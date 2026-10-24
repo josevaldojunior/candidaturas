@@ -103,9 +103,19 @@ public class CandidaturaService {
     public CandidaturaDetalhe atualizar(Long id, CandidaturaRequest req) {
         Candidatura c = obter(id);
         validarChaveExterna(req.chaveExterna(), id);
+        String pendenciaAntes = c.getPendencia();
         preencher(c, req);
         if (req.status() != null && req.status() != c.getStatus()) {
+            // a tela já manda o campo vazio ao sair de Interesse; a pendência anterior volta por
+            // um instante para que aplicarStatus a registre no histórico como concluída
+            String pendenciaPedida = c.getPendencia();
+            c.setPendencia(pendenciaAntes);
             aplicarStatus(c, req.status(), null);
+            boolean concluida = pendenciaAntes != null && c.getPendencia() == null;
+            // fora desse caso vale o que foi editado; uma pendência nova escrita na mesma edição também
+            if (!concluida || (pendenciaPedida != null && !pendenciaPedida.equals(pendenciaAntes))) {
+                c.setPendencia(pendenciaPedida);
+            }
         }
         c.setAtualizadoEm(agora());
         return CandidaturaDtos.detalhe(repository.saveAndFlush(c));
@@ -158,6 +168,12 @@ public class CandidaturaService {
         c.adicionarHistorico(new HistoricoStatus(anterior, novo, agora));
         String texto = "Status alterado de " + anterior + " para " + novo
                 + (Normalizacao.vazio(descricao) ? "" : ": " + descricao.trim());
+        // Sair de INTERESSE significa que o que faltava para enviar foi feito: a pendência é
+        // concluída e o texto fica registrado na interação, para não se perder.
+        if (anterior == Status.INTERESSE && c.getPendencia() != null) {
+            texto += ". Pendência concluída: " + c.getPendencia();
+            c.setPendencia(null);
+        }
         c.adicionarInteracao(new Interacao(agora, TipoInteracao.MUDANCA_STATUS, limitar(texto, 4000)));
         if (c.getDataCandidatura() == null && anterior == Status.INTERESSE) {
             c.setDataCandidatura(agora.toLocalDate());
