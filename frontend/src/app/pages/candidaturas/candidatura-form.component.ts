@@ -1,5 +1,6 @@
 import { COMMA, ENTER, SEMICOLON } from '@angular/cdk/keycodes';
-import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, input, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -54,6 +55,10 @@ export class CandidaturaFormComponent implements OnInit {
   });
   readonly contatos = signal<Contato[]>([]);
   readonly salvando = signal(false);
+  /** Texto da pendência que será concluída ao salvar (mostrado como aviso no formulário). */
+  readonly pendenciaConcluida = signal<string | null>(null);
+  private original: CandidaturaDetalhe | null = null;
+  private readonly destroyRef = inject(DestroyRef);
   readonly carregando = signal(false);
 
   readonly form = inject(FormBuilder).group({
@@ -81,6 +86,7 @@ export class CandidaturaFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.concluirPendenciaAoSairDeInteresse();
     this.api.stacks().subscribe((s) => this.stacksConhecidas.set(s));
     this.contatoApi.listar().subscribe((c) => this.contatos.set(c));
     const id = this.id();
@@ -166,7 +172,29 @@ export class CandidaturaFormComponent implements OnInit {
     });
   }
 
+  /**
+   * Mesma regra do backend: sair de "Interesse" conclui a pendência. O campo é apagado na hora
+   * (e restaurado se voltar para Interesse); um texto novo digitado depois é mantido.
+   */
+  private concluirPendenciaAoSairDeInteresse(): void {
+    this.form.controls.status.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((novo) => {
+      const original = this.original;
+      if (!original || original.status !== 'INTERESSE' || !original.pendencia) {
+        return;
+      }
+      const campo = this.form.controls.pendencia;
+      if (novo !== 'INTERESSE' && campo.value === original.pendencia) {
+        campo.setValue('');
+        this.pendenciaConcluida.set(original.pendencia);
+      } else if (novo === 'INTERESSE' && !campo.value) {
+        campo.setValue(original.pendencia);
+        this.pendenciaConcluida.set(null);
+      }
+    });
+  }
+
   private preencher(c: CandidaturaDetalhe): void {
+    this.original = c;
     this.form.patchValue({
       empresa: c.empresa,
       cargo: c.cargo,
