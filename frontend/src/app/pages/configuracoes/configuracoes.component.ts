@@ -21,7 +21,7 @@ export class ConfiguracoesComponent implements OnInit {
   private readonly csvApi = inject(CsvApi);
   private readonly notificacao = inject(Notificacao);
 
-  readonly dias = new FormControl<number>(21, {
+  readonly dias = new FormControl<number>(30, {
     nonNullable: true,
     validators: [Validators.required, Validators.min(1), Validators.max(365)],
   });

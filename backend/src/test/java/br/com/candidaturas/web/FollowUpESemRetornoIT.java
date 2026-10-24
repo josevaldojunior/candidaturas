@@ -50,7 +50,7 @@ class FollowUpESemRetornoIT {
 
     @Test
     void configuraEExecutaSemRetorno() throws Exception {
-        mvc.perform(get("/api/sem-retorno/configuracao")).andExpect(jsonPath("$.dias").value(21));
+        mvc.perform(get("/api/sem-retorno/configuracao")).andExpect(jsonPath("$.dias").value(30));
 
         long antiga = criar("{\"empresa\":\"Antiga\",\"cargo\":\"Java\",\"dataCandidatura\":\"2026-09-01\"}");
         long recente = criar("{\"empresa\":\"Recente\",\"cargo\":\"Java\",\"dataCandidatura\":\"2026-10-20\"}");

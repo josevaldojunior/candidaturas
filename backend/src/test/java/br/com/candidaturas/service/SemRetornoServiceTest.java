@@ -109,10 +109,10 @@ class SemRetornoServiceTest {
     @Test
     void usaPadraoQuandoNaoHaConfiguracaoValida() {
         when(configuracaoRepository.findById(SemRetornoService.CHAVE_DIAS)).thenReturn(Optional.empty());
-        assertThat(service.dias()).isEqualTo(21);
+        assertThat(service.dias()).isEqualTo(30);
 
         configurarDias("abc");
-        assertThat(service.dias()).isEqualTo(21);
+        assertThat(service.dias()).isEqualTo(30);
     }
 
     @Test
