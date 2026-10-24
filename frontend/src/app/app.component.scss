@@ -1,0 +1,20 @@
+.container { height: 100vh; background: var(--cor-fundo); }
+
+.menu-lateral {
+  width: 232px;
+  border-right: 1px solid var(--cor-borda);
+  background: var(--cor-superficie);
+}
+
+.marca {
+  display: flex; align-items: center; gap: 10px;
+  padding: 20px 16px 12px; font-size: 18px; font-weight: 500; color: #0b4a8b;
+}
+
+.ativo { font-weight: 500; }
+
+.barra-topo {
+  position: sticky; top: 0; z-index: 2;
+  background: var(--cor-superficie); border-bottom: 1px solid var(--cor-borda);
+  font-size: 18px; gap: 4px;
+}
