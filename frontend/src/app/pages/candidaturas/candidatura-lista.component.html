@@ -100,7 +100,7 @@
     } @else {
       <div class="rolagem-tabela">
       <table mat-table [dataSource]="itens()" matSort (matSortChange)="ordenar($event)"
-             matSortActive="atualizadoEm" matSortDirection="desc">
+             [matSortActive]="ordemCampo" [matSortDirection]="ordemDirecao">
         <ng-container matColumnDef="empresa">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Empresa / cargo</th>
           <td mat-cell *matCellDef="let c">

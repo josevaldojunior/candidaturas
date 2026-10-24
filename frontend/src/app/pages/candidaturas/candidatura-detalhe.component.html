@@ -1,7 +1,7 @@
 <div class="pagina">
   @if (c(); as c) {
     <div class="pagina-cabecalho">
-      <button mat-icon-button aria-label="Voltar" routerLink="/candidaturas"><mat-icon>arrow_back</mat-icon></button>
+      <button mat-icon-button aria-label="Voltar" routerLink="/candidaturas" [queryParams]="consulta.ultima()"><mat-icon>arrow_back</mat-icon></button>
       <h1>
         {{ c.empresa }}
         <div class="subtitulo texto-suave">{{ c.cargo }}</div>

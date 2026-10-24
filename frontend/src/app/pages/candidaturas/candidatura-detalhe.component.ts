@@ -16,6 +16,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterLink } from '@angular/router';
 import { filter, switchMap } from 'rxjs';
 import { CandidaturaApi, ContatoApi } from '../../core/api.service';
+import { ConsultaListaService } from '../../core/consulta-lista.service';
 import { paraIsoData } from '../../core/datas';
 import { CandidaturaDetalhe, Contato, Interacao, Status, TipoInteracao } from '../../core/models';
 import { Notificacao } from '../../core/notificacao.service';
@@ -38,6 +39,7 @@ export class CandidaturaDetalheComponent implements OnInit {
   private readonly notificacao = inject(Notificacao);
   private readonly dialog = inject(MatDialog);
   private readonly router = inject(Router);
+  readonly consulta = inject(ConsultaListaService);
 
   readonly id = input.required<string>();
 
@@ -69,7 +71,7 @@ export class CandidaturaDetalheComponent implements OnInit {
       next: (c) => this.c.set(c),
       error: (e) => {
         this.notificacao.erro(e, 'Candidatura não encontrada');
-        this.router.navigate(['/candidaturas']);
+        this.router.navigate(['/candidaturas'], { queryParams: this.consulta.ultima() });
       },
     });
   }
@@ -155,7 +157,7 @@ export class CandidaturaDetalheComponent implements OnInit {
       .subscribe({
         next: () => {
           this.notificacao.ok('Candidatura excluída');
-          this.router.navigate(['/candidaturas']);
+          this.router.navigate(['/candidaturas'], { queryParams: this.consulta.ultima() });
         },
         error: (e) => this.notificacao.erro(e),
       });
