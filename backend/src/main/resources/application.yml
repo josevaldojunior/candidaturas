@@ -47,5 +47,10 @@ springdoc:
 
 app:
   zona: America/Sao_Paulo
+  agendamento:
+    habilitado: true
+  sem-retorno:
+    # todo dia às 06:00
+    cron: "0 0 6 * * *"
   cors:
     origens: http://localhost:4200
