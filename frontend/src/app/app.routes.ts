@@ -33,6 +33,16 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/kanban/kanban.component').then((m) => m.KanbanComponent),
   },
   {
+    path: 'follow-ups',
+    title: 'Follow-ups',
+    loadComponent: () => import('./pages/follow-ups/follow-ups.component').then((m) => m.FollowUpsComponent),
+  },
+  {
+    path: 'configuracoes',
+    title: 'Configurações',
+    loadComponent: () => import('./pages/configuracoes/configuracoes.component').then((m) => m.ConfiguracoesComponent),
+  },
+  {
     path: 'contatos',
     title: 'Contatos',
     loadComponent: () => import('./pages/contatos/contatos.component').then((m) => m.ContatosComponent),

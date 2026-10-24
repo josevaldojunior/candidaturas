@@ -156,3 +156,28 @@ export interface Dashboard {
   porPlataforma: Contagem[];
   porSemana: ContagemSemana[];
 }
+
+export interface FollowUpItem {
+  interacaoId: number;
+  candidaturaId: number;
+  empresa: string;
+  cargo: string;
+  status: Status;
+  tipo: TipoInteracao;
+  descricao: string | null;
+  proximoPasso: string | null;
+  dataFollowUp: string;
+  diasParaVencer: number;
+}
+
+export interface FollowUps {
+  vencidos: FollowUpItem[];
+  proximos: FollowUpItem[];
+}
+
+export interface ResultadoSemRetorno {
+  dias: number;
+  marcadas: number;
+  ids: number[];
+  executadoEm: string;
+}

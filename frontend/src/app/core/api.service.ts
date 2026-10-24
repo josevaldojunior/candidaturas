@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   CandidaturaDetalhe, CandidaturaRequest, CandidaturaResumo, ColunaKanban, Contato, ContatoRequest, Dashboard,
-  FiltrosCandidatura, Interacao, InteracaoRequest, Pagina, Status,
+  FiltrosCandidatura, FollowUps, ResultadoSemRetorno, Interacao, InteracaoRequest, Pagina, Status,
 } from './models';
 
 @Injectable({ providedIn: 'root' })
@@ -116,5 +116,26 @@ export class DashboardApi {
 
   resumo(): Observable<Dashboard> {
     return this.http.get<Dashboard>('/api/dashboard');
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class AcompanhamentoApi {
+  private readonly http = inject(HttpClient);
+
+  followUps(): Observable<FollowUps> {
+    return this.http.get<FollowUps>('/api/follow-ups');
+  }
+
+  diasSemRetorno(): Observable<{ dias: number }> {
+    return this.http.get<{ dias: number }>('/api/sem-retorno/configuracao');
+  }
+
+  salvarDiasSemRetorno(dias: number): Observable<{ dias: number }> {
+    return this.http.put<{ dias: number }>('/api/sem-retorno/configuracao', { dias });
+  }
+
+  executarSemRetorno(): Observable<ResultadoSemRetorno> {
+    return this.http.post<ResultadoSemRetorno>('/api/sem-retorno/executar', null);
   }
 }

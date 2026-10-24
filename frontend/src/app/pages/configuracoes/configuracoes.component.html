@@ -1,0 +1,33 @@
+<div class="pagina">
+  <div class="pagina-cabecalho">
+    <h1>Configurações</h1>
+  </div>
+
+  <div class="secoes">
+    <section class="cartao">
+      <h2><mat-icon>hourglass_empty</mat-icon> Sem retorno automático</h2>
+      <p class="texto-suave">
+        Candidaturas entre <strong>Candidatado</strong> e <strong>Entrevista final</strong> sem nenhuma interação
+        há mais dias do que o prazo abaixo são marcadas como <strong>Sem retorno</strong>.
+        O job roda todos os dias às 06:00; você também pode executá-lo agora.
+      </p>
+      <div class="linha">
+        <mat-form-field class="campo-dias">
+          <mat-label>Prazo (dias)</mat-label>
+          <input matInput type="number" min="1" max="365" [formControl]="dias">
+          @if (dias.invalid) { <mat-error>Entre 1 e 365</mat-error> }
+        </mat-form-field>
+        <button mat-stroked-button (click)="salvarDias()" [disabled]="dias.pristine || dias.invalid">Salvar prazo</button>
+        <button mat-flat-button (click)="executarSemRetorno()" [disabled]="executando()">
+          <mat-icon>play_arrow</mat-icon> Executar agora
+        </button>
+      </div>
+      @if (ultimaExecucao(); as r) {
+        <p class="resultado">
+          Executado em {{ r.executadoEm | date: 'dd/MM/yyyy HH:mm' }} com prazo de {{ r.dias }} dias:
+          <strong>{{ r.marcadas }}</strong> candidatura(s) marcadas.
+        </p>
+      }
+    </section>
+  </div>
+</div>

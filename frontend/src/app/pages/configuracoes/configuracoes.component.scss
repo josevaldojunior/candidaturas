@@ -1,0 +1,6 @@
+.secoes { display: grid; gap: 16px; }
+h2 { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 500; margin: 0 0 8px; }
+p { margin: 0 0 12px; line-height: 1.5; }
+.linha { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.campo-dias { width: 140px; }
+.resultado { margin-top: 12px; }
