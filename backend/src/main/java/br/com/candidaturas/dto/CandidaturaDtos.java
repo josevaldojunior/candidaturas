@@ -31,21 +31,22 @@ public final class CandidaturaDtos {
             @Size(max = 100) String curriculoVersao,
             @Size(max = 4000) String observacoes,
             @Size(max = 300) String chaveExterna,
-            List<Long> contatoIds) {
+            List<Long> contatoIds,
+            @Size(max = 1000) String pendencia) {
     }
 
     public record CandidaturaResumo(
             Long id, String empresa, String cargo, String linkVaga, Plataforma plataforma, Modalidade modalidade,
             TipoContrato tipoContrato, String faixaSalarial, String pretensaoSalarial, Integer nota, List<String> stack,
             LocalDate dataCandidatura, Status status, Prioridade prioridade, Origem origem, String chaveExterna,
-            LocalDateTime ultimaInteracaoEm, LocalDateTime atualizadoEm) {
+            String pendencia, LocalDateTime ultimaInteracaoEm, LocalDateTime atualizadoEm) {
     }
 
     public record CandidaturaDetalhe(
             Long id, String empresa, String cargo, String linkVaga, Plataforma plataforma, Modalidade modalidade,
             TipoContrato tipoContrato, String faixaSalarial, String pretensaoSalarial, Integer nota, List<String> stack,
             LocalDate dataCandidatura, Status status, Prioridade prioridade, String curriculoVersao, String observacoes,
-            Origem origem, String chaveExterna, LocalDateTime ultimaInteracaoEm, LocalDateTime criadoEm,
+            String pendencia, Origem origem, String chaveExterna, LocalDateTime ultimaInteracaoEm, LocalDateTime criadoEm,
             LocalDateTime atualizadoEm, List<ContatoDtos.ContatoResponse> contatos,
             List<InteracaoDtos.InteracaoResponse> interacoes, List<HistoricoResponse> historico) {
     }
@@ -63,14 +64,14 @@ public final class CandidaturaDtos {
         return new CandidaturaResumo(c.getId(), c.getEmpresa(), c.getCargo(), c.getLinkVaga(), c.getPlataforma(),
                 c.getModalidade(), c.getTipoContrato(), c.getFaixaSalarial(), c.getPretensaoSalarial(), c.getNota(),
                 c.getStack().stream().sorted(String.CASE_INSENSITIVE_ORDER).toList(), c.getDataCandidatura(), c.getStatus(), c.getPrioridade(), c.getOrigem(),
-                c.getChaveExterna(), c.getUltimaInteracaoEm(), c.getAtualizadoEm());
+                c.getChaveExterna(), c.getPendencia(), c.getUltimaInteracaoEm(), c.getAtualizadoEm());
     }
 
     public static CandidaturaDetalhe detalhe(Candidatura c) {
         return new CandidaturaDetalhe(c.getId(), c.getEmpresa(), c.getCargo(), c.getLinkVaga(), c.getPlataforma(),
                 c.getModalidade(), c.getTipoContrato(), c.getFaixaSalarial(), c.getPretensaoSalarial(), c.getNota(),
                 c.getStack().stream().sorted(String.CASE_INSENSITIVE_ORDER).toList(), c.getDataCandidatura(), c.getStatus(), c.getPrioridade(),
-                c.getCurriculoVersao(), c.getObservacoes(), c.getOrigem(), c.getChaveExterna(),
+                c.getCurriculoVersao(), c.getObservacoes(), c.getPendencia(), c.getOrigem(), c.getChaveExterna(),
                 c.getUltimaInteracaoEm(), c.getCriadoEm(), c.getAtualizadoEm(),
                 c.getContatos().stream().map(ContatoDtos::response).toList(),
                 c.getInteracoes().stream().map(InteracaoDtos::response).toList(),

@@ -38,6 +38,8 @@ public class IntegracaoService {
 
     enum Resultado { CRIADA, ATUALIZADA, IGNORADA }
 
+    static final String PREFIXO_PENDENCIA = "PENDENTE:";
+
     private final CandidaturaRepository repository;
     private final ContatoRepository contatoRepository;
     private final CandidaturaService candidaturaService;
@@ -145,6 +147,7 @@ public class IntegracaoService {
                 : c.getStatus() == Status.INTERESSE ? null : agora.toLocalDate());
         c.setCurriculoVersao(d.curriculoVersao());
         c.setObservacoes(d.observacoes());
+        c.setPendencia(d.pendencia());
         c.setCriadoEm(agora);
         c.setAtualizadoEm(agora);
         c.adicionarHistorico(new HistoricoStatus(null, c.getStatus(), agora));
@@ -175,6 +178,7 @@ public class IntegracaoService {
         mudou |= aplicar(d.prioridade(), c::getPrioridade, c::setPrioridade);
         mudou |= aplicar(d.curriculoVersao(), c::getCurriculoVersao, c::setCurriculoVersao);
         mudou |= aplicar(d.observacoes(), c::getObservacoes, c::setObservacoes);
+        mudou |= aplicar(d.pendencia(), c::getPendencia, c::setPendencia);
         if (!d.stack().isEmpty() && !minusculas(d.stack()).equals(minusculas(c.getStack()))) {
             c.getStack().clear();
             c.getStack().addAll(d.stack());
@@ -303,7 +307,7 @@ public class IntegracaoService {
     record Dados(String chave, String empresa, String cargo, String link, Plataforma plataforma,
                  Modalidade modalidade, TipoContrato tipoContrato, String faixaSalarial, String pretensaoSalarial,
                  Integer nota, LocalDate dataCandidatura, Status status, Prioridade prioridade,
-                 String curriculoVersao, String observacoes, Set<String> stack, String contatoNome,
+                 String curriculoVersao, String observacoes, String pendencia, Set<String> stack, String contatoNome,
                  String contatoEmail, String contatoTelefone, TipoInteracao tipoInteracao,
                  String descricaoInteracao, String proximoPasso, LocalDate dataFollowUp) {
 
@@ -324,6 +328,7 @@ public class IntegracaoService {
                     paraEnum(Prioridade.class, i.prioridade(), "prioridade"),
                     limite(i.curriculoVersao(), 100, "curriculoVersao"),
                     limite(i.observacoes(), 4000, "observacoes"),
+                    pendenciaDe(i.observacoes()),
                     Normalizacao.stack(i.stack()),
                     limite(i.contatoNome(), 200, "contatoNome"),
                     limite(i.contatoEmail(), 200, "contatoEmail"),
@@ -332,6 +337,19 @@ public class IntegracaoService {
                     limite(i.descricaoInteracao(), 4000, "descricaoInteracao"),
                     limite(i.proximoPasso(), 1000, "proximoPasso"),
                     data(i.dataFollowUp(), "dataFollowUp"));
+        }
+
+        /** Observações que começam com "PENDENTE:" viram pendência (o texto depois do prefixo). */
+        static String pendenciaDe(String observacoes) {
+            String t = texto(observacoes);
+            if (t == null || !t.regionMatches(true, 0, PREFIXO_PENDENCIA, 0, PREFIXO_PENDENCIA.length())) {
+                return null;
+            }
+            String resto = t.substring(PREFIXO_PENDENCIA.length()).strip();
+            if (resto.isEmpty()) {
+                return null;
+            }
+            return resto.length() > 1000 ? resto.substring(0, 1000) : resto;
         }
 
         private static String limite(String valor, int max, String campo) {

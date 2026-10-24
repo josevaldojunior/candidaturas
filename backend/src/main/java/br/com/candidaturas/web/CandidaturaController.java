@@ -9,6 +9,7 @@ import br.com.candidaturas.dto.InteracaoDtos.InteracaoResponse;
 import br.com.candidaturas.dto.Pagina;
 import br.com.candidaturas.service.CandidaturaService;
 import br.com.candidaturas.service.InteracaoService;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -49,9 +50,10 @@ public class CandidaturaController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate de,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate ate,
             @RequestParam(required = false) String q,
+            @RequestParam(required = false) @Parameter(description = "true = só candidaturas com pendência") Boolean pendentes,
             @ParameterObject @PageableDefault(size = 20, sort = "atualizadoEm", direction = Sort.Direction.DESC)
             Pageable pageable) {
-        return service.listar(status, empresa, plataforma, stack, prioridade, de, ate, q, pageable);
+        return service.listar(status, empresa, plataforma, stack, prioridade, de, ate, q, pendentes, pageable);
     }
 
     @GetMapping("/{id}")

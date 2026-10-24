@@ -160,6 +160,24 @@ class CandidaturaControllerIT {
     }
 
     @Test
+    void pendenciaFiltroELimpeza() throws Exception {
+        long id = criar("{\"empresa\":\"ACME\",\"cargo\":\"Java\",\"pendencia\":\"Enviar portfólio\"}");
+        criar("{\"empresa\":\"Beta\",\"cargo\":\"Java\"}");
+
+        mvc.perform(get("/api/candidaturas").param("pendentes", "true"))
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.content[0].pendencia").value("Enviar portfólio"));
+        mvc.perform(get("/api/dashboard")).andExpect(jsonPath("$.pendentes").value(1));
+
+        mvc.perform(put("/api/candidaturas/{id}", id).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"empresa\":\"ACME\",\"cargo\":\"Java\",\"pendencia\":\"\"}"))
+                .andExpect(jsonPath("$.pendencia").value(nullValue()));
+        mvc.perform(get("/api/candidaturas").param("pendentes", "true"))
+                .andExpect(jsonPath("$.totalElements").value(0));
+        mvc.perform(get("/api/dashboard")).andExpect(jsonPath("$.pendentes").value(0));
+    }
+
+    @Test
     void excluir() throws Exception {
         long id = criar("{\"empresa\":\"ACME\",\"cargo\":\"Java\"}");
         mvc.perform(delete("/api/candidaturas/{id}", id)).andExpect(status().isNoContent());

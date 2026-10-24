@@ -13,6 +13,7 @@ public final class DashboardDtos {
     public record DashboardResponse(
             long total,
             long ativas,
+            long pendentes,
             long comResposta,
             double taxaResposta,
             List<EtapaFunil> funil,

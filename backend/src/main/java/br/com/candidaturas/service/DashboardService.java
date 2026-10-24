@@ -60,8 +60,9 @@ public class DashboardService {
         long ativas = todas.stream()
                 .filter(c -> Status.AGUARDANDO_RETORNO.contains(c.getStatus()) || c.getStatus() == Status.PROPOSTA)
                 .count();
+        long pendentes = todas.stream().filter(c -> c.getPendencia() != null).count();
 
-        return new DashboardResponse(total, ativas, comResposta, percentual(comResposta, enviadas),
+        return new DashboardResponse(total, ativas, pendentes, comResposta, percentual(comResposta, enviadas),
                 funil(etapaMaxima.values(), total), porStatus(todas), porPlataforma(todas), porSemana(todas));
     }
 

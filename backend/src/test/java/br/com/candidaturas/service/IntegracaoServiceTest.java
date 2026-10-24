@@ -201,6 +201,37 @@ class IntegracaoServiceTest {
     }
 
     @Test
+    void observacaoComPrefixoPendentePreenchePendencia() {
+        service.processar(List.of(item("p-1", null, null).observacoes("PENDENTE:  enviar teste até sexta").build()),
+                Origem.AGENTE);
+
+        Candidatura c = salva();
+        assertThat(c.getPendencia()).isEqualTo("enviar teste até sexta");
+        assertThat(c.getObservacoes()).isEqualTo("PENDENTE:  enviar teste até sexta");
+    }
+
+    @Test
+    void pendenciaAtualizaAoReenviarEObservacaoComumNaoMexe() {
+        Candidatura existente = existente();
+        when(repository.findByChaveExterna("vaga-1")).thenReturn(Optional.of(existente));
+
+        assertThat(service.processar(List.of(new Builder().chave("vaga-1").observacoes("pendente: mandar portfólio").build()),
+                Origem.AGENTE).atualizadas()).isEqualTo(1);
+        assertThat(existente.getPendencia()).isEqualTo("mandar portfólio");
+
+        service.processar(List.of(new Builder().chave("vaga-1").observacoes("Recrutadora simpática").build()), Origem.AGENTE);
+        assertThat(existente.getPendencia()).isEqualTo("mandar portfólio");
+    }
+
+    @Test
+    void prefixoSemTextoOuNoMeioNaoGeraPendencia() {
+        assertThat(IntegracaoService.Dados.pendenciaDe("PENDENTE:   ")).isNull();
+        assertThat(IntegracaoService.Dados.pendenciaDe("Status PENDENTE: x")).isNull();
+        assertThat(IntegracaoService.Dados.pendenciaDe(null)).isNull();
+        assertThat(IntegracaoService.Dados.pendenciaDe("  PENDENTE:ligar")).isEqualTo("ligar");
+    }
+
+    @Test
     void existeProcuraPorLinkOuEmpresaECargo() {
         Candidatura c = existente();
         when(repository.findFirstByLinkVagaOrderByIdAsc("https://vagas/1")).thenReturn(Optional.of(c));
@@ -238,6 +269,7 @@ class IntegracaoServiceTest {
     static final class Builder {
         private String chave, empresa, cargo, link, plataforma, modalidade, contrato, nota, data, status;
         private String stack, contatoNome, contatoEmail, contatoTelefone, tipoInteracao, descricao, followUp;
+        private String observacoes;
 
         Builder chave(String v) { chave = v; return this; }
         Builder empresa(String v) { empresa = v; return this; }
@@ -250,6 +282,7 @@ class IntegracaoServiceTest {
         Builder data(String v) { data = v; return this; }
         Builder status(String v) { status = v; return this; }
         Builder stack(String v) { stack = v; return this; }
+        Builder observacoes(String v) { observacoes = v; return this; }
 
         Builder contato(String nome, String email, String telefone) {
             contatoNome = nome;
@@ -267,7 +300,7 @@ class IntegracaoServiceTest {
 
         IntegracaoItem build() {
             return new IntegracaoItem(chave, empresa, cargo, link, plataforma, modalidade, contrato, null, null, nota,
-                    data, status, null, null, null, stack == null ? null : List.of(stack), contatoNome, contatoEmail,
+                    data, status, null, null, observacoes, stack == null ? null : List.of(stack), contatoNome, contatoEmail,
                     contatoTelefone, tipoInteracao, descricao, null, followUp);
         }
     }
