@@ -1,0 +1,31 @@
+# Java / Maven
+backend/target/
+*.class
+*.log
+
+# Banco H2 do perfil dev
+backend/data/
+data/
+
+# Node / Angular
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# Pasta inbox: só a estrutura vai para o repositório
+inbox/*
+!inbox/.gitkeep
+!inbox/processados/
+inbox/processados/*
+!inbox/processados/.gitkeep
+!inbox/erros/
+inbox/erros/*
+!inbox/erros/.gitkeep
+
+# Ambiente e IDEs
+.env
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
