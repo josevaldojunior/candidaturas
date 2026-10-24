@@ -178,6 +178,20 @@ class CandidaturaControllerIT {
     }
 
     @Test
+    void moverDeInteresseParaCandidatadoTiraDosPendentes() throws Exception {
+        long id = criar("{\"empresa\":\"PagBank\",\"cargo\":\"Java\",\"status\":\"INTERESSE\",\"pendencia\":\"Pede RG\"}");
+        mvc.perform(get("/api/candidaturas").param("pendentes", "true")).andExpect(jsonPath("$.totalElements").value(1));
+
+        mvc.perform(patch("/api/candidaturas/{id}/status", id).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"status\":\"CANDIDATADO\"}"))
+                .andExpect(jsonPath("$.pendencia").value(nullValue()))
+                .andExpect(jsonPath("$.interacoes[0].descricao", containsString("Pendência concluída: Pede RG")));
+
+        mvc.perform(get("/api/candidaturas").param("pendentes", "true")).andExpect(jsonPath("$.totalElements").value(0));
+        mvc.perform(get("/api/dashboard")).andExpect(jsonPath("$.pendentes").value(0));
+    }
+
+    @Test
     void excluir() throws Exception {
         long id = criar("{\"empresa\":\"ACME\",\"cargo\":\"Java\"}");
         mvc.perform(delete("/api/candidaturas/{id}", id)).andExpect(status().isNoContent());

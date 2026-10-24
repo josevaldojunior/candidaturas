@@ -148,6 +148,84 @@ class CandidaturaServiceTest {
     }
 
     @Test
+    void sairDeInteresseConcluiAPendenciaERegistraNoHistorico() {
+        Candidatura c = candidatura(1L, Status.INTERESSE);
+        c.setPendencia("Pede RG e nome dos pais");
+        when(repository.findById(1L)).thenReturn(Optional.of(c));
+        when(repository.saveAndFlush(c)).thenReturn(c);
+
+        CandidaturaDetalhe d = service.mudarStatus(1L, new MudancaStatusRequest(Status.CANDIDATADO, null));
+
+        assertThat(d.pendencia()).isNull();
+        assertThat(c.getDataCandidatura()).isEqualTo(LocalDate.of(2026, 10, 24));
+        assertThat(c.getInteracoes()).singleElement()
+                .satisfies(i -> assertThat(i.getDescricao()).contains("Pendência concluída: Pede RG e nome dos pais"));
+    }
+
+    @Test
+    void mudarEntreOutrasEtapasMantemAPendencia() {
+        Candidatura c = candidatura(1L, Status.TRIAGEM_RH);
+        c.setPendencia("Enviar teste técnico");
+        when(repository.findById(1L)).thenReturn(Optional.of(c));
+        when(repository.saveAndFlush(c)).thenReturn(c);
+
+        service.mudarStatus(1L, new MudancaStatusRequest(Status.TESTE_TECNICO, null));
+
+        assertThat(c.getPendencia()).isEqualTo("Enviar teste técnico");
+    }
+
+    @Test
+    void editarParaCandidatadoLimpaAPendenciaMesmoComOTextoAntigoNoFormulario() {
+        Candidatura c = candidatura(1L, Status.INTERESSE);
+        c.setPendencia("Pede CPF");
+        when(repository.findById(1L)).thenReturn(Optional.of(c));
+        when(repository.saveAndFlush(c)).thenReturn(c);
+
+        service.atualizar(1L, comPendencia(request("ACME", Status.CANDIDATADO, null), "Pede CPF"));
+
+        assertThat(c.getStatus()).isEqualTo(Status.CANDIDATADO);
+        assertThat(c.getPendencia()).isNull();
+    }
+
+    @Test
+    void formularioQueJaApagouOCampoAindaRegistraAPendenciaConcluida() {
+        Candidatura c = candidatura(1L, Status.INTERESSE);
+        c.setPendencia("Pede CPF");
+        when(repository.findById(1L)).thenReturn(Optional.of(c));
+        when(repository.saveAndFlush(c)).thenReturn(c);
+
+        service.atualizar(1L, comPendencia(request("ACME", Status.CANDIDATADO, null), ""));
+
+        assertThat(c.getPendencia()).isNull();
+        assertThat(c.getInteracoes()).singleElement()
+                .satisfies(i -> assertThat(i.getDescricao()).contains("Pendência concluída: Pede CPF"));
+    }
+
+    @Test
+    void editarSemMudarStatusAindaPermiteTrocarAPendencia() {
+        Candidatura c = candidatura(1L, Status.TRIAGEM_RH);
+        c.setPendencia("Antiga");
+        when(repository.findById(1L)).thenReturn(Optional.of(c));
+        when(repository.saveAndFlush(c)).thenReturn(c);
+
+        service.atualizar(1L, comPendencia(request("ACME", Status.TESTE_TECNICO, null), "Nova"));
+
+        assertThat(c.getPendencia()).isEqualTo("Nova");
+    }
+
+    @Test
+    void pendenciaNovaEscritaNaMesmaEdicaoEhMantida() {
+        Candidatura c = candidatura(1L, Status.INTERESSE);
+        c.setPendencia("Pede CPF");
+        when(repository.findById(1L)).thenReturn(Optional.of(c));
+        when(repository.saveAndFlush(c)).thenReturn(c);
+
+        service.atualizar(1L, comPendencia(request("ACME", Status.CANDIDATADO, null), "Aguardar retorno do RH"));
+
+        assertThat(c.getPendencia()).isEqualTo("Aguardar retorno do RH");
+    }
+
+    @Test
     void buscarInexistenteLancaNaoEncontrado() {
         when(repository.findById(5L)).thenReturn(Optional.empty());
 
@@ -157,6 +235,13 @@ class CandidaturaServiceTest {
     private static CandidaturaRequest request(String empresa, Status status, String chave) {
         return new CandidaturaRequest(empresa, "Dev Java", "https://vagas/1", Plataforma.LINKEDIN, Modalidade.REMOTO,
                 TipoContrato.PJ, null, null, 8, Set.of("Java", "Spring"), null, status, null, "v3", null, chave, null, null);
+    }
+
+    private static CandidaturaRequest comPendencia(CandidaturaRequest r, String pendencia) {
+        return new CandidaturaRequest(r.empresa(), r.cargo(), r.linkVaga(), r.plataforma(), r.modalidade(),
+                r.tipoContrato(), r.faixaSalarial(), r.pretensaoSalarial(), r.nota(), r.stack(), r.dataCandidatura(),
+                r.status(), r.prioridade(), r.curriculoVersao(), r.observacoes(), r.chaveExterna(), r.contatoIds(),
+                pendencia);
     }
 
     static Candidatura candidatura(Long id, Status status) {

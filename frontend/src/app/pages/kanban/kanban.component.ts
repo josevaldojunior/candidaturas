@@ -86,6 +86,9 @@ export class KanbanComponent implements OnInit {
     this.api.mudarStatus(item.id, destino).subscribe({
       next: (atualizada) => {
         item.ultimaInteracaoEm = atualizada.ultimaInteracaoEm;
+        // sair de Interesse conclui a pendência no backend: o selo some do cartão
+        item.pendencia = atualizada.pendencia;
+        this.colunas.update((c) => [...c]);
         this.notificacao.ok(`${item.empresa} → ${ROTULO_STATUS[destino]}`);
       },
       error: (e) => {
