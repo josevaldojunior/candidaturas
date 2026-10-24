@@ -1,27 +1,127 @@
 @use '@angular/material' as mat;
 
-html {
+// O tema escuro é incluído duas vezes de propósito (preferência do sistema e escolha manual).
+mat.$theme-ignore-duplication-warnings: true;
+
+// Tema claro/escuro no mesmo esquema do portfólio (josevaldojunior.github.io):
+// sem data-theme segue o sistema; data-theme="light" | "dark" força o modo escolhido.
+
+$tema-claro: mat.define-theme((
+  color: (theme-type: light, primary: mat.$azure-palette, tertiary: mat.$blue-palette),
+  typography: (brand-family: 'Roboto', plain-family: 'Roboto'),
+  density: (scale: 0),
+));
+
+$tema-escuro: mat.define-theme((
+  color: (theme-type: dark, primary: mat.$azure-palette, tertiary: mat.$blue-palette),
+  typography: (brand-family: 'Roboto', plain-family: 'Roboto'),
+  density: (scale: 0),
+));
+
+// Paleta do portfólio + cores de estado da aplicação.
+@mixin tokens-claros {
   color-scheme: light;
-  @include mat.core();
-  @include mat.all-component-themes(mat.define-theme((
-    color: (theme-type: light, primary: mat.$azure-palette, tertiary: mat.$blue-palette),
-    typography: (brand-family: 'Roboto', plain-family: 'Roboto'),
-    density: (scale: 0),
-  )));
+  --cor-fundo: #F3F5F9;
+  --cor-superficie: #FFFFFF;
+  --cor-superficie-2: #EBEFF5;
+  --cor-hover: #F0F4FB;
+  --cor-texto: #111B2E;
+  --cor-texto-suave: #56627A;
+  --cor-borda: #D4DCE8;
+  --cor-destaque: #1D5FD1;
+  --cor-destaque-suave: #E2EBFA;
+  --cor-marca: #B86A12;
+  --cor-perigo: #B3261E;
+  --cor-ok: #1B7F3B;
+  --cor-alerta: #9A6700;
+  --cor-pendente-fundo: #FFF4E5;
+  --cor-pendente-texto: #8A4B00;
+  --cor-pendente-borda: #F5C98B;
+  --sombra: 0 6px 18px rgba(17, 27, 46, .18);
+
+  --st-INTERESSE-bg: #ECEFF1;          --st-INTERESSE-fg: #37474F;
+  --st-CANDIDATADO-bg: #E3F2FD;        --st-CANDIDATADO-fg: #0D47A1;
+  --st-TRIAGEM_RH-bg: #E0F7FA;         --st-TRIAGEM_RH-fg: #006064;
+  --st-TESTE_TECNICO-bg: #EDE7F6;      --st-TESTE_TECNICO-fg: #4527A0;
+  --st-ENTREVISTA_TECNICA-bg: #F3E5F5; --st-ENTREVISTA_TECNICA-fg: #6A1B9A;
+  --st-ENTREVISTA_FINAL-bg: #FFF3E0;   --st-ENTREVISTA_FINAL-fg: #B34700;
+  --st-PROPOSTA-bg: #FFFDE7;           --st-PROPOSTA-fg: #7A5F00;
+  --st-ACEITA-bg: #E8F5E9;             --st-ACEITA-fg: #1B5E20;
+  --st-RECUSADA-bg: #FFEBEE;           --st-RECUSADA-fg: #B71C1C;
+  --st-SEM_RETORNO-bg: #F1F1F1;        --st-SEM_RETORNO-fg: #5C5C5C;
 }
 
-:root {
-  --cor-fundo: #f5f7fb;
-  --cor-superficie: #ffffff;
-  --cor-borda: #dfe3eb;
-  --cor-texto-suave: #5f6673;
-  --cor-perigo: #b3261e;
-  --cor-ok: #1b7f3b;
-  --cor-alerta: #9a6700;
+@mixin tokens-escuros {
+  color-scheme: dark;
+  --cor-fundo: #0C1220;
+  --cor-superficie: #131C2E;
+  --cor-superficie-2: #1A2438;
+  --cor-hover: #1A2540;
+  --cor-texto: #E3E9F4;
+  --cor-texto-suave: #96A3BB;
+  --cor-borda: #25304A;
+  --cor-destaque: #6FA3FF;
+  --cor-destaque-suave: #17264A;
+  --cor-marca: #E8A34B;
+  --cor-perigo: #FF8A80;
+  --cor-ok: #7BD88F;
+  --cor-alerta: #E8B44B;
+  --cor-pendente-fundo: #3A2A12;
+  --cor-pendente-texto: #F2C27A;
+  --cor-pendente-borda: #6B4A1C;
+  --sombra: 0 6px 18px rgba(0, 0, 0, .5);
+
+  --st-INTERESSE-bg: #263042;          --st-INTERESSE-fg: #C5CEDC;
+  --st-CANDIDATADO-bg: #16294A;        --st-CANDIDATADO-fg: #8DB8FF;
+  --st-TRIAGEM_RH-bg: #0F3238;         --st-TRIAGEM_RH-fg: #7FDBE6;
+  --st-TESTE_TECNICO-bg: #261F45;      --st-TESTE_TECNICO-fg: #B9A6FF;
+  --st-ENTREVISTA_TECNICA-bg: #33193B; --st-ENTREVISTA_TECNICA-fg: #E3A6F0;
+  --st-ENTREVISTA_FINAL-bg: #3A2412;   --st-ENTREVISTA_FINAL-fg: #FFB074;
+  --st-PROPOSTA-bg: #362E10;           --st-PROPOSTA-fg: #F2D46B;
+  --st-ACEITA-bg: #163420;             --st-ACEITA-fg: #8EE0A3;
+  --st-RECUSADA-bg: #3D1A1C;           --st-RECUSADA-fg: #FF9C9C;
+  --st-SEM_RETORNO-bg: #252B36;        --st-SEM_RETORNO-fg: #A9B2C2;
+}
+
+html {
+  @include mat.core();
+  @include mat.all-component-themes($tema-claro);
+  @include tokens-claros;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    @include mat.all-component-colors($tema-escuro);
+    @include tokens-escuros;
+  }
+}
+
+html[data-theme="dark"] {
+  @include mat.all-component-colors($tema-escuro);
+  @include tokens-escuros;
+}
+
+// Superfícies do Material seguem a paleta da aplicação nos dois modos.
+// Ficam no body para valer acima das variáveis que o tema define no html.
+body {
+  --mat-sidenav-container-background-color: var(--cor-superficie);
+  --mat-sidenav-content-background-color: var(--cor-fundo);
+  --mat-sidenav-container-divider-color: var(--cor-borda);
+  --mat-toolbar-container-background-color: var(--cor-superficie);
+  --mat-table-background-color: var(--cor-superficie);
+  --mat-paginator-container-background-color: var(--cor-superficie);
+  --mat-expansion-container-background-color: var(--cor-superficie);
+  --mdc-dialog-container-color: var(--cor-superficie);
 }
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, 'Helvetica Neue', sans-serif; background: var(--cor-fundo); }
+body {
+  margin: 0; font-family: Roboto, 'Helvetica Neue', sans-serif;
+  background: var(--cor-fundo); color: var(--cor-texto);
+  transition: background-color .25s, color .25s;
+}
+
+a { color: var(--cor-destaque); }
 
 .pagina { padding: 16px; max-width: 1280px; margin: 0 auto; box-sizing: border-box; }
 .pagina-cabecalho {
@@ -30,6 +130,7 @@ body { margin: 0; font-family: Roboto, 'Helvetica Neue', sans-serif; background:
 }
 .cartao {
   background: var(--cor-superficie); border: 1px solid var(--cor-borda); border-radius: 12px; padding: 16px;
+  transition: background-color .25s, border-color .25s;
 }
 .grade-form {
   display: grid; gap: 4px 16px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -40,19 +141,15 @@ body { margin: 0; font-family: Roboto, 'Helvetica Neue', sans-serif; background:
 .acoes { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .flex-espaco { flex: 1 1 auto; }
 
+$status: INTERESSE, CANDIDATADO, TRIAGEM_RH, TESTE_TECNICO, ENTREVISTA_TECNICA, ENTREVISTA_FINAL, PROPOSTA,
+  ACEITA, RECUSADA, SEM_RETORNO;
+
 .chip-status {
   display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 500;
-  white-space: nowrap; background: #e8eef9; color: #1f3b70;
-  &.s-INTERESSE { background: #eceff1; color: #37474f; }
-  &.s-CANDIDATADO { background: #e3f2fd; color: #0d47a1; }
-  &.s-TRIAGEM_RH { background: #e0f7fa; color: #006064; }
-  &.s-TESTE_TECNICO { background: #ede7f6; color: #4527a0; }
-  &.s-ENTREVISTA_TECNICA { background: #f3e5f5; color: #6a1b9a; }
-  &.s-ENTREVISTA_FINAL { background: #fff3e0; color: #e65100; }
-  &.s-PROPOSTA { background: #fffde7; color: #8d6e00; }
-  &.s-ACEITA { background: #e8f5e9; color: #1b5e20; }
-  &.s-RECUSADA { background: #ffebee; color: #b71c1c; }
-  &.s-SEM_RETORNO { background: #f5f5f5; color: #616161; }
+  white-space: nowrap; background: var(--cor-destaque-suave); color: var(--cor-destaque);
+  @each $s in $status {
+    &.s-#{$s} { background: var(--st-#{$s}-bg); color: var(--st-#{$s}-fg); }
+  }
 }
 .prioridade { font-size: 12px; font-weight: 500;
   &.p-ALTA { color: var(--cor-perigo); }
@@ -60,10 +157,10 @@ body { margin: 0; font-family: Roboto, 'Helvetica Neue', sans-serif; background:
   &.p-BAIXA { color: var(--cor-texto-suave); }
 }
 .tag { display: inline-block; font-size: 11px; padding: 1px 8px; margin: 2px 4px 2px 0; border-radius: 10px;
-  background: #eef1f6; color: #3c4655; }
+  background: var(--cor-superficie-2); color: var(--cor-texto-suave); }
 
 .selo-pendente {
   display: inline-flex; align-items: center; gap: 2px; padding: 1px 8px; border-radius: 10px;
   font-size: 11px; font-weight: 500; white-space: nowrap; vertical-align: middle;
-  background: #fff4e5; color: #8a4b00; border: 1px solid #f5c98b;
+  background: var(--cor-pendente-fundo); color: var(--cor-pendente-texto); border: 1px solid var(--cor-pendente-borda);
 }

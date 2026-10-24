@@ -8,6 +8,7 @@ import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { map } from 'rxjs';
+import { SeletorTemaComponent } from './shared/seletor-tema.component';
 
 interface ItemMenu {
   rota: string;
@@ -28,7 +29,7 @@ const MENU: ItemMenu[] = [
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, RouterLink, RouterLinkActive, MatSidenavModule, MatToolbarModule, MatListModule,
-    MatIconModule, MatButtonModule],
+    MatIconModule, MatButtonModule, SeletorTemaComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
