@@ -128,3 +128,31 @@ export interface ErroApi {
   caminho: string;
   campos: { campo: string; mensagem: string }[];
 }
+
+export interface EtapaFunil {
+  etapa: Status;
+  quantidade: number;
+  conversaoDaAnterior: number;
+  percentualDoTotal: number;
+}
+
+export interface Contagem {
+  chave: string;
+  quantidade: number;
+}
+
+export interface ContagemSemana {
+  inicioSemana: string;
+  quantidade: number;
+}
+
+export interface Dashboard {
+  total: number;
+  ativas: number;
+  comResposta: number;
+  taxaResposta: number;
+  funil: EtapaFunil[];
+  porStatus: Contagem[];
+  porPlataforma: Contagem[];
+  porSemana: ContagemSemana[];
+}

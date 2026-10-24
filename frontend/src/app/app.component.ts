@@ -16,6 +16,7 @@ interface ItemMenu {
 }
 
 const MENU: ItemMenu[] = [
+  { rota: '/dashboard', rotulo: 'Dashboard', icone: 'insights' },
   { rota: '/candidaturas', rotulo: 'Candidaturas', icone: 'work_outline' },
   { rota: '/kanban', rotulo: 'Quadro', icone: 'view_kanban' },
   { rota: '/contatos', rotulo: 'Contatos', icone: 'contacts' },

@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
-  CandidaturaDetalhe, CandidaturaRequest, CandidaturaResumo, ColunaKanban, Contato, ContatoRequest,
+  CandidaturaDetalhe, CandidaturaRequest, CandidaturaResumo, ColunaKanban, Contato, ContatoRequest, Dashboard,
   FiltrosCandidatura, Interacao, InteracaoRequest, Pagina, Status,
 } from './models';
 
@@ -108,4 +108,13 @@ export function paramsDeFiltros(f: FiltrosCandidatura): HttpParams {
     }
   }
   return p;
+}
+
+@Injectable({ providedIn: 'root' })
+export class DashboardApi {
+  private readonly http = inject(HttpClient);
+
+  resumo(): Observable<Dashboard> {
+    return this.http.get<Dashboard>('/api/dashboard');
+  }
 }
