@@ -54,3 +54,7 @@ app:
     cron: "0 0 6 * * *"
   cors:
     origens: http://localhost:4200
+
+integracao:
+  # se definido, o header X-Integracao-Token passa a ser obrigatório
+  token: ${INTEGRACAO_TOKEN:}
