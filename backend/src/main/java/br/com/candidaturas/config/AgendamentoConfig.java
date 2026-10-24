@@ -25,7 +25,7 @@ public class AgendamentoConfig {
         this.inboxService = inboxService;
     }
 
-    @Scheduled(cron = "${app.sem-retorno.cron:0 0 6 * * *}", zone = "${app.zona:America/Sao_Paulo}")
+    @Scheduled(cron = "${app.sem-retorno.cron:0 0 18 * * *}", zone = "${app.zona:America/Sao_Paulo}")
     public void marcarSemRetorno() {
         try {
             semRetornoService.executar();
