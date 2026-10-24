@@ -15,6 +15,13 @@
       </div>
     </div>
 
+    @if (c.pendencia) {
+      <div class="aviso-pendencia" role="status">
+        <mat-icon>pending_actions</mat-icon>
+        <div><strong>Pendente:</strong> {{ c.pendencia }}</div>
+      </div>
+    }
+
     <div class="layout">
       <section class="coluna-principal">
         <div class="cartao">

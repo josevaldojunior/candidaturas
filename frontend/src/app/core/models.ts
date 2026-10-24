@@ -26,6 +26,7 @@ export interface CandidaturaResumo {
   prioridade: Prioridade;
   origem: Origem;
   chaveExterna: string | null;
+  pendencia: string | null;
   ultimaInteracaoEm: string | null;
   atualizadoEm: string;
 }
@@ -57,6 +58,7 @@ export interface CandidaturaRequest {
   observacoes?: string | null;
   chaveExterna?: string | null;
   contatoIds?: number[] | null;
+  pendencia?: string | null;
 }
 
 export interface Interacao {
@@ -119,6 +121,7 @@ export interface FiltrosCandidatura {
   de?: string;
   ate?: string;
   q?: string;
+  pendentes?: boolean;
 }
 
 export interface ErroApi {
@@ -149,6 +152,7 @@ export interface ContagemSemana {
 export interface Dashboard {
   total: number;
   ativas: number;
+  pendentes: number;
   comResposta: number;
   taxaResposta: number;
   funil: EtapaFunil[];

@@ -25,6 +25,11 @@
         <span class="kpi-valor">{{ d.taxaResposta | number: '1.0-1' }}%</span>
         <span class="kpi-nota">{{ d.comResposta }} de {{ enviadas() }} enviadas</span>
       </div>
+      <a class="cartao kpi kpi-link" routerLink="/candidaturas" [queryParams]="{ pendentes: true }">
+        <span class="kpi-rotulo">Pendências</span>
+        <span class="kpi-valor" [class.kpi-alerta]="d.pendentes > 0">{{ d.pendentes }}</span>
+        <span class="kpi-nota">ver candidaturas pendentes →</span>
+      </a>
       <div class="cartao kpi">
         <span class="kpi-rotulo">Chegaram à entrevista</span>
         <span class="kpi-valor">{{ entrevistas() }}</span>

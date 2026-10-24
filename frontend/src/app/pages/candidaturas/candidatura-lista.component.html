@@ -68,6 +68,9 @@
         <mat-date-range-picker #periodo />
       </mat-form-field>
       <div class="acoes-filtro">
+        <mat-slide-toggle formControlName="pendentes">Só pendentes</mat-slide-toggle>
+      </div>
+      <div class="acoes-filtro">
         <button mat-button type="button" (click)="limpar()">
           <mat-icon>clear_all</mat-icon> Limpar
         </button>
@@ -84,7 +87,7 @@
       @for (c of itens(); track c.id) {
         <a class="item-celular" [routerLink]="['/candidaturas', c.id]">
           <div class="linha">
-            <strong>{{ c.empresa }}</strong>
+            <strong>{{ c.empresa }}</strong> @if (c.pendencia) { <span class="selo-pendente" [matTooltip]="c.pendencia">Pendente</span> }
             <span class="chip-status s-{{ c.status }}">{{ c.status | rotulo: 'status' }}</span>
           </div>
           <div class="texto-suave">{{ c.cargo }}</div>
@@ -101,7 +104,10 @@
         <ng-container matColumnDef="empresa">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Empresa / cargo</th>
           <td mat-cell *matCellDef="let c">
-            <div class="empresa">{{ c.empresa }}</div>
+            <div class="empresa">
+              {{ c.empresa }}
+              @if (c.pendencia) { <span class="selo-pendente" [matTooltip]="c.pendencia">Pendente</span> }
+            </div>
             <div class="texto-suave pequeno">{{ c.cargo }}</div>
           </td>
         </ng-container>
