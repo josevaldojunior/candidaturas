@@ -18,10 +18,5 @@
   background: var(--cor-superficie); border-bottom: 1px solid var(--cor-borda);
   font-size: 18px; gap: 4px;
 }
-
-/* o conteúdo interno do mat-sidenav é renderizado pelo próprio componente */
-:host ::ng-deep .menu-lateral .mat-drawer-inner-container { display: flex; flex-direction: column; }
-.rodape-menu {
-  margin-top: auto; padding: 16px; display: flex; align-items: center; justify-content: space-between;
-  border-top: 1px solid var(--cor-borda); font-size: 13px;
-}
+/* no desktop a barra só segura o seletor de tema, então fica baixa */
+.barra-topo.compacta { height: 52px; min-height: 52px; padding: 0 16px; }
