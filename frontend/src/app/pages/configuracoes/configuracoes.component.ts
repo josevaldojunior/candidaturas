@@ -5,8 +5,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { AcompanhamentoApi } from '../../core/api.service';
-import { ResultadoSemRetorno } from '../../core/models';
+import { AcompanhamentoApi, CsvApi } from '../../core/api.service';
+import { ResultadoImportacao, ResultadoInbox, ResultadoSemRetorno } from '../../core/models';
 import { Notificacao } from '../../core/notificacao.service';
 
 @Component({
@@ -18,6 +18,7 @@ import { Notificacao } from '../../core/notificacao.service';
 })
 export class ConfiguracoesComponent implements OnInit {
   private readonly api = inject(AcompanhamentoApi);
+  private readonly csvApi = inject(CsvApi);
   private readonly notificacao = inject(Notificacao);
 
   readonly dias = new FormControl<number>(21, {
@@ -26,6 +27,10 @@ export class ConfiguracoesComponent implements OnInit {
   });
   readonly ultimaExecucao = signal<ResultadoSemRetorno | null>(null);
   readonly executando = signal(false);
+  readonly importando = signal(false);
+  readonly resultadoImportacao = signal<ResultadoImportacao | null>(null);
+  readonly resultadoInbox = signal<ResultadoInbox | null>(null);
+  readonly urlExportacao = this.csvApi.urlExportacao();
 
   ngOnInit(): void {
     this.api.diasSemRetorno().subscribe({
@@ -61,6 +66,37 @@ export class ConfiguracoesComponent implements OnInit {
         this.executando.set(false);
         this.notificacao.erro(e);
       },
+    });
+  }
+
+  importar(campo: HTMLInputElement): void {
+    const arquivo = campo.files?.[0];
+    if (!arquivo) {
+      return;
+    }
+    this.importando.set(true);
+    this.csvApi.importar(arquivo).subscribe({
+      next: (r) => {
+        this.importando.set(false);
+        this.resultadoImportacao.set(r);
+        campo.value = '';
+        this.notificacao.ok(`${r.criadas} criada(s), ${r.atualizadas} atualizada(s)`);
+      },
+      error: (e) => {
+        this.importando.set(false);
+        campo.value = '';
+        this.notificacao.erro(e, 'Erro ao importar o CSV');
+      },
+    });
+  }
+
+  processarInbox(): void {
+    this.csvApi.processarInbox().subscribe({
+      next: (r) => {
+        this.resultadoInbox.set(r);
+        this.notificacao.ok(r.arquivos.length ? `${r.arquivos.length} arquivo(s) processado(s)` : 'Nenhum CSV na pasta inbox');
+      },
+      error: (e) => this.notificacao.erro(e),
     });
   }
 }

@@ -181,3 +181,14 @@ export interface ResultadoSemRetorno {
   ids: number[];
   executadoEm: string;
 }
+
+export interface ResultadoImportacao {
+  criadas: number;
+  atualizadas: number;
+  ignoradas: number;
+  erros: string[];
+}
+
+export interface ResultadoInbox {
+  arquivos: { arquivo: string; destino: string; resultado: ResultadoImportacao }[];
+}
