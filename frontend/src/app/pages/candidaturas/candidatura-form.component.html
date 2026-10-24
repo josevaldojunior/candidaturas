@@ -1,0 +1,133 @@
+<div class="pagina">
+  <div class="pagina-cabecalho">
+    <button mat-icon-button aria-label="Voltar" [routerLink]="edicao ? ['/candidaturas', id()] : ['/candidaturas']">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>{{ edicao ? 'Editar candidatura' : 'Nova candidatura' }}</h1>
+  </div>
+
+  @if (carregando()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  <form class="cartao" [formGroup]="form" (ngSubmit)="salvar()">
+    <h2 class="secao">Vaga</h2>
+    <div class="grade-form">
+      <mat-form-field>
+        <mat-label>Empresa</mat-label>
+        <input matInput formControlName="empresa" required>
+        @if (form.controls.empresa.hasError('required')) { <mat-error>Informe a empresa</mat-error> }
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Cargo</mat-label>
+        <input matInput formControlName="cargo" required>
+        @if (form.controls.cargo.hasError('required')) { <mat-error>Informe o cargo</mat-error> }
+      </mat-form-field>
+      <mat-form-field class="largura-total">
+        <mat-label>Link da vaga</mat-label>
+        <input matInput formControlName="linkVaga" type="url">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Plataforma</mat-label>
+        <mat-select formControlName="plataforma">
+          <mat-option [value]="null">—</mat-option>
+          @for (p of plataformas; track p) { <mat-option [value]="p">{{ p | rotulo: 'plataforma' }}</mat-option> }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Modalidade</mat-label>
+        <mat-select formControlName="modalidade">
+          <mat-option [value]="null">—</mat-option>
+          @for (m of modalidades; track m) { <mat-option [value]="m">{{ m | rotulo: 'modalidade' }}</mat-option> }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Tipo de contrato</mat-label>
+        <mat-select formControlName="tipoContrato">
+          <mat-option [value]="null">—</mat-option>
+          @for (t of tiposContrato; track t) { <mat-option [value]="t">{{ t | rotulo: 'contrato' }}</mat-option> }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Faixa salarial</mat-label>
+        <input matInput formControlName="faixaSalarial" placeholder="Ex.: R$ 9.000 – 12.000">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Pretensão salarial</mat-label>
+        <input matInput formControlName="pretensaoSalarial" placeholder="Ex.: R$ 11.000 PJ">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Compatibilidade (1–10)</mat-label>
+        <input matInput formControlName="nota" type="number" min="1" max="10">
+        @if (form.controls.nota.invalid) { <mat-error>Entre 1 e 10</mat-error> }
+      </mat-form-field>
+      <mat-form-field class="largura-total">
+        <mat-label>Stack exigida</mat-label>
+        <mat-chip-grid #grade aria-label="Stack">
+          @for (t of stack(); track t) {
+            <mat-chip-row (removed)="removerStack(t)">
+              {{ t }}
+              <button matChipRemove [attr.aria-label]="'Remover ' + t"><mat-icon>cancel</mat-icon></button>
+            </mat-chip-row>
+          }
+          <input #campoStack placeholder="Java, Spring, Angular…" [matChipInputFor]="grade"
+                 [matAutocomplete]="auto" [matChipInputSeparatorKeyCodes]="separadores"
+                 (matChipInputTokenEnd)="adicionarStack($event)" (input)="textoStack.set(campoStack.value)">
+        </mat-chip-grid>
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selecionarStack($event, campoStack)">
+          @for (s of sugestoesStack(); track s) { <mat-option [value]="s">{{ s }}</mat-option> }
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+
+    <h2 class="secao">Acompanhamento</h2>
+    <div class="grade-form">
+      <mat-form-field>
+        <mat-label>Data da candidatura</mat-label>
+        <input matInput [matDatepicker]="dp" formControlName="dataCandidatura">
+        <mat-datepicker-toggle matIconSuffix [for]="dp" />
+        <mat-datepicker #dp />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="status">
+          @for (s of status; track s) { <mat-option [value]="s">{{ s | rotulo: 'status' }}</mat-option> }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Prioridade</mat-label>
+        <mat-select formControlName="prioridade">
+          @for (p of prioridades; track p) { <mat-option [value]="p">{{ p | rotulo: 'prioridade' }}</mat-option> }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Currículo usado (versão)</mat-label>
+        <input matInput formControlName="curriculoVersao" placeholder="Ex.: v3-java-backend">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Contatos</mat-label>
+        <mat-select formControlName="contatoIds" multiple>
+          @for (c of contatos(); track c.id) {
+            <mat-option [value]="c.id">{{ c.nome }}{{ c.empresa ? ' · ' + c.empresa : '' }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Chave externa</mat-label>
+        <input matInput formControlName="chaveExterna">
+        <mat-hint>Usada pelo agente para não duplicar</mat-hint>
+      </mat-form-field>
+      <mat-form-field class="largura-total">
+        <mat-label>Observações</mat-label>
+        <textarea matInput formControlName="observacoes" rows="4"></textarea>
+      </mat-form-field>
+    </div>
+
+    <div class="acoes">
+      <a mat-button [routerLink]="edicao ? ['/candidaturas', id()] : ['/candidaturas']">Cancelar</a>
+      <button mat-flat-button type="submit" [disabled]="salvando()">
+        <mat-icon>save</mat-icon> Salvar
+      </button>
+    </div>
+  </form>
+</div>

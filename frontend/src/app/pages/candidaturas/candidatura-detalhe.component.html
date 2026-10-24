@@ -1,0 +1,155 @@
+<div class="pagina">
+  @if (c(); as c) {
+    <div class="pagina-cabecalho">
+      <button mat-icon-button aria-label="Voltar" routerLink="/candidaturas"><mat-icon>arrow_back</mat-icon></button>
+      <h1>
+        {{ c.empresa }}
+        <div class="subtitulo texto-suave">{{ c.cargo }}</div>
+      </h1>
+      <div class="acoes">
+        <a mat-stroked-button [routerLink]="['/candidaturas', c.id, 'editar']"><mat-icon>edit</mat-icon> Editar</a>
+        <button mat-icon-button [matMenuTriggerFor]="mais" aria-label="Mais ações"><mat-icon>more_vert</mat-icon></button>
+        <mat-menu #mais="matMenu">
+          <button mat-menu-item (click)="excluir()"><mat-icon>delete</mat-icon> Excluir candidatura</button>
+        </mat-menu>
+      </div>
+    </div>
+
+    <div class="layout">
+      <section class="coluna-principal">
+        <div class="cartao">
+          <div class="status-linha">
+            <mat-form-field class="campo-status">
+              <mat-label>Status</mat-label>
+              <mat-select [value]="c.status" (selectionChange)="mudarStatus($event.value)">
+                @for (s of status; track s) { <mat-option [value]="s">{{ s | rotulo: 'status' }}</mat-option> }
+              </mat-select>
+            </mat-form-field>
+            <span class="prioridade p-{{ c.prioridade }}">Prioridade {{ c.prioridade | rotulo: 'prioridade' }}</span>
+            @if (c.nota) { <span class="nota" matTooltip="Compatibilidade">★ {{ c.nota }}/10</span> }
+          </div>
+
+          <dl class="dados">
+            <div><dt>Plataforma</dt><dd>{{ c.plataforma | rotulo: 'plataforma' }}</dd></div>
+            <div><dt>Modalidade</dt><dd>{{ c.modalidade | rotulo: 'modalidade' }}</dd></div>
+            <div><dt>Contrato</dt><dd>{{ c.tipoContrato | rotulo: 'contrato' }}</dd></div>
+            <div><dt>Data da candidatura</dt><dd>{{ (c.dataCandidatura | date: 'dd/MM/yyyy') ?? '—' }}</dd></div>
+            <div><dt>Faixa salarial</dt><dd>{{ c.faixaSalarial ?? '—' }}</dd></div>
+            <div><dt>Pretensão</dt><dd>{{ c.pretensaoSalarial ?? '—' }}</dd></div>
+            <div><dt>Currículo</dt><dd>{{ c.curriculoVersao ?? '—' }}</dd></div>
+            <div><dt>Origem</dt><dd>{{ c.origem | rotulo: 'origem' }}</dd></div>
+            <div><dt>Última interação</dt><dd>{{ (c.ultimaInteracaoEm | date: 'dd/MM/yyyy HH:mm') ?? '—' }}</dd></div>
+            @if (c.linkVaga) {
+              <div class="largo"><dt>Link</dt><dd><a [href]="c.linkVaga" target="_blank" rel="noopener">{{ c.linkVaga }}</a></dd></div>
+            }
+            @if (c.stack.length) {
+              <div class="largo"><dt>Stack</dt><dd>@for (t of c.stack; track t) { <span class="tag">{{ t }}</span> }</dd></div>
+            }
+            @if (c.observacoes) {
+              <div class="largo"><dt>Observações</dt><dd class="pre">{{ c.observacoes }}</dd></div>
+            }
+          </dl>
+        </div>
+
+        <div class="cartao">
+          <h2>Interações</h2>
+          <mat-expansion-panel class="nova-interacao">
+            <mat-expansion-panel-header><mat-panel-title><mat-icon>add_comment</mat-icon>&nbsp;Registrar interação</mat-panel-title></mat-expansion-panel-header>
+            <form class="grade-form" [formGroup]="novaInteracao" (ngSubmit)="adicionarInteracao()">
+              <mat-form-field>
+                <mat-label>Tipo</mat-label>
+                <mat-select formControlName="tipo">
+                  @for (t of tiposInteracao; track t) { <mat-option [value]="t">{{ t | rotulo: 'interacao' }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Follow-up em</mat-label>
+                <input matInput [matDatepicker]="fu" formControlName="dataFollowUp">
+                <mat-datepicker-toggle matIconSuffix [for]="fu" />
+                <mat-datepicker #fu />
+              </mat-form-field>
+              <mat-form-field class="largura-total">
+                <mat-label>Descrição</mat-label>
+                <textarea matInput formControlName="descricao" rows="2"></textarea>
+              </mat-form-field>
+              <mat-form-field class="largura-total">
+                <mat-label>Próximo passo</mat-label>
+                <input matInput formControlName="proximoPasso">
+              </mat-form-field>
+              <div class="acoes largura-total">
+                <button mat-flat-button type="submit" [disabled]="salvandoInteracao()">Registrar</button>
+              </div>
+            </form>
+          </mat-expansion-panel>
+
+          <ul class="linha-tempo">
+            @for (i of c.interacoes; track i.id) {
+              <li [class.automatica]="i.tipo === 'MUDANCA_STATUS'">
+                <div class="cabecalho-interacao">
+                  <strong>{{ i.tipo | rotulo: 'interacao' }}</strong>
+                  <span class="texto-suave">{{ i.data | date: 'dd/MM/yyyy HH:mm' }}</span>
+                  <span class="flex-espaco"></span>
+                  <button mat-icon-button class="pequeno" aria-label="Excluir interação" (click)="excluirInteracao(i)">
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                </div>
+                @if (i.descricao) { <div class="pre">{{ i.descricao }}</div> }
+                @if (i.proximoPasso) { <div class="texto-suave">Próximo passo: {{ i.proximoPasso }}</div> }
+                @if (i.dataFollowUp) {
+                  <mat-checkbox [checked]="i.followUpConcluido" (change)="alternarFollowUp(i, $event.checked)">
+                    Follow-up em {{ i.dataFollowUp | date: 'dd/MM/yyyy' }}
+                  </mat-checkbox>
+                }
+              </li>
+            } @empty {
+              <li class="vazio">Nenhuma interação registrada.</li>
+            }
+          </ul>
+        </div>
+      </section>
+
+      <aside class="coluna-lateral">
+        <div class="cartao">
+          <h2>Contatos</h2>
+          @for (ct of c.contatos; track ct.id) {
+            <div class="contato">
+              <div>
+                <strong>{{ ct.nome }}</strong>
+                <div class="texto-suave pequeno">{{ ct.cargo | rotulo: 'cargoContato' }}</div>
+                @if (ct.email) { <div class="pequeno"><a [href]="'mailto:' + ct.email">{{ ct.email }}</a></div> }
+                @if (ct.telefone) { <div class="pequeno">{{ ct.telefone }}</div> }
+                @if (ct.linkedin) { <div class="pequeno"><a [href]="ct.linkedin" target="_blank" rel="noopener">LinkedIn</a></div> }
+              </div>
+              <button mat-icon-button aria-label="Desvincular contato" (click)="desvincular(ct)"><mat-icon>link_off</mat-icon></button>
+            </div>
+          } @empty {
+            <p class="texto-suave">Nenhum contato vinculado.</p>
+          }
+          @if (contatosDisponiveis().length) {
+            <mat-form-field class="vincular">
+              <mat-label>Vincular contato</mat-label>
+              <mat-select (selectionChange)="vincular($event.value)">
+                @for (ct of contatosDisponiveis(); track ct.id) { <mat-option [value]="ct.id">{{ ct.nome }}</mat-option> }
+              </mat-select>
+            </mat-form-field>
+          }
+          <a mat-button routerLink="/contatos"><mat-icon>person_add</mat-icon> Gerenciar contatos</a>
+        </div>
+
+        <div class="cartao">
+          <h2>Histórico de status</h2>
+          <ul class="historico">
+            @for (h of historicoRecente(); track h.id) {
+              <li>
+                <span class="chip-status s-{{ h.statusNovo }}">{{ h.statusNovo | rotulo: 'status' }}</span>
+                <span class="texto-suave pequeno">{{ h.data | date: 'dd/MM/yyyy HH:mm' }}</span>
+              </li>
+            }
+          </ul>
+        </div>
+      </aside>
+    </div>
+  } @else {
+    <mat-progress-bar mode="indeterminate" />
+  }
+</div>

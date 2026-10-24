@@ -1,0 +1,34 @@
+<mat-sidenav-container class="container">
+  <mat-sidenav #sidenav class="menu-lateral"
+               [mode]="celular() ? 'over' : 'side'"
+               [opened]="!celular()"
+               [fixedInViewport]="celular()">
+    <div class="marca">
+      <mat-icon>rocket_launch</mat-icon>
+      <span>Candidaturas</span>
+    </div>
+    <mat-nav-list>
+      @for (item of menu; track item.rota) {
+        <a mat-list-item [routerLink]="item.rota" routerLinkActive="ativo" #rla="routerLinkActive"
+           [activated]="rla.isActive" (click)="fecharSeCelular(sidenav)">
+          <mat-icon matListItemIcon>{{ item.icone }}</mat-icon>
+          <span matListItemTitle>{{ item.rotulo }}</span>
+        </a>
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="conteudo">
+    @if (celular()) {
+      <mat-toolbar class="barra-topo">
+        <button mat-icon-button aria-label="Abrir menu" (click)="sidenav.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <span>Candidaturas</span>
+      </mat-toolbar>
+    }
+    <main>
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

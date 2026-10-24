@@ -1,0 +1,145 @@
+<div class="pagina">
+  <div class="pagina-cabecalho">
+    <h1>Candidaturas</h1>
+    <a mat-flat-button routerLink="/candidaturas/nova">
+      <mat-icon>add</mat-icon> Nova
+    </a>
+  </div>
+
+  <mat-expansion-panel class="filtros" [expanded]="!celular()">
+    <mat-expansion-panel-header>
+      <mat-panel-title><mat-icon>filter_list</mat-icon>&nbsp;Filtros</mat-panel-title>
+      <mat-panel-description>{{ total() }} encontrada(s)</mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <form class="grade-form" [formGroup]="filtros">
+      <mat-form-field class="busca">
+        <mat-label>Buscar</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput formControlName="q" placeholder="Empresa, cargo, link, observações">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="status" multiple>
+          @for (s of status; track s) {
+            <mat-option [value]="s">{{ s | rotulo: 'status' }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Empresa</mat-label>
+        <input matInput formControlName="empresa">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Plataforma</mat-label>
+        <mat-select formControlName="plataforma" multiple>
+          @for (p of plataformas; track p) {
+            <mat-option [value]="p">{{ p | rotulo: 'plataforma' }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Stack</mat-label>
+        <mat-select formControlName="stack">
+          <mat-option value="">Todas</mat-option>
+          @for (s of stacks(); track s) {
+            <mat-option [value]="s">{{ s }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Prioridade</mat-label>
+        <mat-select formControlName="prioridade" multiple>
+          @for (p of prioridades; track p) {
+            <mat-option [value]="p">{{ p | rotulo: 'prioridade' }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Período</mat-label>
+        <mat-date-range-input [rangePicker]="periodo">
+          <input matStartDate formControlName="de" placeholder="De">
+          <input matEndDate formControlName="ate" placeholder="Até">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="periodo" />
+        <mat-date-range-picker #periodo />
+      </mat-form-field>
+      <div class="acoes-filtro">
+        <button mat-button type="button" (click)="limpar()">
+          <mat-icon>clear_all</mat-icon> Limpar
+        </button>
+      </div>
+    </form>
+  </mat-expansion-panel>
+
+  <div class="cartao lista">
+    @if (carregando()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+
+    @if (celular()) {
+      @for (c of itens(); track c.id) {
+        <a class="item-celular" [routerLink]="['/candidaturas', c.id]">
+          <div class="linha">
+            <strong>{{ c.empresa }}</strong>
+            <span class="chip-status s-{{ c.status }}">{{ c.status | rotulo: 'status' }}</span>
+          </div>
+          <div class="texto-suave">{{ c.cargo }}</div>
+          <div class="linha texto-suave pequeno">
+            <span>{{ c.plataforma | rotulo: 'plataforma' }} · {{ c.dataCandidatura | date: 'dd/MM/yy' }}</span>
+            <span class="prioridade p-{{ c.prioridade }}">{{ c.prioridade | rotulo: 'prioridade' }}</span>
+          </div>
+        </a>
+      }
+    } @else {
+      <div class="rolagem-tabela">
+      <table mat-table [dataSource]="itens()" matSort (matSortChange)="ordenar($event)"
+             matSortActive="atualizadoEm" matSortDirection="desc">
+        <ng-container matColumnDef="empresa">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Empresa / cargo</th>
+          <td mat-cell *matCellDef="let c">
+            <div class="empresa">{{ c.empresa }}</div>
+            <div class="texto-suave pequeno">{{ c.cargo }}</div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+          <td mat-cell *matCellDef="let c"><span class="chip-status s-{{ c.status }}">{{ c.status | rotulo: 'status' }}</span></td>
+        </ng-container>
+        <ng-container matColumnDef="plataforma">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Plataforma</th>
+          <td mat-cell *matCellDef="let c">{{ c.plataforma | rotulo: 'plataforma' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="stack">
+          <th mat-header-cell *matHeaderCellDef>Stack</th>
+          <td mat-cell *matCellDef="let c">
+            @for (t of c.stack; track t) { <span class="tag">{{ t }}</span> }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="prioridade">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Prioridade</th>
+          <td mat-cell *matCellDef="let c"><span class="prioridade p-{{ c.prioridade }}">{{ c.prioridade | rotulo: 'prioridade' }}</span></td>
+        </ng-container>
+        <ng-container matColumnDef="dataCandidatura">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Candidatura</th>
+          <td mat-cell *matCellDef="let c">{{ c.dataCandidatura | date: 'dd/MM/yyyy' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="ultimaInteracaoEm">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Última interação</th>
+          <td mat-cell *matCellDef="let c">{{ c.ultimaInteracaoEm | date: 'dd/MM/yyyy HH:mm' }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+        <tr mat-row *matRowDef="let c; columns: colunas" class="linha-clicavel" (click)="abrir(c)"></tr>
+      </table>
+      </div>
+    }
+
+    @if (!carregando() && itens().length === 0) {
+      <div class="vazio">Nenhuma candidatura encontrada.</div>
+    }
+
+    <mat-paginator [length]="total()" [pageIndex]="pagina" [pageSize]="tamanho" [pageSizeOptions]="[10, 20, 50, 100]"
+                   (page)="mudarPagina($event)" [hidePageSize]="celular()" />
+  </div>
+</div>
