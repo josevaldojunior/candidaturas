@@ -1,0 +1,51 @@
+server:
+  port: 8080
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: candidaturas-api
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/candidaturas}
+    username: ${DB_USER:candidaturas}
+    password: ${DB_PASSWORD:candidaturas}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: America/Sao_Paulo
+  flyway:
+    enabled: true
+  jackson:
+    time-zone: America/Sao_Paulo
+    deserialization:
+      accept-single-value-as-array: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+  api-docs:
+    path: /v3/api-docs
+
+app:
+  zona: America/Sao_Paulo
+  cors:
+    origens: http://localhost:4200
