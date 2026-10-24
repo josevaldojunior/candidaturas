@@ -49,3 +49,4 @@ h2 { font-size: 16px; font-weight: 500; margin: 0 0 4px; }
   .eixo { font-size: 9px; }
   .graficos { grid-template-columns: 1fr; }
 }
+.linha-barra.zerada .rotulo, .linha-barra.zerada .valor { color: var(--cor-texto-suave); font-weight: 400; }
