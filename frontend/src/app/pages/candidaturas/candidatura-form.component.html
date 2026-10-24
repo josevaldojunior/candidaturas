@@ -1,6 +1,6 @@
 <div class="pagina">
   <div class="pagina-cabecalho">
-    <button mat-icon-button aria-label="Voltar" [routerLink]="edicao ? ['/candidaturas', id()] : ['/candidaturas']">
+    <button mat-icon-button aria-label="Voltar" [routerLink]="edicao ? ['/candidaturas', id()] : ['/candidaturas']" [queryParams]="edicao ? {} : consulta.ultima()">
       <mat-icon>arrow_back</mat-icon>
     </button>
     <h1>{{ edicao ? 'Editar candidatura' : 'Nova candidatura' }}</h1>
@@ -133,7 +133,7 @@
     </div>
 
     <div class="acoes">
-      <a mat-button [routerLink]="edicao ? ['/candidaturas', id()] : ['/candidaturas']">Cancelar</a>
+      <a mat-button [routerLink]="edicao ? ['/candidaturas', id()] : ['/candidaturas']" [queryParams]="edicao ? {} : consulta.ultima()">Cancelar</a>
       <button mat-flat-button type="submit" [disabled]="salvando()">
         <mat-icon>save</mat-icon> Salvar
       </button>

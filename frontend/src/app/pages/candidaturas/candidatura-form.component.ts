@@ -13,6 +13,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { Router, RouterLink } from '@angular/router';
 import { CandidaturaApi, ContatoApi } from '../../core/api.service';
+import { ConsultaListaService } from '../../core/consulta-lista.service';
 import { deIsoData, paraIsoData } from '../../core/datas';
 import {
   CandidaturaDetalhe, CandidaturaRequest, Contato, Modalidade, Plataforma, Prioridade, Status, TipoContrato,
@@ -34,6 +35,7 @@ export class CandidaturaFormComponent implements OnInit {
   private readonly contatoApi = inject(ContatoApi);
   private readonly notificacao = inject(Notificacao);
   private readonly router = inject(Router);
+  readonly consulta = inject(ConsultaListaService);
 
   /** Preenchido pela rota /candidaturas/:id/editar. */
   readonly id = input<string>();
@@ -96,7 +98,7 @@ export class CandidaturaFormComponent implements OnInit {
         next: (c) => this.preencher(c),
         error: (e) => {
           this.notificacao.erro(e, 'Candidatura não encontrada');
-          this.router.navigate(['/candidaturas']);
+          this.router.navigate(['/candidaturas'], { queryParams: this.consulta.ultima() });
         },
       });
     }
