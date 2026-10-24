@@ -1,0 +1,63 @@
+@use '@angular/material' as mat;
+
+html {
+  color-scheme: light;
+  @include mat.core();
+  @include mat.all-component-themes(mat.define-theme((
+    color: (theme-type: light, primary: mat.$azure-palette, tertiary: mat.$blue-palette),
+    typography: (brand-family: 'Roboto', plain-family: 'Roboto'),
+    density: (scale: 0),
+  )));
+}
+
+:root {
+  --cor-fundo: #f5f7fb;
+  --cor-superficie: #ffffff;
+  --cor-borda: #dfe3eb;
+  --cor-texto-suave: #5f6673;
+  --cor-perigo: #b3261e;
+  --cor-ok: #1b7f3b;
+  --cor-alerta: #9a6700;
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, 'Helvetica Neue', sans-serif; background: var(--cor-fundo); }
+
+.pagina { padding: 16px; max-width: 1280px; margin: 0 auto; box-sizing: border-box; }
+.pagina-cabecalho {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
+  h1 { font-size: 22px; font-weight: 500; margin: 0; flex: 1 1 auto; }
+}
+.cartao {
+  background: var(--cor-superficie); border: 1px solid var(--cor-borda); border-radius: 12px; padding: 16px;
+}
+.grade-form {
+  display: grid; gap: 4px 16px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  .largura-total { grid-column: 1 / -1; }
+}
+.texto-suave { color: var(--cor-texto-suave); }
+.vazio { padding: 32px 16px; text-align: center; color: var(--cor-texto-suave); }
+.acoes { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.flex-espaco { flex: 1 1 auto; }
+
+.chip-status {
+  display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 500;
+  white-space: nowrap; background: #e8eef9; color: #1f3b70;
+  &.s-INTERESSE { background: #eceff1; color: #37474f; }
+  &.s-CANDIDATADO { background: #e3f2fd; color: #0d47a1; }
+  &.s-TRIAGEM_RH { background: #e0f7fa; color: #006064; }
+  &.s-TESTE_TECNICO { background: #ede7f6; color: #4527a0; }
+  &.s-ENTREVISTA_TECNICA { background: #f3e5f5; color: #6a1b9a; }
+  &.s-ENTREVISTA_FINAL { background: #fff3e0; color: #e65100; }
+  &.s-PROPOSTA { background: #fffde7; color: #8d6e00; }
+  &.s-ACEITA { background: #e8f5e9; color: #1b5e20; }
+  &.s-RECUSADA { background: #ffebee; color: #b71c1c; }
+  &.s-SEM_RETORNO { background: #f5f5f5; color: #616161; }
+}
+.prioridade { font-size: 12px; font-weight: 500;
+  &.p-ALTA { color: var(--cor-perigo); }
+  &.p-MEDIA { color: var(--cor-alerta); }
+  &.p-BAIXA { color: var(--cor-texto-suave); }
+}
+.tag { display: inline-block; font-size: 11px; padding: 1px 8px; margin: 2px 4px 2px 0; border-radius: 10px;
+  background: #eef1f6; color: #3c4655; }
