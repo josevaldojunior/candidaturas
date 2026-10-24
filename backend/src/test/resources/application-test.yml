@@ -7,3 +7,5 @@ spring:
 app:
   agendamento:
     habilitado: false
+  inbox:
+    dir: target/inbox-test
