@@ -72,7 +72,7 @@ cd frontend && npx ng build   # build de produção
   - *Taxa de resposta* = candidaturas enviadas (que passaram de `INTERESSE`) que chegaram pelo menos a `TRIAGEM_RH` ou foram `RECUSADA`, dividido pelas enviadas.
   - *Funil*: quantas candidaturas alcançaram cada etapa, considerando o histórico de status.
 - **Follow-ups**: pendentes vencidos e dos próximos 7 dias, com botão de concluir.
-- **Sem retorno automático**: candidaturas de `CANDIDATADO` a `ENTREVISTA_FINAL` sem interação há mais de X dias (padrão 21, ajustável em *Configurações*) viram `SEM_RETORNO`. O job roda todo dia às 06:00, e o botão "Executar agora" roda na hora.
+- **Sem retorno automático**: candidaturas de `CANDIDATADO` a `ENTREVISTA_FINAL` sem interação há mais de X dias (padrão 21, ajustável em *Configurações*) viram `SEM_RETORNO`. O job roda todo dia às 18:00 (horário de Brasília), e o botão "Executar agora" roda na hora.
 - **Pendências**: campo opcional na candidatura, com selo "Pendente" na lista e no quadro, filtro "Só pendentes" e contador no dashboard. Para remover, apague o texto na edição.
 - **CSV**: exportação (respeita os filtros da listagem) e importação com o mesmo cabeçalho, de modo que exportar, editar e reimportar não duplica.
 
