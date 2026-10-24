@@ -23,6 +23,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/candidaturas/candidatura-detalhe.component').then((m) => m.CandidaturaDetalheComponent),
   },
   {
+    path: 'kanban',
+    title: 'Quadro',
+    loadComponent: () => import('./pages/kanban/kanban.component').then((m) => m.KanbanComponent),
+  },
+  {
     path: 'contatos',
     title: 'Contatos',
     loadComponent: () => import('./pages/contatos/contatos.component').then((m) => m.ContatosComponent),
