@@ -120,7 +120,11 @@
       <mat-form-field class="largura-total">
         <mat-label>Pendência</mat-label>
         <textarea matInput formControlName="pendencia" rows="2" placeholder="O que falta fazer nesta candidatura"></textarea>
-        <mat-hint>Apague o texto para remover a pendência</mat-hint>
+        @if (pendenciaConcluida(); as concluida) {
+          <mat-hint class="pendencia-concluida">✓ Pendência concluída ao sair de "Interesse": {{ concluida }}</mat-hint>
+        } @else {
+          <mat-hint>Some ao mudar de "Interesse" para "Candidatado", ou apague o texto</mat-hint>
+        }
       </mat-form-field>
       <mat-form-field class="largura-total">
         <mat-label>Observações</mat-label>
