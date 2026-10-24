@@ -4,3 +4,6 @@ p { margin: 0 0 12px; line-height: 1.5; }
 .linha { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .campo-dias { width: 140px; }
 .resultado { margin-top: 12px; }
+.erros { color: var(--cor-perigo); margin: 8px 0 0; padding-left: 20px; }
+.arquivos { padding-left: 20px; }
+code { background: #eef1f6; padding: 0 4px; border-radius: 4px; }

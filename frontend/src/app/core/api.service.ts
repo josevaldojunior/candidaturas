@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   CandidaturaDetalhe, CandidaturaRequest, CandidaturaResumo, ColunaKanban, Contato, ContatoRequest, Dashboard,
-  FiltrosCandidatura, FollowUps, ResultadoSemRetorno, Interacao, InteracaoRequest, Pagina, Status,
+  FiltrosCandidatura, FollowUps, ResultadoImportacao, ResultadoInbox, ResultadoSemRetorno, Interacao, InteracaoRequest, Pagina, Status,
 } from './models';
 
 @Injectable({ providedIn: 'root' })
@@ -137,5 +137,26 @@ export class AcompanhamentoApi {
 
   executarSemRetorno(): Observable<ResultadoSemRetorno> {
     return this.http.post<ResultadoSemRetorno>('/api/sem-retorno/executar', null);
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class CsvApi {
+  private readonly http = inject(HttpClient);
+
+  /** URL de download do CSV com os mesmos filtros da listagem. */
+  urlExportacao(filtros: FiltrosCandidatura = {}): string {
+    const query = paramsDeFiltros(filtros).toString();
+    return `/api/csv/exportar${query ? '?' + query : ''}`;
+  }
+
+  importar(arquivo: File): Observable<ResultadoImportacao> {
+    const dados = new FormData();
+    dados.append('arquivo', arquivo, arquivo.name);
+    return this.http.post<ResultadoImportacao>('/api/csv/importar', dados);
+  }
+
+  processarInbox(): Observable<ResultadoInbox> {
+    return this.http.post<ResultadoInbox>('/api/inbox/processar', null);
   }
 }

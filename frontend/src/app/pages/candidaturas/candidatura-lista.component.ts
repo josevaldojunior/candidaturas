@@ -17,7 +17,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterLink } from '@angular/router';
 import { debounceTime, map } from 'rxjs';
-import { CandidaturaApi } from '../../core/api.service';
+import { CandidaturaApi, CsvApi } from '../../core/api.service';
 import { paraIsoData } from '../../core/datas';
 import { CandidaturaResumo, FiltrosCandidatura, Plataforma, Prioridade, Status } from '../../core/models';
 import { Notificacao } from '../../core/notificacao.service';
@@ -38,6 +38,7 @@ export class CandidaturaListaComponent implements OnInit {
   private readonly notificacao = inject(Notificacao);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly csvApi = inject(CsvApi);
 
   readonly status = STATUS;
   readonly plataformas = PLATAFORMAS;
@@ -58,6 +59,8 @@ export class CandidaturaListaComponent implements OnInit {
   tamanho = 20;
   ordenacao = 'atualizadoEm,desc';
 
+  readonly urlExportacao = signal(this.csvApi.urlExportacao());
+
   readonly filtros = inject(FormBuilder).group({
     q: [''],
     status: [[] as Status[]],
@@ -73,6 +76,7 @@ export class CandidaturaListaComponent implements OnInit {
     this.filtros.valueChanges.pipe(debounceTime(350), takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.pagina = 0;
       this.carregar();
+      this.urlExportacao.set(this.csvApi.urlExportacao(this.filtrosAtuais()));
     });
     this.api.stacks().subscribe((s) => this.stacks.set(s));
     this.carregar();
