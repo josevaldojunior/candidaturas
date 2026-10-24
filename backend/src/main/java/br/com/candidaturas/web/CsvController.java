@@ -57,8 +57,9 @@ public class CsvController {
                          @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate de,
                          @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate ate,
                          @RequestParam(required = false) String q,
+                         @RequestParam(required = false) Boolean pendentes,
                          HttpServletResponse response) throws IOException {
-        var candidaturas = candidaturaService.listarTodas(status, empresa, plataforma, stack, prioridade, de, ate, q);
+        var candidaturas = candidaturaService.listarTodas(status, empresa, plataforma, stack, prioridade, de, ate, q, pendentes);
         response.setContentType("text/csv; charset=UTF-8");
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=\"candidaturas-" + LocalDate.now(clock) + ".csv\"");

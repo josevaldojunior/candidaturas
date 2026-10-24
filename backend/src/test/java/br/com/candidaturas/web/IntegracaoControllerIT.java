@@ -106,6 +106,17 @@ class IntegracaoControllerIT {
     }
 
     @Test
+    void observacaoPendenteViraPendencia() throws Exception {
+        enviar("""
+                [{"chaveExterna":"p-9","empresa":"Omega","cargo":"Java","observacoes":"PENDENTE: responder teste técnico"}]
+                """).andExpect(jsonPath("$.criadas").value(1));
+
+        mvc.perform(get("/api/candidaturas").param("pendentes", "true"))
+                .andExpect(jsonPath("$.content[0].empresa").value("Omega"))
+                .andExpect(jsonPath("$.content[0].pendencia").value("responder teste técnico"));
+    }
+
+    @Test
     void aceitaObjetoUnicoEStackComoTexto() throws Exception {
         enviar("""
                 {"empresa":"Delta","cargo":"Java","linkVaga":"https://vagas/delta","stack":"Java;Quarkus"}

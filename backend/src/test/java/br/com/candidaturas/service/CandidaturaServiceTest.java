@@ -135,6 +135,19 @@ class CandidaturaServiceTest {
     }
 
     @Test
+    void limparOCampoAoEditarRemoveAPendencia() {
+        Candidatura c = candidatura(1L, Status.CANDIDATADO);
+        c.setPendencia("Enviar portfólio");
+        when(repository.findById(1L)).thenReturn(Optional.of(c));
+        when(repository.saveAndFlush(c)).thenReturn(c);
+
+        CandidaturaDetalhe d = service.atualizar(1L, request("ACME", Status.CANDIDATADO, null));
+
+        assertThat(d.pendencia()).isNull();
+        assertThat(c.getPendencia()).isNull();
+    }
+
+    @Test
     void buscarInexistenteLancaNaoEncontrado() {
         when(repository.findById(5L)).thenReturn(Optional.empty());
 
@@ -143,7 +156,7 @@ class CandidaturaServiceTest {
 
     private static CandidaturaRequest request(String empresa, Status status, String chave) {
         return new CandidaturaRequest(empresa, "Dev Java", "https://vagas/1", Plataforma.LINKEDIN, Modalidade.REMOTO,
-                TipoContrato.PJ, null, null, 8, Set.of("Java", "Spring"), null, status, null, "v3", null, chave, null);
+                TipoContrato.PJ, null, null, 8, Set.of("Java", "Spring"), null, status, null, "v3", null, chave, null, null);
     }
 
     static Candidatura candidatura(Long id, Status status) {

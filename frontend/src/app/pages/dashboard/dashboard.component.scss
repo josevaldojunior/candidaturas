@@ -9,6 +9,9 @@ h2 { font-size: 16px; font-weight: 500; margin: 0 0 4px; }
 .kpi-rotulo { font-size: 13px; color: var(--cor-texto-suave); }
 .kpi-valor { font-size: 32px; font-weight: 500; line-height: 1.2; color: #1d2430; }
 .kpi-nota { font-size: 12px; color: var(--cor-texto-suave); }
+.kpi-link { text-decoration: none; color: inherit; }
+.kpi-link:hover { border-color: #f5c98b; }
+.kpi-alerta { color: #8a4b00; }
 
 .graficos { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
 .semanas { grid-column: 1 / -1; }

@@ -63,6 +63,9 @@ public class Candidatura {
     @Column(length = 4000)
     private String observacoes;
 
+    @Column(length = 1000)
+    private String pendencia;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Origem origem;
@@ -142,6 +145,8 @@ public class Candidatura {
     public void setCurriculoVersao(String curriculoVersao) { this.curriculoVersao = curriculoVersao; }
     public String getObservacoes() { return observacoes; }
     public void setObservacoes(String observacoes) { this.observacoes = observacoes; }
+    public String getPendencia() { return pendencia; }
+    public void setPendencia(String pendencia) { this.pendencia = pendencia; }
     public Origem getOrigem() { return origem; }
     public void setOrigem(Origem origem) { this.origem = origem; }
     public String getChaveExterna() { return chaveExterna; }

@@ -12,10 +12,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { debounceTime, map } from 'rxjs';
 import { CandidaturaApi, CsvApi } from '../../core/api.service';
 import { paraIsoData } from '../../core/datas';
@@ -29,7 +30,7 @@ import { RotuloPipe } from '../../shared/rotulo.pipe';
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink, DatePipe, RotuloPipe, MatTableModule, MatPaginatorModule, MatSortModule,
     MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, MatButtonModule, MatIconModule,
-    MatExpansionModule, MatProgressBarModule, MatTooltipModule],
+    MatExpansionModule, MatProgressBarModule, MatTooltipModule, MatSlideToggleModule],
   templateUrl: './candidatura-lista.component.html',
   styleUrl: './candidatura-lista.component.scss',
 })
@@ -37,6 +38,7 @@ export class CandidaturaListaComponent implements OnInit {
   private readonly api = inject(CandidaturaApi);
   private readonly notificacao = inject(Notificacao);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly csvApi = inject(CsvApi);
 
@@ -70,9 +72,15 @@ export class CandidaturaListaComponent implements OnInit {
     prioridade: [[] as Prioridade[]],
     de: [null as Date | null],
     ate: [null as Date | null],
+    pendentes: [false],
   });
 
   ngOnInit(): void {
+    // o card de pendências do dashboard abre a lista já filtrada
+    if (this.route.snapshot.queryParamMap.get('pendentes') === 'true') {
+      this.filtros.controls.pendentes.setValue(true, { emitEvent: false });
+      this.urlExportacao.set(this.csvApi.urlExportacao(this.filtrosAtuais()));
+    }
     this.filtros.valueChanges.pipe(debounceTime(350), takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.pagina = 0;
       this.carregar();
@@ -109,7 +117,7 @@ export class CandidaturaListaComponent implements OnInit {
   }
 
   limpar(): void {
-    this.filtros.reset({ q: '', status: [], empresa: '', plataforma: [], stack: '', prioridade: [], de: null, ate: null });
+    this.filtros.reset({ q: '', status: [], empresa: '', plataforma: [], stack: '', prioridade: [], de: null, ate: null, pendentes: false });
   }
 
   abrir(c: CandidaturaResumo): void {
@@ -127,6 +135,7 @@ export class CandidaturaListaComponent implements OnInit {
       prioridade: v.prioridade ?? [],
       de: paraIsoData(v.de) ?? undefined,
       ate: paraIsoData(v.ate) ?? undefined,
+      pendentes: v.pendentes || undefined,
     };
   }
 }

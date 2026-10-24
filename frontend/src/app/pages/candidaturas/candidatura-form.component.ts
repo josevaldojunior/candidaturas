@@ -71,6 +71,7 @@ export class CandidaturaFormComponent implements OnInit {
     prioridade: ['MEDIA' as Prioridade],
     curriculoVersao: ['', Validators.maxLength(100)],
     observacoes: ['', Validators.maxLength(4000)],
+    pendencia: ['', Validators.maxLength(1000)],
     chaveExterna: ['', Validators.maxLength(300)],
     contatoIds: [[] as number[]],
   });
@@ -133,6 +134,7 @@ export class CandidaturaFormComponent implements OnInit {
       prioridade: v.prioridade,
       curriculoVersao: v.curriculoVersao || null,
       observacoes: v.observacoes || null,
+      pendencia: v.pendencia?.trim() || null,
       chaveExterna: v.chaveExterna || null,
       contatoIds: v.contatoIds ?? [],
     };
@@ -180,6 +182,7 @@ export class CandidaturaFormComponent implements OnInit {
       prioridade: c.prioridade,
       curriculoVersao: c.curriculoVersao ?? '',
       observacoes: c.observacoes ?? '',
+      pendencia: c.pendencia ?? '',
       chaveExterna: c.chaveExterna ?? '',
       contatoIds: c.contatos.map((ct) => ct.id),
     });

@@ -73,6 +73,7 @@ cd frontend && npx ng build   # build de produção
   - *Funil*: quantas candidaturas alcançaram cada etapa, considerando o histórico de status.
 - **Follow-ups**: pendentes vencidos e dos próximos 7 dias, com botão de concluir.
 - **Sem retorno automático**: candidaturas de `CANDIDATADO` a `ENTREVISTA_FINAL` sem interação há mais de X dias (padrão 21, ajustável em *Configurações*) viram `SEM_RETORNO`. O job roda todo dia às 06:00, e o botão "Executar agora" roda na hora.
+- **Pendências**: campo opcional na candidatura, com selo "Pendente" na lista e no quadro, filtro "Só pendentes" e contador no dashboard. Para remover, apague o texto na edição.
 - **CSV**: exportação (respeita os filtros da listagem) e importação com o mesmo cabeçalho, de modo que exportar, editar e reimportar não duplica.
 
 ## Integração com o agente
@@ -117,6 +118,7 @@ Regras:
 - **Enums em texto livre**: a comparação ignora acento, caixa, espaço e hífen (`"Híbrido"`→`HIBRIDO`, `"Triagem RH"`→`TRIAGEM_RH`, `"e-mail"`→`EMAIL`, `"linkedin"`→`LINKEDIN`). Plataforma, tipo de contrato e tipo de interação desconhecidos viram `OUTRO`. Status, modalidade ou prioridade inválidos geram erro naquele item.
 - **Contato**: é reaproveitado por e-mail ou telefone; se não existir, é criado como `RECRUTADOR` e vinculado.
 - **Interação**: é criada se vier `descricaoInteracao` ou `dataFollowUp`. Reenviar o mesmo item não duplica a interação.
+- **Pendência**: se `observacoes` começar com `PENDENTE:` (sem diferenciar maiúsculas), o texto depois do prefixo vira a pendência da candidatura. Reenviar as mesmas observações não recria uma pendência que você já limpou na tela. Isso também vale para a coluna `observacoes` do CSV.
 - **Transação por item**: um erro num item não afeta os outros.
 
 Resposta:

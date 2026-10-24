@@ -5,6 +5,9 @@
       <mat-icon matPrefix>search</mat-icon>
       <input matInput placeholder="Filtrar cartões" [ngModel]="busca()" (ngModelChange)="busca.set($event)">
     </mat-form-field>
+    <mat-slide-toggle [checked]="soPendentes()" (change)="soPendentes.set($event.checked)">
+      Só pendentes
+    </mat-slide-toggle>
     <mat-slide-toggle [checked]="mostrarEncerradas()" (change)="mostrarEncerradas.set($event.checked)">
       Recusadas / sem retorno
     </mat-slide-toggle>
@@ -33,6 +36,9 @@
                 <span class="prioridade p-{{ c.prioridade }}" [matTooltip]="'Prioridade ' + (c.prioridade | rotulo: 'prioridade')">●</span>
               </div>
               <div class="cargo">{{ c.cargo }}</div>
+              @if (c.pendencia) {
+                <div><span class="selo-pendente" [matTooltip]="c.pendencia">Pendente</span></div>
+              }
               @if (c.stack.length) {
                 <div>@for (t of c.stack.slice(0, 4); track t) { <span class="tag">{{ t }}</span> }</div>
               }

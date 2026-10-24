@@ -34,16 +34,16 @@ public class CandidaturaService {
     @Transactional(readOnly = true)
     public Pagina<CandidaturaResumo> listar(List<Status> status, String empresa, List<Plataforma> plataformas,
                                            String stack, List<Prioridade> prioridades, LocalDate de, LocalDate ate,
-                                           String texto, Pageable pageable) {
-        var spec = CandidaturaSpecs.filtrar(status, empresa, plataformas, stack, prioridades, de, ate, texto);
+                                           String texto, Boolean soPendentes, Pageable pageable) {
+        var spec = CandidaturaSpecs.filtrar(status, empresa, plataformas, stack, prioridades, de, ate, texto, soPendentes);
         return Pagina.de(repository.findAll(spec, pageable), CandidaturaDtos::resumo);
     }
 
     @Transactional(readOnly = true)
     public List<Candidatura> listarTodas(List<Status> status, String empresa, List<Plataforma> plataformas,
                                          String stack, List<Prioridade> prioridades, LocalDate de, LocalDate ate,
-                                         String texto) {
-        var spec = CandidaturaSpecs.filtrar(status, empresa, plataformas, stack, prioridades, de, ate, texto);
+                                         String texto, Boolean soPendentes) {
+        var spec = CandidaturaSpecs.filtrar(status, empresa, plataformas, stack, prioridades, de, ate, texto, soPendentes);
         List<Candidatura> todas = repository.findAll(spec, Sort.by("id"));
         // inicializa coleções usadas na exportação enquanto a sessão está aberta
         todas.forEach(c -> {
@@ -184,6 +184,8 @@ public class CandidaturaService {
         c.setPrioridade(req.prioridade() != null ? req.prioridade() : Prioridade.MEDIA);
         c.setCurriculoVersao(Normalizacao.texto(req.curriculoVersao()));
         c.setObservacoes(Normalizacao.texto(req.observacoes()));
+        // PUT substitui tudo: campo vazio limpa a pendência
+        c.setPendencia(Normalizacao.texto(req.pendencia()));
         c.setChaveExterna(Normalizacao.texto(req.chaveExterna()));
         if (req.contatoIds() != null) {
             c.getContatos().clear();

@@ -35,6 +35,7 @@ export class KanbanComponent implements OnInit {
   readonly carregando = signal(false);
   readonly mostrarEncerradas = signal(false);
   readonly busca = signal('');
+  readonly soPendentes = signal(false);
 
   readonly colunasVisiveis = computed(() => {
     const termo = this.busca().trim().toLowerCase();
@@ -43,9 +44,10 @@ export class KanbanComponent implements OnInit {
       .map((c) => ({
         ...c,
         // a lista original é mantida para o drag-drop; o filtro só esconde cartões
-        visiveis: termo
-          ? c.candidaturas.filter((x) => `${x.empresa} ${x.cargo} ${x.stack.join(' ')}`.toLowerCase().includes(termo))
-          : c.candidaturas,
+        visiveis: c.candidaturas.filter(
+          (x) => (!this.soPendentes() || !!x.pendencia)
+            && (!termo || `${x.empresa} ${x.cargo} ${x.stack.join(' ')}`.toLowerCase().includes(termo)),
+        ),
       }));
   });
 

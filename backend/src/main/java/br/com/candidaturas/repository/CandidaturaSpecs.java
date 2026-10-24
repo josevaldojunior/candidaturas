@@ -21,7 +21,8 @@ public final class CandidaturaSpecs {
 
     public static Specification<Candidatura> filtrar(List<Status> status, String empresa, List<Plataforma> plataformas,
                                                      String stack, List<Prioridade> prioridades,
-                                                     LocalDate de, LocalDate ate, String texto) {
+                                                     LocalDate de, LocalDate ate, String texto,
+                                                     Boolean soPendentes) {
         return (root, query, cb) -> {
             List<Predicate> p = new ArrayList<>();
             if (status != null && !status.isEmpty()) {
@@ -46,6 +47,9 @@ public final class CandidaturaSpecs {
             }
             if (ate != null) {
                 p.add(cb.lessThanOrEqualTo(root.get("dataCandidatura"), ate));
+            }
+            if (Boolean.TRUE.equals(soPendentes)) {
+                p.add(cb.isNotNull(root.get("pendencia")));
             }
             if (temTexto(texto)) {
                 String t = like(texto);
