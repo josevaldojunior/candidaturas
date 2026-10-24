@@ -66,7 +66,7 @@ import { RotuloPipe } from '../../shared/rotulo.pipe';
     .titulo-secao.vencidos { color: var(--cor-perigo); }
     .follow-up { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
     .data { display: flex; flex-direction: column; align-items: center; min-width: 64px; font-size: 12px; color: var(--cor-texto-suave); }
-    .data strong { font-size: 18px; color: #1d2430; }
+    .data strong { font-size: 18px; color: var(--cor-texto); }
     .data.atrasado, .data.atrasado strong { color: var(--cor-perigo); }
     .corpo { flex: 1 1 auto; display: grid; gap: 4px; min-width: 0; }
     .empresa { font-weight: 500; color: inherit; }

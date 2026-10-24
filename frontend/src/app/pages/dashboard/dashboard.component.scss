@@ -1,5 +1,5 @@
 /* Uma única série por gráfico: um só tom (magnitude), texto sempre em tinta neutra */
-:host { --cor-barra: #2a6fdb; --cor-trilho: #eef1f6; }
+:host { --cor-barra: var(--cor-destaque); --cor-trilho: var(--cor-superficie-2); }
 
 h2 { font-size: 16px; font-weight: 500; margin: 0 0 4px; }
 .legenda { font-size: 12px; margin: 0 0 12px; }
@@ -7,11 +7,11 @@ h2 { font-size: 16px; font-weight: 500; margin: 0 0 4px; }
 .kpis { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 16px; }
 .kpi { display: flex; flex-direction: column; gap: 2px; }
 .kpi-rotulo { font-size: 13px; color: var(--cor-texto-suave); }
-.kpi-valor { font-size: 32px; font-weight: 500; line-height: 1.2; color: #1d2430; }
+.kpi-valor { font-size: 32px; font-weight: 500; line-height: 1.2; color: var(--cor-texto); }
 .kpi-nota { font-size: 12px; color: var(--cor-texto-suave); }
 .kpi-link { text-decoration: none; color: inherit; }
-.kpi-link:hover { border-color: #f5c98b; }
-.kpi-alerta { color: #8a4b00; }
+.kpi-link:hover { border-color: var(--cor-pendente-borda); }
+.kpi-alerta { color: var(--cor-pendente-texto); }
 
 .graficos { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
 .semanas { grid-column: 1 / -1; }
@@ -20,8 +20,8 @@ h2 { font-size: 16px; font-weight: 500; margin: 0 0 4px; }
   display: grid; grid-template-columns: 130px 1fr 36px 44px; align-items: center; gap: 8px;
   padding: 4px 0; font-size: 13px;
   &.simples { grid-template-columns: 110px 1fr 36px; }
-  .rotulo { color: #1d2430; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .valor { text-align: right; font-weight: 500; color: #1d2430; }
+  .rotulo { color: var(--cor-texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .valor { text-align: right; font-weight: 500; color: var(--cor-texto); }
   .conversao { text-align: right; font-size: 12px; color: var(--cor-texto-suave); }
 }
 .trilho { height: 14px; background: var(--cor-trilho); border-radius: 4px; overflow: hidden; }
@@ -34,7 +34,7 @@ h2 { font-size: 16px; font-weight: 500; margin: 0 0 4px; }
   min-width: 0; cursor: default;
 }
 .barra-vertical { width: 70%; max-width: 36px; min-height: 2px; background: var(--cor-barra); border-radius: 4px 4px 0 0; }
-.valor-coluna { font-size: 11px; color: #1d2430; min-height: 14px; }
+.valor-coluna { font-size: 11px; color: var(--cor-texto); min-height: 14px; }
 .eixo { font-size: 11px; color: var(--cor-texto-suave); margin-top: 4px; border-top: 1px solid var(--cor-borda); width: 100%; text-align: center; padding-top: 2px; }
 
 .tabela {

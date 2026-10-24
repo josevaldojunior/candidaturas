@@ -7,7 +7,7 @@ table { width: 100%; min-width: 760px; }
 .empresa { font-weight: 500; }
 .pequeno { font-size: 12px; }
 .linha-clicavel { cursor: pointer; }
-.linha-clicavel:hover { background: #f4f7fd; }
+.linha-clicavel:hover { background: var(--cor-hover); }
 
 .item-celular {
   display: block; padding: 12px 16px; border-bottom: 1px solid var(--cor-borda);
