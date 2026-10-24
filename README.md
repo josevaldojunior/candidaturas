@@ -74,7 +74,7 @@ cd frontend && npx ng build   # build de produção
 - **Follow-ups**: pendentes vencidos e dos próximos 7 dias, com botão de concluir.
 - **Sem retorno automático**: candidaturas de `CANDIDATADO` a `ENTREVISTA_FINAL` sem interação há mais de X dias (padrão 21, ajustável em *Configurações*) viram `SEM_RETORNO`. O job roda todo dia às 18:00 (horário de Brasília), e o botão "Executar agora" roda na hora.
 - **Pendências**: campo opcional na candidatura, com selo "Pendente" na lista e no quadro, filtro "Só pendentes" e contador no dashboard. Quando a candidatura sai de *Interesse* (por exemplo, ao mudar para *Candidatado* no formulário, no quadro ou pelo agente), a pendência é concluída: o texto some e fica registrado no histórico. Também dá para apagar o texto na edição.
-- **Tema claro e escuro**: seletor no rodapé do menu (ou na barra superior no celular) com Automático, que segue o sistema, Claro e Escuro. A escolha fica salva no navegador.
+- **Tema claro e escuro**: seletor no canto superior direito com Automático, que segue o sistema, Claro e Escuro. A escolha fica salva no navegador.
 - **CSV**: exportação (respeita os filtros da listagem) e importação com o mesmo cabeçalho, de modo que exportar, editar e reimportar não duplica.
 
 ## Integração com o agente

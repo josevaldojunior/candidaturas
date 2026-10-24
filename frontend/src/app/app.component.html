@@ -16,25 +16,20 @@
         </a>
       }
     </mat-nav-list>
-    @if (!celular()) {
-      <div class="rodape-menu">
-        <span class="texto-suave">Tema</span>
-        <app-seletor-tema />
-      </div>
-    }
   </mat-sidenav>
 
   <mat-sidenav-content class="conteudo">
-    @if (celular()) {
-      <mat-toolbar class="barra-topo">
+    <!-- barra superior: no celular traz o menu; nos dois tamanhos o tema fica no canto direito -->
+    <mat-toolbar class="barra-topo" [class.compacta]="!celular()">
+      @if (celular()) {
         <button mat-icon-button aria-label="Abrir menu" (click)="sidenav.toggle()">
           <mat-icon>menu</mat-icon>
         </button>
         <span>Candidaturas</span>
-        <span class="flex-espaco"></span>
-        <app-seletor-tema />
-      </mat-toolbar>
-    }
+      }
+      <span class="flex-espaco"></span>
+      <app-seletor-tema />
+    </mat-toolbar>
     <main>
       <router-outlet />
     </main>
