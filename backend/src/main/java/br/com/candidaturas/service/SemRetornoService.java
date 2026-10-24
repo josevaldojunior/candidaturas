@@ -24,7 +24,7 @@ import java.util.List;
 public class SemRetornoService {
 
     public static final String CHAVE_DIAS = "sem_retorno.dias";
-    public static final int DIAS_PADRAO = 21;
+    public static final int DIAS_PADRAO = 30;
 
     private static final Logger log = LoggerFactory.getLogger(SemRetornoService.class);
 
