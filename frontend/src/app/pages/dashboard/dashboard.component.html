@@ -59,7 +59,7 @@
         <section class="cartao grafico">
           <h2>Por plataforma</h2>
           @for (p of d.porPlataforma; track p.chave) {
-            <div class="linha-barra simples" [matTooltip]="p.quantidade + ' candidatura(s)'">
+            <div class="linha-barra simples" [class.zerada]="p.quantidade === 0" [matTooltip]="p.quantidade + ' candidatura(s)'">
               <span class="rotulo">{{ p.chave === 'NAO_INFORMADA' ? 'Não informada' : (p.chave | rotulo: 'plataforma') }}</span>
               <span class="trilho"><span class="barra" [style.width]="largura(p.quantidade, maxPlataforma())"></span></span>
               <span class="valor">{{ p.quantidade }}</span>

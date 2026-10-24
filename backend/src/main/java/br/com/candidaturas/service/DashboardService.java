@@ -2,6 +2,7 @@ package br.com.candidaturas.service;
 
 import br.com.candidaturas.domain.Candidatura;
 import br.com.candidaturas.domain.HistoricoStatus;
+import br.com.candidaturas.domain.Plataforma;
 import br.com.candidaturas.domain.Status;
 import br.com.candidaturas.dto.DashboardDtos.*;
 import br.com.candidaturas.repository.CandidaturaRepository;
@@ -97,14 +98,28 @@ public class DashboardService {
                 .toList();
     }
 
+    /**
+     * Todas as plataformas, inclusive as que ainda não têm candidatura (quantidade 0), da maior para a menor;
+     * empates seguem a ordem do enum. "NAO_INFORMADA" só aparece quando há candidaturas sem plataforma.
+     */
     private static List<Contagem> porPlataforma(List<Candidatura> todas) {
-        return todas.stream()
-                .collect(Collectors.groupingBy(c -> c.getPlataforma() == null ? "NAO_INFORMADA" : c.getPlataforma().name(),
-                        TreeMap::new, Collectors.counting()))
-                .entrySet().stream()
-                .map(e -> new Contagem(e.getKey(), e.getValue()))
-                .sorted(Comparator.comparingLong(Contagem::quantidade).reversed())
-                .toList();
+        Map<Plataforma, Long> contagem = new EnumMap<>(Plataforma.class);
+        long semPlataforma = 0;
+        for (Candidatura c : todas) {
+            if (c.getPlataforma() == null) {
+                semPlataforma++;
+            } else {
+                contagem.merge(c.getPlataforma(), 1L, Long::sum);
+            }
+        }
+        List<Contagem> resultado = new ArrayList<>(Arrays.stream(Plataforma.values())
+                .map(p -> new Contagem(p.name(), contagem.getOrDefault(p, 0L)))
+                .toList());
+        if (semPlataforma > 0) {
+            resultado.add(new Contagem("NAO_INFORMADA", semPlataforma));
+        }
+        resultado.sort(Comparator.comparingLong(Contagem::quantidade).reversed());
+        return resultado;
     }
 
     /** Últimas 12 semanas (segunda a domingo), contando candidaturas enviadas pela data da candidatura. */

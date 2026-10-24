@@ -86,7 +86,7 @@ class DashboardServiceTest {
 
         assertThat(r.porPlataforma()).extracting(Contagem::chave, Contagem::quantidade)
                 .containsExactly(tuple("LINKEDIN", 3L), tuple("GUPY", 1L), tuple("INDICACAO", 1L),
-                        tuple("NAO_INFORMADA", 1L));
+                        tuple("NAO_INFORMADA", 1L), tuple("INDEED", 0L), tuple("OUTRO", 0L));
 
         List<ContagemSemana> semanas = r.porSemana();
         assertThat(semanas).hasSize(12);
@@ -103,6 +103,9 @@ class DashboardServiceTest {
         historico.clear();
 
         DashboardResponse r = service.resumo();
+
+        assertThat(r.porPlataforma()).extracting(Contagem::chave)
+                .containsExactly("LINKEDIN", "GUPY", "INDEED", "INDICACAO", "OUTRO");
 
         assertThat(r.total()).isZero();
         assertThat(r.taxaResposta()).isZero();
