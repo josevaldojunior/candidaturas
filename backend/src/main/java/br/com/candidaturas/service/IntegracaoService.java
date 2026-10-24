@@ -177,8 +177,13 @@ public class IntegracaoService {
         mudou |= aplicar(d.dataCandidatura(), c::getDataCandidatura, c::setDataCandidatura);
         mudou |= aplicar(d.prioridade(), c::getPrioridade, c::setPrioridade);
         mudou |= aplicar(d.curriculoVersao(), c::getCurriculoVersao, c::setCurriculoVersao);
-        mudou |= aplicar(d.observacoes(), c::getObservacoes, c::setObservacoes);
-        mudou |= aplicar(d.pendencia(), c::getPendencia, c::setPendencia);
+        boolean observacoesMudaram = aplicar(d.observacoes(), c::getObservacoes, c::setObservacoes);
+        mudou |= observacoesMudaram;
+        // só recria a pendência quando chega uma observação nova: reenviar o mesmo item não
+        // ressuscita uma pendência que foi limpa na tela
+        if (observacoesMudaram) {
+            mudou |= aplicar(d.pendencia(), c::getPendencia, c::setPendencia);
+        }
         if (!d.stack().isEmpty() && !minusculas(d.stack()).equals(minusculas(c.getStack()))) {
             c.getStack().clear();
             c.getStack().addAll(d.stack());

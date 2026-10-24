@@ -224,6 +224,20 @@ class IntegracaoServiceTest {
     }
 
     @Test
+    void reenviarMesmaObservacaoNaoRessuscitaPendenciaLimpa() {
+        Candidatura existente = existente();
+        existente.setObservacoes("PENDENTE: mandar portfólio");
+        existente.setPendencia(null); // limpa na tela
+        when(repository.findByChaveExterna("vaga-1")).thenReturn(Optional.of(existente));
+
+        ResultadoImportacao r = service.processar(
+                List.of(new Builder().chave("vaga-1").observacoes("PENDENTE: mandar portfólio").build()), Origem.AGENTE);
+
+        assertThat(r.ignoradas()).isEqualTo(1);
+        assertThat(existente.getPendencia()).isNull();
+    }
+
+    @Test
     void prefixoSemTextoOuNoMeioNaoGeraPendencia() {
         assertThat(IntegracaoService.Dados.pendenciaDe("PENDENTE:   ")).isNull();
         assertThat(IntegracaoService.Dados.pendenciaDe("Status PENDENTE: x")).isNull();
