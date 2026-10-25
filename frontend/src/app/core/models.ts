@@ -1,7 +1,9 @@
 export type Status =
   | 'INTERESSE' | 'CANDIDATADO' | 'TRIAGEM_RH' | 'TESTE_TECNICO' | 'ENTREVISTA_TECNICA'
   | 'ENTREVISTA_FINAL' | 'PROPOSTA' | 'ACEITA' | 'RECUSADA' | 'SEM_RETORNO';
-export type Plataforma = 'LINKEDIN' | 'GUPY' | 'INDEED' | 'INDICACAO' | 'OUTRO';
+export type Plataforma =
+  | 'LINKEDIN_VAGAS' | 'LINKEDIN_FEED' | 'GUPY' | 'INDEED' | 'PROGRAMATHOR' | 'REMOTAR' | 'INFOJOBS' | 'GITHUB'
+  | 'COODESH' | 'GEEKHUNTER' | 'CATHO' | 'OUTRO';
 export type Modalidade = 'REMOTO' | 'HIBRIDO' | 'PRESENCIAL';
 export type TipoContrato = 'CLT' | 'PJ' | 'OUTRO';
 export type Prioridade = 'ALTA' | 'MEDIA' | 'BAIXA';

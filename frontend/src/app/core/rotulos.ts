@@ -18,9 +18,23 @@ export const ROTULO_STATUS: Record<Status, string> = {
   SEM_RETORNO: 'Sem retorno',
 };
 
-export const PLATAFORMAS: Plataforma[] = ['LINKEDIN', 'GUPY', 'INDEED', 'INDICACAO', 'OUTRO'];
+export const PLATAFORMAS: Plataforma[] = [
+  'LINKEDIN_VAGAS', 'LINKEDIN_FEED', 'GUPY', 'INDEED', 'PROGRAMATHOR', 'REMOTAR', 'INFOJOBS', 'GITHUB',
+  'COODESH', 'GEEKHUNTER', 'CATHO', 'OUTRO',
+];
 export const ROTULO_PLATAFORMA: Record<Plataforma, string> = {
-  LINKEDIN: 'LinkedIn', GUPY: 'Gupy', INDEED: 'Indeed', INDICACAO: 'Indicação', OUTRO: 'Outro',
+  LINKEDIN_VAGAS: 'LinkedIn Vagas',
+  LINKEDIN_FEED: 'LinkedIn Post do Feed',
+  GUPY: 'Gupy',
+  INDEED: 'Indeed',
+  PROGRAMATHOR: 'Programathor',
+  REMOTAR: 'Remotar',
+  INFOJOBS: 'InfoJobs',
+  GITHUB: 'Repositórios de vagas no GitHub',
+  COODESH: 'Coodesh',
+  GEEKHUNTER: 'GeekHunter',
+  CATHO: 'Catho',
+  OUTRO: 'Outro',
 };
 
 export const MODALIDADES: Modalidade[] = ['REMOTO', 'HIBRIDO', 'PRESENCIAL'];
