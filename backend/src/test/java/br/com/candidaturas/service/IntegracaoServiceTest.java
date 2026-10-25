@@ -68,7 +68,7 @@ class IntegracaoServiceTest {
         assertThat(c.getChaveExterna()).isEqualTo("vaga-1");
         assertThat(c.getStatus()).isEqualTo(Status.TRIAGEM_RH);
         assertThat(c.getModalidade()).isEqualTo(Modalidade.HIBRIDO);
-        assertThat(c.getPlataforma()).isEqualTo(Plataforma.LINKEDIN);
+        assertThat(c.getPlataforma()).isEqualTo(Plataforma.LINKEDIN_VAGAS);
         assertThat(c.getTipoContrato()).isEqualTo(TipoContrato.PJ);
         assertThat(c.getPrioridade()).isEqualTo(Prioridade.MEDIA);
         assertThat(c.getStack()).containsExactly("Java", "Spring");

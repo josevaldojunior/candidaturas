@@ -29,9 +29,24 @@ class NormalizacaoTest {
     void normalizaOutrosEnums() {
         assertThat(Normalizacao.paraEnum(TipoInteracao.class, "e-mail", "tipo")).isEqualTo(TipoInteracao.EMAIL);
         assertThat(Normalizacao.paraEnum(TipoInteracao.class, "Ligação", "tipo")).isEqualTo(TipoInteracao.LIGACAO);
-        assertThat(Normalizacao.paraEnum(Plataforma.class, "linkedin", "plataforma")).isEqualTo(Plataforma.LINKEDIN);
-        assertThat(Normalizacao.paraEnum(Plataforma.class, "Indicação", "plataforma")).isEqualTo(Plataforma.INDICACAO);
         assertThat(Normalizacao.paraEnum(Prioridade.class, "Média", "prioridade")).isEqualTo(Prioridade.MEDIA);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "LinkedIn Vagas,LINKEDIN_VAGAS", "linkedin,LINKEDIN_VAGAS", "LinkedIn (simplificada),LINKEDIN_VAGAS",
+            "LinkedIn (JazzHR),LINKEDIN_VAGAS", "LinkedIn Post do Feed,LINKEDIN_FEED", "post no feed do LinkedIn,LINKEDIN_FEED",
+            "Gupy,GUPY", "Gupy (personalizada),GUPY", "Indeed,INDEED", "Programathor,PROGRAMATHOR", "Remotar,REMOTAR",
+            "InfoJobs,INFOJOBS", "Info Job,INFOJOBS", "Repositórios de vagas no GitHub,GITHUB", "github,GITHUB",
+            "Coodesh,COODESH", "GeekHunter,GEEKHUNTER", "Catho,CATHO",
+            "E-mail,OUTRO", "WhatsApp,OUTRO", "InHire,OUTRO", "Indicação,OUTRO"})
+    void normalizaPlataformas(String entrada, Plataforma esperada) {
+        assertThat(Normalizacao.plataforma(entrada)).isEqualTo(esperada);
+    }
+
+    @Test
+    void plataformaVaziaEhNula() {
+        assertThat(Normalizacao.plataforma("  ")).isNull();
     }
 
     @Test
@@ -40,7 +55,7 @@ class NormalizacaoTest {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> Normalizacao.paraEnum(Status.class, "contratado amanhã", "status"))
                 .withMessageContaining("status");
-        assertThat(Normalizacao.paraEnumOu(Plataforma.class, "Catho", "plataforma", Plataforma.OUTRO))
+        assertThat(Normalizacao.paraEnumOu(Plataforma.class, "Vagas.com", "plataforma", Plataforma.OUTRO))
                 .isEqualTo(Plataforma.OUTRO);
     }
 

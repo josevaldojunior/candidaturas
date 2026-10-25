@@ -19,7 +19,7 @@ h2 { font-size: 16px; font-weight: 500; margin: 0 0 4px; }
 .linha-barra {
   display: grid; grid-template-columns: 130px 1fr 36px 44px; align-items: center; gap: 8px;
   padding: 4px 0; font-size: 13px;
-  &.simples { grid-template-columns: 110px 1fr 36px; }
+  &.simples { grid-template-columns: minmax(120px, 210px) 1fr 36px; }
   .rotulo { color: var(--cor-texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .valor { text-align: right; font-weight: 500; color: var(--cor-texto); }
   .conversao { text-align: right; font-size: 12px; color: var(--cor-texto-suave); }
@@ -45,7 +45,7 @@ h2 { font-size: 16px; font-weight: 500; margin: 0 0 4px; }
 
 @media (max-width: 599px) {
   .linha-barra { grid-template-columns: 96px 1fr 28px 38px; }
-  .linha-barra.simples { grid-template-columns: 96px 1fr 28px; }
+  .linha-barra.simples { grid-template-columns: 130px 1fr 28px; }
   .eixo { font-size: 9px; }
   .graficos { grid-template-columns: 1fr; }
 }

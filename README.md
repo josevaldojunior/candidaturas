@@ -90,7 +90,7 @@ Recebe um **array JSON** (um objeto sozinho também é aceito). Campos obrigató
     "empresa": "ACME Tecnologia",
     "cargo": "Desenvolvedor Java Pleno",
     "linkVaga": "https://www.linkedin.com/jobs/view/4012345678",
-    "plataforma": "linkedin",
+    "plataforma": "LinkedIn Vagas",
     "modalidade": "Remoto",
     "tipoContrato": "PJ",
     "faixaSalarial": "R$ 10.000 – 13.000",
@@ -116,7 +116,8 @@ Recebe um **array JSON** (um objeto sozinho também é aceito). Campos obrigató
 Regras:
 
 - **Upsert**: a chave é `chaveExterna` ou, se vier vazia, `linkVaga`. Se já existir uma candidatura com essa `chave_externa` ou esse `link_vaga`, só os campos enviados são atualizados. Se o status mudar, a mudança vai para o histórico. Sem chave e sem link, a busca é por empresa + cargo, sem diferenciar maiúsculas. Quando nada é encontrado, a candidatura é criada com origem `AGENTE` e status padrão `CANDIDATADO`.
-- **Enums em texto livre**: a comparação ignora acento, caixa, espaço e hífen (`"Híbrido"`→`HIBRIDO`, `"Triagem RH"`→`TRIAGEM_RH`, `"e-mail"`→`EMAIL`, `"linkedin"`→`LINKEDIN`). Plataforma, tipo de contrato e tipo de interação desconhecidos viram `OUTRO`. Status, modalidade ou prioridade inválidos geram erro naquele item.
+- **Enums em texto livre**: a comparação ignora acento, caixa, espaço e hífen (`"Híbrido"`→`HIBRIDO`, `"Triagem RH"`→`TRIAGEM_RH`, `"e-mail"`→`EMAIL`, `"linkedin"`→`LINKEDIN_VAGAS`). Tipo de contrato e tipo de interação desconhecidos viram `OUTRO`. Status, modalidade ou prioridade inválidos geram erro naquele item.
+- **Plataformas**: `LINKEDIN_VAGAS` (LinkedIn Vagas), `LINKEDIN_FEED` (LinkedIn Post do Feed), `GUPY`, `INDEED`, `PROGRAMATHOR`, `REMOTAR`, `INFOJOBS`, `GITHUB` (repositórios de vagas no GitHub), `COODESH`, `GEEKHUNTER`, `CATHO` e `OUTRO`. Além do nome, o agente pode mandar variações: qualquer texto com "LinkedIn" vira LinkedIn Vagas, ou LinkedIn Post do Feed se falar em "post"/"feed" (ex.: `"LinkedIn (JazzHR)"`, `"post no feed do LinkedIn"`); `"Gupy (personalizada)"` vira Gupy; textos com "GitHub" viram GitHub. O que não for reconhecido (e-mail, WhatsApp, sites próprios) vira `OUTRO`.
 - **Contato**: é reaproveitado por e-mail ou telefone; se não existir, é criado como `RECRUTADOR` e vinculado.
 - **Interação**: é criada se vier `descricaoInteracao` ou `dataFollowUp`. Reenviar o mesmo item não duplica a interação.
 - **Pendência**: se `observacoes` começar com `PENDENTE:` (sem diferenciar maiúsculas), o texto depois do prefixo vira a pendência da candidatura. Reenviar as mesmas observações não recria uma pendência que você já limpou na tela. Isso também vale para a coluna `observacoes` do CSV.

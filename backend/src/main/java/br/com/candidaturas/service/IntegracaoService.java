@@ -322,7 +322,7 @@ public class IntegracaoService {
                     limite(i.empresa(), 200, "empresa"),
                     limite(i.cargo(), 200, "cargo"),
                     limite(i.linkVaga(), 1000, "linkVaga"),
-                    paraEnumOu(Plataforma.class, i.plataforma(), "plataforma", Plataforma.OUTRO),
+                    Normalizacao.plataforma(i.plataforma()),
                     paraEnum(Modalidade.class, i.modalidade(), "modalidade"),
                     paraEnumOu(TipoContrato.class, i.tipoContrato(), "tipoContrato", TipoContrato.OUTRO),
                     limite(i.faixaSalarial(), 100, "faixaSalarial"),
