@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,14 +40,14 @@ class DashboardServiceTest {
     void setUp() {
         service = new DashboardService(candidaturaRepository, historicoRepository, RelogioFixo.clock());
         // hoje = sábado 24/10/2026; semana atual começa na segunda 19/10
-        nova(1L, Status.INTERESSE, Plataforma.LINKEDIN, null);
-        nova(2L, Status.CANDIDATADO, Plataforma.LINKEDIN, "2026-10-20", Status.CANDIDATADO);
+        nova(1L, Status.INTERESSE, Plataforma.LINKEDIN_VAGAS, null);
+        nova(2L, Status.CANDIDATADO, Plataforma.LINKEDIN_VAGAS, "2026-10-20", Status.CANDIDATADO);
         nova(3L, Status.ENTREVISTA_TECNICA, Plataforma.GUPY, "2026-10-01",
                 Status.CANDIDATADO, Status.TRIAGEM_RH, Status.TESTE_TECNICO, Status.ENTREVISTA_TECNICA);
-        nova(4L, Status.RECUSADA, Plataforma.LINKEDIN, "2026-10-22",
+        nova(4L, Status.RECUSADA, Plataforma.LINKEDIN_VAGAS, "2026-10-22",
                 Status.CANDIDATADO, Status.TRIAGEM_RH, Status.RECUSADA);
         nova(5L, Status.SEM_RETORNO, null, "2026-08-01", Status.CANDIDATADO, Status.SEM_RETORNO);
-        nova(6L, Status.ACEITA, Plataforma.INDICACAO, "2026-10-19", Status.CANDIDATADO, Status.TRIAGEM_RH,
+        nova(6L, Status.ACEITA, Plataforma.CATHO, "2026-10-19", Status.CANDIDATADO, Status.TRIAGEM_RH,
                 Status.TESTE_TECNICO, Status.ENTREVISTA_TECNICA, Status.ENTREVISTA_FINAL, Status.PROPOSTA, Status.ACEITA);
         when(candidaturaRepository.findAll()).thenReturn(candidaturas);
         when(historicoRepository.findAll()).thenReturn(historico);
@@ -85,8 +86,10 @@ class DashboardServiceTest {
         DashboardResponse r = service.resumo();
 
         assertThat(r.porPlataforma()).extracting(Contagem::chave, Contagem::quantidade)
-                .containsExactly(tuple("LINKEDIN", 3L), tuple("GUPY", 1L), tuple("INDICACAO", 1L),
-                        tuple("NAO_INFORMADA", 1L), tuple("INDEED", 0L), tuple("OUTRO", 0L));
+                .startsWith(tuple("LINKEDIN_VAGAS", 3L), tuple("GUPY", 1L), tuple("CATHO", 1L),
+                        tuple("NAO_INFORMADA", 1L), tuple("LINKEDIN_FEED", 0L));
+        // todas as plataformas aparecem, mesmo zeradas, mais o "não informada"
+        assertThat(r.porPlataforma()).hasSize(Plataforma.values().length + 1);
 
         List<ContagemSemana> semanas = r.porSemana();
         assertThat(semanas).hasSize(12);
@@ -105,7 +108,7 @@ class DashboardServiceTest {
         DashboardResponse r = service.resumo();
 
         assertThat(r.porPlataforma()).extracting(Contagem::chave)
-                .containsExactly("LINKEDIN", "GUPY", "INDEED", "INDICACAO", "OUTRO");
+                .containsExactly(Arrays.stream(Plataforma.values()).map(Enum::name).toArray(String[]::new));
 
         assertThat(r.total()).isZero();
         assertThat(r.taxaResposta()).isZero();

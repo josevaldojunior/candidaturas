@@ -32,7 +32,7 @@ class CandidaturaControllerIT {
     @Test
     void criaBuscaEAtualiza() throws Exception {
         long id = criar("""
-                {"empresa":"ACME","cargo":"Dev Java Pleno","linkVaga":"https://vagas/acme/1","plataforma":"LINKEDIN",
+                {"empresa":"ACME","cargo":"Dev Java Pleno","linkVaga":"https://vagas/acme/1","plataforma":"LINKEDIN_VAGAS",
                  "modalidade":"REMOTO","tipoContrato":"PJ","nota":8,"stack":["Java","Spring"],"prioridade":"ALTA"}
                 """);
 
@@ -75,10 +75,10 @@ class CandidaturaControllerIT {
     @Test
     void listaComFiltros() throws Exception {
         criar("{\"empresa\":\"ACME\",\"cargo\":\"Java Dev\",\"plataforma\":\"GUPY\",\"stack\":[\"Java\",\"Angular\"],\"prioridade\":\"ALTA\",\"dataCandidatura\":\"2026-10-01\"}");
-        criar("{\"empresa\":\"Beta\",\"cargo\":\"Kotlin Dev\",\"plataforma\":\"LINKEDIN\",\"stack\":[\"Kotlin\"],\"dataCandidatura\":\"2026-09-01\"}");
-        criar("{\"empresa\":\"Gama\",\"cargo\":\"Fullstack\",\"plataforma\":\"LINKEDIN\",\"status\":\"INTERESSE\",\"observacoes\":\"usa Spring Boot\"}");
+        criar("{\"empresa\":\"Beta\",\"cargo\":\"Kotlin Dev\",\"plataforma\":\"LINKEDIN_VAGAS\",\"stack\":[\"Kotlin\"],\"dataCandidatura\":\"2026-09-01\"}");
+        criar("{\"empresa\":\"Gama\",\"cargo\":\"Fullstack\",\"plataforma\":\"LINKEDIN_VAGAS\",\"status\":\"INTERESSE\",\"observacoes\":\"usa Spring Boot\"}");
 
-        mvc.perform(get("/api/candidaturas").param("plataforma", "LINKEDIN"))
+        mvc.perform(get("/api/candidaturas").param("plataforma", "LINKEDIN_VAGAS"))
                 .andExpect(jsonPath("$.totalElements").value(2));
         mvc.perform(get("/api/candidaturas").param("stack", "angular"))
                 .andExpect(jsonPath("$.content[*].empresa", contains("ACME")));

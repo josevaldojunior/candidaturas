@@ -233,7 +233,7 @@ class CandidaturaServiceTest {
     }
 
     private static CandidaturaRequest request(String empresa, Status status, String chave) {
-        return new CandidaturaRequest(empresa, "Dev Java", "https://vagas/1", Plataforma.LINKEDIN, Modalidade.REMOTO,
+        return new CandidaturaRequest(empresa, "Dev Java", "https://vagas/1", Plataforma.LINKEDIN_VAGAS, Modalidade.REMOTO,
                 TipoContrato.PJ, null, null, 8, Set.of("Java", "Spring"), null, status, null, "v3", null, chave, null, null);
     }
 

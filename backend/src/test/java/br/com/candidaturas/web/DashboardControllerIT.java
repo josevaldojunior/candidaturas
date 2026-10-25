@@ -28,7 +28,7 @@ class DashboardControllerIT {
     @Test
     void resumoUsaHistoricoGravadoNoBanco() throws Exception {
         mvc.perform(post("/api/candidaturas").contentType(MediaType.APPLICATION_JSON)
-                .content("{\"empresa\":\"ACME\",\"cargo\":\"Java\",\"plataforma\":\"LINKEDIN\"}"));
+                .content("{\"empresa\":\"ACME\",\"cargo\":\"Java\",\"plataforma\":\"LINKEDIN_VAGAS\"}"));
         String body = mvc.perform(post("/api/candidaturas").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"empresa\":\"Beta\",\"cargo\":\"Java\",\"plataforma\":\"GUPY\"}"))
                 .andReturn().getResponse().getContentAsString();

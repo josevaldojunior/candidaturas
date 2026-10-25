@@ -1,5 +1,7 @@
 package br.com.candidaturas.util;
 
+import br.com.candidaturas.domain.Plataforma;
+
 import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -21,7 +23,9 @@ public final class Normalizacao {
             Map.entry("HOMEOFFICE", "REMOTO"),
             Map.entry("HYBRID", "HIBRIDO"),
             Map.entry("ONSITE", "PRESENCIAL"),
-            Map.entry("REFERRAL", "INDICACAO"),
+            // plataformas (variações de LinkedIn/Gupy/GitHub são tratadas em plataforma())
+            Map.entry("INFOJOB", "INFOJOBS"),
+            Map.entry("GEEKHUNTERS", "GEEKHUNTER"),
             Map.entry("ALTO", "ALTA"),
             Map.entry("MEDIO", "MEDIA"),
             Map.entry("BAIXO", "BAIXA"),
@@ -75,6 +79,33 @@ public final class Normalizacao {
         } catch (IllegalArgumentException e) {
             return padrao;
         }
+    }
+
+    /**
+     * Plataforma a partir do texto livre do agente/CSV. Além do nome exato (ignorando acento, caixa e
+     * pontuação), reconhece variações: "LinkedIn (JazzHR)" → LINKEDIN_VAGAS, "post do LinkedIn" →
+     * LINKEDIN_FEED, "Gupy (personalizada)" → GUPY, "repositório de vagas no GitHub" → GITHUB.
+     * O que não for reconhecido vira OUTRO (e-mail, WhatsApp, sites próprios...).
+     */
+    public static Plataforma plataforma(String valor) {
+        if (vazio(valor)) {
+            return null;
+        }
+        Plataforma exata = paraEnumOu(Plataforma.class, valor, "plataforma", null);
+        if (exata != null) {
+            return exata;
+        }
+        String k = chave(valor);
+        if (k.contains("LINKEDIN")) {
+            return k.contains("FEED") || k.contains("POST") ? Plataforma.LINKEDIN_FEED : Plataforma.LINKEDIN_VAGAS;
+        }
+        if (k.startsWith("GUPY")) {
+            return Plataforma.GUPY;
+        }
+        if (k.contains("GITHUB")) {
+            return Plataforma.GITHUB;
+        }
+        return Plataforma.OUTRO;
     }
 
     /** Aceita yyyy-MM-dd ou dd/MM/yyyy. */
