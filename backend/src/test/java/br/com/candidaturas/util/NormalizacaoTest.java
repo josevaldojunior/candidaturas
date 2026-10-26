@@ -39,7 +39,8 @@ class NormalizacaoTest {
             "Gupy,GUPY", "Gupy (personalizada),GUPY", "Indeed,INDEED", "Programathor,PROGRAMATHOR", "Remotar,REMOTAR",
             "InfoJobs,INFOJOBS", "Info Job,INFOJOBS", "Repositórios de vagas no GitHub,GITHUB", "github,GITHUB",
             "Coodesh,COODESH", "GeekHunter,GEEKHUNTER", "Catho,CATHO",
-            "E-mail,OUTRO", "WhatsApp,OUTRO", "InHire,OUTRO", "Indicação,OUTRO"})
+            "E-mail,OUTRO", "WhatsApp,OUTRO", "InHire,OUTRO", "Indicação,OUTRO",
+            "LinkedIn Feed,LINKEDIN_FEED", "Repositórios GitHub,GITHUB", "Outros,OUTRO"})
     void normalizaPlataformas(String entrada, Plataforma esperada) {
         assertThat(Normalizacao.plataforma(entrada)).isEqualTo(esperada);
     }

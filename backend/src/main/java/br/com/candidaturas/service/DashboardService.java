@@ -103,8 +103,8 @@ public class DashboardService {
     }
 
     /**
-     * Todas as plataformas, inclusive as que ainda não têm candidatura (quantidade 0), da maior para a menor;
-     * empates seguem a ordem do enum. "NAO_INFORMADA" só aparece quando há candidaturas sem plataforma.
+     * Todas as plataformas na ordem de exibição (a do enum), inclusive as sem candidatura (quantidade 0).
+     * "NAO_INFORMADA" vem por último e só aparece quando há candidaturas sem plataforma.
      */
     private static List<Contagem> porPlataforma(List<Candidatura> todas) {
         Map<Plataforma, Long> contagem = new EnumMap<>(Plataforma.class);
@@ -122,7 +122,6 @@ public class DashboardService {
         if (semPlataforma > 0) {
             resultado.add(new Contagem("NAO_INFORMADA", semPlataforma));
         }
-        resultado.sort(Comparator.comparingLong(Contagem::quantidade).reversed());
         return resultado;
     }
 

@@ -18,23 +18,24 @@ export const ROTULO_STATUS: Record<Status, string> = {
   SEM_RETORNO: 'Sem retorno',
 };
 
+/** Ordem de exibição (a mesma do enum Plataforma no backend). */
 export const PLATAFORMAS: Plataforma[] = [
-  'LINKEDIN_VAGAS', 'LINKEDIN_FEED', 'GUPY', 'INDEED', 'PROGRAMATHOR', 'REMOTAR', 'INFOJOBS', 'GITHUB',
-  'COODESH', 'GEEKHUNTER', 'CATHO', 'OUTRO',
+  'GUPY', 'LINKEDIN_VAGAS', 'LINKEDIN_FEED', 'INDEED', 'PROGRAMATHOR', 'REMOTAR', 'INFOJOBS', 'COODESH',
+  'GEEKHUNTER', 'CATHO', 'GITHUB', 'OUTRO',
 ];
 export const ROTULO_PLATAFORMA: Record<Plataforma, string> = {
   LINKEDIN_VAGAS: 'LinkedIn Vagas',
-  LINKEDIN_FEED: 'LinkedIn Post do Feed',
+  LINKEDIN_FEED: 'LinkedIn Feed',
   GUPY: 'Gupy',
   INDEED: 'Indeed',
   PROGRAMATHOR: 'Programathor',
   REMOTAR: 'Remotar',
   INFOJOBS: 'InfoJobs',
-  GITHUB: 'Repositórios de vagas no GitHub',
+  GITHUB: 'Repositórios GitHub',
   COODESH: 'Coodesh',
   GEEKHUNTER: 'GeekHunter',
   CATHO: 'Catho',
-  OUTRO: 'Outro',
+  OUTRO: 'Outros',
 };
 
 export const MODALIDADES: Modalidade[] = ['REMOTO', 'HIBRIDO', 'PRESENCIAL'];
