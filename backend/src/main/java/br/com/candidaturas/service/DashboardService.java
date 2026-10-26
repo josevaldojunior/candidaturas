@@ -7,6 +7,7 @@ import br.com.candidaturas.domain.Status;
 import br.com.candidaturas.dto.DashboardDtos.*;
 import br.com.candidaturas.repository.CandidaturaRepository;
 import br.com.candidaturas.repository.HistoricoStatusRepository;
+import br.com.candidaturas.seguranca.UsuarioAtual;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,19 +33,22 @@ public class DashboardService {
 
     private final CandidaturaRepository candidaturaRepository;
     private final HistoricoStatusRepository historicoRepository;
+    private final UsuarioAtual usuarioAtual;
     private final Clock clock;
 
     public DashboardService(CandidaturaRepository candidaturaRepository, HistoricoStatusRepository historicoRepository,
-                            Clock clock) {
+                            UsuarioAtual usuarioAtual, Clock clock) {
         this.candidaturaRepository = candidaturaRepository;
         this.historicoRepository = historicoRepository;
+        this.usuarioAtual = usuarioAtual;
         this.clock = clock;
     }
 
     @Transactional(readOnly = true)
     public DashboardResponse resumo() {
-        List<Candidatura> todas = candidaturaRepository.findAll();
-        Map<Long, List<Status>> historicoPorCandidatura = historicoRepository.findAll().stream()
+        Long usuarioId = usuarioAtual.id();
+        List<Candidatura> todas = candidaturaRepository.findByUsuarioId(usuarioId);
+        Map<Long, List<Status>> historicoPorCandidatura = historicoRepository.findByCandidaturaUsuarioId(usuarioId).stream()
                 .collect(Collectors.groupingBy(h -> h.getCandidatura().getId(),
                         Collectors.mapping(HistoricoStatus::getStatusNovo, Collectors.toList())));
 

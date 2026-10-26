@@ -2,27 +2,42 @@ package br.com.candidaturas.repository;
 
 import br.com.candidaturas.domain.Candidatura;
 import br.com.candidaturas.domain.Status;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+/** Toda consulta recebe o dono (usuarioId): um usuário nunca enxerga dados de outro. */
 public interface CandidaturaRepository extends JpaRepository<Candidatura, Long>, JpaSpecificationExecutor<Candidatura> {
 
-    Optional<Candidatura> findByChaveExterna(String chaveExterna);
+    Optional<Candidatura> findByIdAndUsuarioId(Long id, Long usuarioId);
 
-    Optional<Candidatura> findFirstByLinkVagaOrderByIdAsc(String linkVaga);
+    List<Candidatura> findByUsuarioId(Long usuarioId);
 
-    Optional<Candidatura> findFirstByEmpresaIgnoreCaseAndCargoIgnoreCaseOrderByIdAsc(String empresa, String cargo);
+    List<Candidatura> findByUsuarioId(Long usuarioId, Sort sort);
 
-    List<Candidatura> findByStatusIn(Collection<Status> status);
+    Optional<Candidatura> findByUsuarioIdAndChaveExterna(Long usuarioId, String chaveExterna);
 
-    @Query("select distinct t from Candidatura c join c.stack t order by t")
-    List<String> listarStacks();
+    Optional<Candidatura> findFirstByUsuarioIdAndLinkVagaOrderByIdAsc(Long usuarioId, String linkVaga);
 
-    @Query("select distinct c.empresa from Candidatura c order by c.empresa")
-    List<String> listarEmpresas();
+    Optional<Candidatura> findFirstByUsuarioIdAndEmpresaIgnoreCaseAndCargoIgnoreCaseOrderByIdAsc(
+            Long usuarioId, String empresa, String cargo);
+
+    List<Candidatura> findByUsuarioIdAndStatusIn(Long usuarioId, Collection<Status> status);
+
+    @Query("select distinct t from Candidatura c join c.stack t where c.usuarioId = :usuarioId order by t")
+    List<String> listarStacks(Long usuarioId);
+
+    @Query("select distinct c.empresa from Candidatura c where c.usuarioId = :usuarioId order by c.empresa")
+    List<String> listarEmpresas(Long usuarioId);
+
+    /** Registros criados antes das contas existirem passam para a primeira conta. */
+    @Modifying
+    @Query("update Candidatura c set c.usuarioId = :usuarioId where c.usuarioId is null")
+    int assumirSemDono(Long usuarioId);
 }

@@ -17,6 +17,10 @@ public class Candidatura {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /** Dono da candidatura. */
+    @Column(name = "usuario_id")
+    private Long usuarioId;
+
     @Column(nullable = false, length = 200)
     private String empresa;
 
@@ -70,7 +74,7 @@ public class Candidatura {
     @Column(nullable = false, length = 20)
     private Origem origem;
 
-    @Column(name = "chave_externa", length = 300, unique = true)
+    @Column(name = "chave_externa", length = 300)
     private String chaveExterna;
 
     @Column(name = "ultima_interacao_em")
@@ -117,6 +121,8 @@ public class Candidatura {
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+    public Long getUsuarioId() { return usuarioId; }
+    public void setUsuarioId(Long usuarioId) { this.usuarioId = usuarioId; }
     public String getEmpresa() { return empresa; }
     public void setEmpresa(String empresa) { this.empresa = empresa; }
     public String getCargo() { return cargo; }

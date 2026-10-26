@@ -7,6 +7,7 @@ import br.com.candidaturas.dto.IntegracaoDtos.ResumoExistente;
 import br.com.candidaturas.dto.IntegracaoItem;
 import br.com.candidaturas.repository.CandidaturaRepository;
 import br.com.candidaturas.repository.ContatoRepository;
+import br.com.candidaturas.seguranca.UsuarioAtual;
 import br.com.candidaturas.util.Normalizacao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,20 +45,24 @@ public class IntegracaoService {
     private final ContatoRepository contatoRepository;
     private final CandidaturaService candidaturaService;
     private final TransactionTemplate transacaoPorItem;
+    private final UsuarioAtual usuarioAtual;
     private final Clock clock;
 
     public IntegracaoService(CandidaturaRepository repository, ContatoRepository contatoRepository,
                              CandidaturaService candidaturaService, PlatformTransactionManager transactionManager,
-                             Clock clock) {
+                             UsuarioAtual usuarioAtual, Clock clock) {
         this.repository = repository;
         this.contatoRepository = contatoRepository;
         this.candidaturaService = candidaturaService;
+        this.usuarioAtual = usuarioAtual;
         this.transacaoPorItem = new TransactionTemplate(transactionManager);
         this.transacaoPorItem.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         this.clock = clock;
     }
 
     public ResultadoImportacao processar(List<IntegracaoItem> itens, Origem origem) {
+        // tudo o que vier no lote vai para a conta de quem enviou (login ou token do agente)
+        Long usuarioId = usuarioAtual.id();
         int criadas = 0;
         int atualizadas = 0;
         int ignoradas = 0;
@@ -69,7 +74,7 @@ public class IntegracaoService {
                 if (item == null) {
                     throw new IllegalArgumentException("item vazio");
                 }
-                Resultado r = transacaoPorItem.execute(status -> upsert(item, origem));
+                Resultado r = transacaoPorItem.execute(status -> upsert(item, origem, usuarioId));
                 switch (Objects.requireNonNull(r)) {
                     case CRIADA -> criadas++;
                     case ATUALIZADA -> atualizadas++;
@@ -86,41 +91,45 @@ public class IntegracaoService {
 
     @Transactional(readOnly = true)
     public ExisteResponse existe(String link, String empresa, String cargo) {
+        Long usuarioId = usuarioAtual.id();
         Optional<Candidatura> encontrada = Optional.empty();
         String l = texto(link);
         if (l != null) {
-            encontrada = repository.findByChaveExterna(l).or(() -> repository.findFirstByLinkVagaOrderByIdAsc(l));
+            encontrada = repository.findByUsuarioIdAndChaveExterna(usuarioId, l)
+                    .or(() -> repository.findFirstByUsuarioIdAndLinkVagaOrderByIdAsc(usuarioId, l));
         } else if (!vazio(empresa) && !vazio(cargo)) {
-            encontrada = repository.findFirstByEmpresaIgnoreCaseAndCargoIgnoreCaseOrderByIdAsc(empresa.trim(), cargo.trim());
+            encontrada = repository.findFirstByUsuarioIdAndEmpresaIgnoreCaseAndCargoIgnoreCaseOrderByIdAsc(
+                    usuarioId, empresa.trim(), cargo.trim());
         }
         return encontrada.map(c -> new ExisteResponse(true, ResumoExistente.de(c)))
                 .orElseGet(() -> new ExisteResponse(false, null));
     }
 
-    Resultado upsert(IntegracaoItem item, Origem origem) {
+    Resultado upsert(IntegracaoItem item, Origem origem, Long usuarioId) {
         Dados d = Dados.de(item);
-        return localizar(d).map(c -> atualizar(c, d)).orElseGet(() -> criar(d, origem));
+        return localizar(d, usuarioId).map(c -> atualizar(c, d)).orElseGet(() -> criar(d, origem, usuarioId));
     }
 
     /** Chave = chaveExterna; se vazia, linkVaga. Sem nenhuma das duas, empresa + cargo. */
-    private Optional<Candidatura> localizar(Dados d) {
+    private Optional<Candidatura> localizar(Dados d, Long usuarioId) {
         if (d.chave() != null) {
-            Optional<Candidatura> porChave = repository.findByChaveExterna(d.chave());
+            Optional<Candidatura> porChave = repository.findByUsuarioIdAndChaveExterna(usuarioId, d.chave());
             if (porChave.isPresent()) {
                 return porChave;
             }
         }
         if (d.link() != null) {
-            return repository.findByChaveExterna(d.link())
-                    .or(() -> repository.findFirstByLinkVagaOrderByIdAsc(d.link()));
+            return repository.findByUsuarioIdAndChaveExterna(usuarioId, d.link())
+                    .or(() -> repository.findFirstByUsuarioIdAndLinkVagaOrderByIdAsc(usuarioId, d.link()));
         }
         if (d.chave() == null && d.empresa() != null && d.cargo() != null) {
-            return repository.findFirstByEmpresaIgnoreCaseAndCargoIgnoreCaseOrderByIdAsc(d.empresa(), d.cargo());
+            return repository.findFirstByUsuarioIdAndEmpresaIgnoreCaseAndCargoIgnoreCaseOrderByIdAsc(
+                    usuarioId, d.empresa(), d.cargo());
         }
         return Optional.empty();
     }
 
-    private Resultado criar(Dados d, Origem origem) {
+    private Resultado criar(Dados d, Origem origem, Long usuarioId) {
         if (d.empresa() == null) {
             throw new IllegalArgumentException("empresa é obrigatória");
         }
@@ -129,6 +138,7 @@ public class IntegracaoService {
         }
         LocalDateTime agora = LocalDateTime.now(clock);
         Candidatura c = new Candidatura();
+        c.setUsuarioId(usuarioId);
         c.setOrigem(origem);
         c.setChaveExterna(d.chave());
         c.setEmpresa(d.empresa());
@@ -212,8 +222,9 @@ public class IntegracaoService {
         if (jaVinculado.isPresent()) {
             return completar(jaVinculado.get(), d);
         }
-        Contato contato = localizarContato(d).orElseGet(() -> {
+        Contato contato = localizarContato(d, c.getUsuarioId()).orElseGet(() -> {
             Contato novo = new Contato();
+            novo.setUsuarioId(c.getUsuarioId());
             novo.setNome(d.contatoNome() != null ? d.contatoNome()
                     : d.contatoEmail() != null ? d.contatoEmail() : d.contatoTelefone());
             novo.setCargo(CargoContato.RECRUTADOR);
@@ -227,16 +238,17 @@ public class IntegracaoService {
         return true;
     }
 
-    private Optional<Contato> localizarContato(Dados d) {
+    private Optional<Contato> localizarContato(Dados d, Long usuarioId) {
         if (d.contatoEmail() != null) {
-            Optional<Contato> porEmail = contatoRepository.findFirstByEmailIgnoreCaseOrderByIdAsc(d.contatoEmail());
+            Optional<Contato> porEmail = contatoRepository.findFirstByUsuarioIdAndEmailIgnoreCaseOrderByIdAsc(
+                    usuarioId, d.contatoEmail());
             if (porEmail.isPresent()) {
                 return porEmail;
             }
         }
         String fone = digitos(d.contatoTelefone());
         if (fone.length() >= 8) {
-            return contatoRepository.findByTelefoneIsNotNull().stream()
+            return contatoRepository.findByUsuarioIdAndTelefoneIsNotNull(usuarioId).stream()
                     .filter(ct -> ContatoService.mesmoTelefone(digitos(ct.getTelefone()), fone))
                     .findFirst();
         }

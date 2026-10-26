@@ -19,12 +19,13 @@ public final class CandidaturaSpecs {
     private CandidaturaSpecs() {
     }
 
-    public static Specification<Candidatura> filtrar(List<Status> status, String empresa, List<Plataforma> plataformas,
+    public static Specification<Candidatura> filtrar(Long usuarioId, List<Status> status, String empresa, List<Plataforma> plataformas,
                                                      String stack, List<Prioridade> prioridades,
                                                      LocalDate de, LocalDate ate, String texto,
                                                      Boolean soPendentes) {
         return (root, query, cb) -> {
             List<Predicate> p = new ArrayList<>();
+            p.add(cb.equal(root.get("usuarioId"), usuarioId));
             if (status != null && !status.isEmpty()) {
                 p.add(root.get("status").in(status));
             }

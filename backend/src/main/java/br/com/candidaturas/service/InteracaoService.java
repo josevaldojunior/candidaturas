@@ -7,6 +7,7 @@ import br.com.candidaturas.dto.InteracaoDtos.InteracaoRequest;
 import br.com.candidaturas.dto.InteracaoDtos.InteracaoResponse;
 import br.com.candidaturas.repository.CandidaturaRepository;
 import br.com.candidaturas.repository.InteracaoRepository;
+import br.com.candidaturas.seguranca.UsuarioAtual;
 import br.com.candidaturas.util.Normalizacao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,17 +22,20 @@ public class InteracaoService {
 
     private final InteracaoRepository repository;
     private final CandidaturaRepository candidaturaRepository;
+    private final UsuarioAtual usuarioAtual;
     private final Clock clock;
 
-    public InteracaoService(InteracaoRepository repository, CandidaturaRepository candidaturaRepository, Clock clock) {
+    public InteracaoService(InteracaoRepository repository, CandidaturaRepository candidaturaRepository,
+                            UsuarioAtual usuarioAtual, Clock clock) {
         this.repository = repository;
         this.candidaturaRepository = candidaturaRepository;
+        this.usuarioAtual = usuarioAtual;
         this.clock = clock;
     }
 
     @Transactional
     public InteracaoResponse adicionar(Long candidaturaId, InteracaoRequest req) {
-        Candidatura c = candidaturaRepository.findById(candidaturaId)
+        Candidatura c = candidaturaRepository.findByIdAndUsuarioId(candidaturaId, usuarioAtual.id())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Candidatura", candidaturaId));
         LocalDateTime agora = LocalDateTime.now(clock);
         Interacao i = new Interacao(req.data() != null ? req.data() : agora, req.tipo(),
@@ -77,7 +81,8 @@ public class InteracaoService {
     }
 
     private Interacao obter(Long id) {
-        return repository.findById(id).orElseThrow(() -> new RecursoNaoEncontradoException("Interação", id));
+        return repository.findByIdAndCandidaturaUsuarioId(id, usuarioAtual.id())
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Interação", id));
     }
 
     private void recalcularUltimaInteracao(Candidatura c) {

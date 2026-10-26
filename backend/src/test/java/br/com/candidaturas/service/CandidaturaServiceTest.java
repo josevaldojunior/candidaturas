@@ -7,6 +7,7 @@ import br.com.candidaturas.dto.CandidaturaDtos.MudancaStatusRequest;
 import br.com.candidaturas.repository.CandidaturaRepository;
 import br.com.candidaturas.repository.ContatoRepository;
 import br.com.candidaturas.support.RelogioFixo;
+import br.com.candidaturas.support.UsuarioFixo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,7 +38,7 @@ class CandidaturaServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new CandidaturaService(repository, contatoRepository, RelogioFixo.clock());
+        service = new CandidaturaService(repository, contatoRepository, new UsuarioFixo(), RelogioFixo.clock());
     }
 
     @Test
@@ -71,7 +72,7 @@ class CandidaturaServiceTest {
     @Test
     void recusaChaveExternaDuplicada() {
         Candidatura outra = candidatura(99L, Status.CANDIDATADO);
-        when(repository.findByChaveExterna("vaga-1")).thenReturn(Optional.of(outra));
+        when(repository.findByUsuarioIdAndChaveExterna(UsuarioFixo.ID, "vaga-1")).thenReturn(Optional.of(outra));
 
         assertThatThrownBy(() -> service.criar(request("ACME", null, "vaga-1")))
                 .isInstanceOf(RegraNegocioException.class)
@@ -81,7 +82,7 @@ class CandidaturaServiceTest {
     @Test
     void mudarStatusGravaHistoricoEInteracao() {
         Candidatura c = candidatura(1L, Status.CANDIDATADO);
-        when(repository.findById(1L)).thenReturn(Optional.of(c));
+        when(repository.findByIdAndUsuarioId(1L, UsuarioFixo.ID)).thenReturn(Optional.of(c));
         when(repository.saveAndFlush(c)).thenReturn(c);
 
         CandidaturaDetalhe d = service.mudarStatus(1L, new MudancaStatusRequest(Status.TRIAGEM_RH, "RH ligou"));
@@ -103,7 +104,7 @@ class CandidaturaServiceTest {
     @Test
     void mesmoStatusNaoGeraHistorico() {
         Candidatura c = candidatura(1L, Status.CANDIDATADO);
-        when(repository.findById(1L)).thenReturn(Optional.of(c));
+        when(repository.findByIdAndUsuarioId(1L, UsuarioFixo.ID)).thenReturn(Optional.of(c));
         when(repository.saveAndFlush(c)).thenReturn(c);
 
         service.mudarStatus(1L, new MudancaStatusRequest(Status.CANDIDATADO, null));
@@ -124,7 +125,7 @@ class CandidaturaServiceTest {
     @Test
     void atualizarComNovoStatusGravaHistorico() {
         Candidatura c = candidatura(1L, Status.CANDIDATADO);
-        when(repository.findById(1L)).thenReturn(Optional.of(c));
+        when(repository.findByIdAndUsuarioId(1L, UsuarioFixo.ID)).thenReturn(Optional.of(c));
         when(repository.saveAndFlush(c)).thenReturn(c);
 
         service.atualizar(1L, request("ACME Atualizada", Status.TESTE_TECNICO, null));
@@ -138,7 +139,7 @@ class CandidaturaServiceTest {
     void limparOCampoAoEditarRemoveAPendencia() {
         Candidatura c = candidatura(1L, Status.CANDIDATADO);
         c.setPendencia("Enviar portfólio");
-        when(repository.findById(1L)).thenReturn(Optional.of(c));
+        when(repository.findByIdAndUsuarioId(1L, UsuarioFixo.ID)).thenReturn(Optional.of(c));
         when(repository.saveAndFlush(c)).thenReturn(c);
 
         CandidaturaDetalhe d = service.atualizar(1L, request("ACME", Status.CANDIDATADO, null));
@@ -151,7 +152,7 @@ class CandidaturaServiceTest {
     void sairDeInteresseConcluiAPendenciaERegistraNoHistorico() {
         Candidatura c = candidatura(1L, Status.INTERESSE);
         c.setPendencia("Pede RG e nome dos pais");
-        when(repository.findById(1L)).thenReturn(Optional.of(c));
+        when(repository.findByIdAndUsuarioId(1L, UsuarioFixo.ID)).thenReturn(Optional.of(c));
         when(repository.saveAndFlush(c)).thenReturn(c);
 
         CandidaturaDetalhe d = service.mudarStatus(1L, new MudancaStatusRequest(Status.CANDIDATADO, null));
@@ -166,7 +167,7 @@ class CandidaturaServiceTest {
     void mudarEntreOutrasEtapasMantemAPendencia() {
         Candidatura c = candidatura(1L, Status.TRIAGEM_RH);
         c.setPendencia("Enviar teste técnico");
-        when(repository.findById(1L)).thenReturn(Optional.of(c));
+        when(repository.findByIdAndUsuarioId(1L, UsuarioFixo.ID)).thenReturn(Optional.of(c));
         when(repository.saveAndFlush(c)).thenReturn(c);
 
         service.mudarStatus(1L, new MudancaStatusRequest(Status.TESTE_TECNICO, null));
@@ -178,7 +179,7 @@ class CandidaturaServiceTest {
     void editarParaCandidatadoLimpaAPendenciaMesmoComOTextoAntigoNoFormulario() {
         Candidatura c = candidatura(1L, Status.INTERESSE);
         c.setPendencia("Pede CPF");
-        when(repository.findById(1L)).thenReturn(Optional.of(c));
+        when(repository.findByIdAndUsuarioId(1L, UsuarioFixo.ID)).thenReturn(Optional.of(c));
         when(repository.saveAndFlush(c)).thenReturn(c);
 
         service.atualizar(1L, comPendencia(request("ACME", Status.CANDIDATADO, null), "Pede CPF"));
@@ -191,7 +192,7 @@ class CandidaturaServiceTest {
     void formularioQueJaApagouOCampoAindaRegistraAPendenciaConcluida() {
         Candidatura c = candidatura(1L, Status.INTERESSE);
         c.setPendencia("Pede CPF");
-        when(repository.findById(1L)).thenReturn(Optional.of(c));
+        when(repository.findByIdAndUsuarioId(1L, UsuarioFixo.ID)).thenReturn(Optional.of(c));
         when(repository.saveAndFlush(c)).thenReturn(c);
 
         service.atualizar(1L, comPendencia(request("ACME", Status.CANDIDATADO, null), ""));
@@ -205,7 +206,7 @@ class CandidaturaServiceTest {
     void editarSemMudarStatusAindaPermiteTrocarAPendencia() {
         Candidatura c = candidatura(1L, Status.TRIAGEM_RH);
         c.setPendencia("Antiga");
-        when(repository.findById(1L)).thenReturn(Optional.of(c));
+        when(repository.findByIdAndUsuarioId(1L, UsuarioFixo.ID)).thenReturn(Optional.of(c));
         when(repository.saveAndFlush(c)).thenReturn(c);
 
         service.atualizar(1L, comPendencia(request("ACME", Status.TESTE_TECNICO, null), "Nova"));
@@ -217,7 +218,7 @@ class CandidaturaServiceTest {
     void pendenciaNovaEscritaNaMesmaEdicaoEhMantida() {
         Candidatura c = candidatura(1L, Status.INTERESSE);
         c.setPendencia("Pede CPF");
-        when(repository.findById(1L)).thenReturn(Optional.of(c));
+        when(repository.findByIdAndUsuarioId(1L, UsuarioFixo.ID)).thenReturn(Optional.of(c));
         when(repository.saveAndFlush(c)).thenReturn(c);
 
         service.atualizar(1L, comPendencia(request("ACME", Status.CANDIDATADO, null), "Aguardar retorno do RH"));
@@ -227,7 +228,7 @@ class CandidaturaServiceTest {
 
     @Test
     void buscarInexistenteLancaNaoEncontrado() {
-        when(repository.findById(5L)).thenReturn(Optional.empty());
+        when(repository.findByIdAndUsuarioId(5L, UsuarioFixo.ID)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.buscar(5L)).isInstanceOf(RecursoNaoEncontradoException.class);
     }

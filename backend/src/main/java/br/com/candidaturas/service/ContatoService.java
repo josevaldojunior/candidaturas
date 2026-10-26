@@ -6,25 +6,27 @@ import br.com.candidaturas.dto.ContatoDtos;
 import br.com.candidaturas.dto.ContatoDtos.ContatoRequest;
 import br.com.candidaturas.dto.ContatoDtos.ContatoResponse;
 import br.com.candidaturas.repository.ContatoRepository;
+import br.com.candidaturas.seguranca.UsuarioAtual;
 import br.com.candidaturas.util.Normalizacao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ContatoService {
 
     private final ContatoRepository repository;
+    private final UsuarioAtual usuarioAtual;
 
-    public ContatoService(ContatoRepository repository) {
+    public ContatoService(ContatoRepository repository, UsuarioAtual usuarioAtual) {
         this.repository = repository;
+        this.usuarioAtual = usuarioAtual;
     }
 
     @Transactional(readOnly = true)
     public List<ContatoResponse> listar() {
-        return repository.findAllByOrderByNomeAsc().stream().map(ContatoDtos::response).toList();
+        return repository.findByUsuarioIdOrderByNomeAsc(usuarioAtual.id()).stream().map(ContatoDtos::response).toList();
     }
 
     @Transactional(readOnly = true)
@@ -35,6 +37,7 @@ public class ContatoService {
     @Transactional
     public ContatoResponse criar(ContatoRequest req) {
         Contato c = new Contato();
+        c.setUsuarioId(usuarioAtual.id());
         preencher(c, req);
         return ContatoDtos.response(repository.save(c));
     }
@@ -51,24 +54,6 @@ public class ContatoService {
         repository.delete(obter(id));
     }
 
-    /** Procura um contato existente pelo e-mail (sem caixa) ou pelo telefone (só dígitos). */
-    @Transactional(readOnly = true)
-    public Optional<Contato> localizar(String email, String telefone) {
-        if (!Normalizacao.vazio(email)) {
-            Optional<Contato> porEmail = repository.findFirstByEmailIgnoreCaseOrderByIdAsc(email.trim());
-            if (porEmail.isPresent()) {
-                return porEmail;
-            }
-        }
-        String digitos = Normalizacao.digitos(telefone);
-        if (digitos.length() >= 8) {
-            return repository.findByTelefoneIsNotNull().stream()
-                    .filter(c -> mesmoTelefone(Normalizacao.digitos(c.getTelefone()), digitos))
-                    .findFirst();
-        }
-        return Optional.empty();
-    }
-
     /** Compara telefones tolerando DDI/DDD ausente: um termina com o outro (mínimo 8 dígitos). */
     static boolean mesmoTelefone(String a, String b) {
         if (a.length() < 8 || b.length() < 8) {
@@ -78,7 +63,8 @@ public class ContatoService {
     }
 
     private Contato obter(Long id) {
-        return repository.findById(id).orElseThrow(() -> new RecursoNaoEncontradoException("Contato", id));
+        return repository.findByIdAndUsuarioId(id, usuarioAtual.id())
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Contato", id));
     }
 
     private void preencher(Contato c, ContatoRequest req) {

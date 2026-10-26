@@ -9,6 +9,7 @@ import br.com.candidaturas.dto.InteracaoDtos.InteracaoResponse;
 import br.com.candidaturas.repository.CandidaturaRepository;
 import br.com.candidaturas.repository.InteracaoRepository;
 import br.com.candidaturas.support.RelogioFixo;
+import br.com.candidaturas.support.UsuarioFixo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,13 +38,13 @@ class InteracaoServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new InteracaoService(repository, candidaturaRepository, RelogioFixo.clock());
+        service = new InteracaoService(repository, candidaturaRepository, new UsuarioFixo(), RelogioFixo.clock());
     }
 
     @Test
     void adicionarAtualizaUltimaInteracao() {
         Candidatura c = CandidaturaServiceTest.candidatura(1L, Status.CANDIDATADO);
-        when(candidaturaRepository.findById(1L)).thenReturn(Optional.of(c));
+        when(candidaturaRepository.findByIdAndUsuarioId(1L, UsuarioFixo.ID)).thenReturn(Optional.of(c));
         when(repository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         InteracaoResponse r = service.adicionar(1L, new InteracaoRequest(null, TipoInteracao.EMAIL, " Enviei e-mail ",
@@ -63,7 +64,7 @@ class InteracaoServiceTest {
         Interacao recente = new Interacao(AGORA.minusDays(1), TipoInteracao.LIGACAO, "recente");
         c.adicionarInteracao(antiga);
         c.adicionarInteracao(recente);
-        when(repository.findById(2L)).thenReturn(Optional.of(recente));
+        when(repository.findByIdAndCandidaturaUsuarioId(2L, UsuarioFixo.ID)).thenReturn(Optional.of(recente));
 
         service.excluir(2L);
 
@@ -75,7 +76,7 @@ class InteracaoServiceTest {
     void concluirFollowUp() {
         Interacao i = new Interacao(AGORA, TipoInteracao.EMAIL, "x");
         i.setDataFollowUp(LocalDate.of(2026, 10, 20));
-        when(repository.findById(3L)).thenReturn(Optional.of(i));
+        when(repository.findByIdAndCandidaturaUsuarioId(3L, UsuarioFixo.ID)).thenReturn(Optional.of(i));
 
         assertThat(service.concluirFollowUp(3L, true).followUpConcluido()).isTrue();
         assertThat(i.isFollowUpConcluido()).isTrue();
