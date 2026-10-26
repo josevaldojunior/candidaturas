@@ -1,0 +1,14 @@
+# Perfil de produção (usado pelo docker-compose): exige segredo do JWT e respeita o proxy reverso.
+server:
+  # atrás de nginx/load balancer com HTTPS: usa X-Forwarded-* para montar URLs e o esquema certo
+  forward-headers-strategy: framework
+
+app:
+  seguranca:
+    # sem JWT_SEGREDO (ou com um curto demais) a API não sobe
+    jwt-segredo-obrigatorio: true
+
+logging:
+  level:
+    root: INFO
+    org.springframework.security: WARN
