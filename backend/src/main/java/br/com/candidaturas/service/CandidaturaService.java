@@ -3,6 +3,7 @@ package br.com.candidaturas.service;
 import br.com.candidaturas.domain.*;
 import br.com.candidaturas.dto.CandidaturaDtos.*;
 import br.com.candidaturas.dto.CandidaturaDtos;
+import br.com.candidaturas.dto.FiltroCandidaturas;
 import br.com.candidaturas.dto.Pagina;
 import br.com.candidaturas.repository.CandidaturaRepository;
 import br.com.candidaturas.repository.CandidaturaSpecs;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -36,20 +36,14 @@ public class CandidaturaService {
     }
 
     @Transactional(readOnly = true)
-    public Pagina<CandidaturaResumo> listar(List<Status> status, String empresa, List<Plataforma> plataformas,
-                                           String stack, List<Prioridade> prioridades, LocalDate de, LocalDate ate,
-                                           String texto, Boolean soPendentes, Pageable pageable) {
-        var spec = CandidaturaSpecs.filtrar(usuarioAtual.id(), status, empresa, plataformas, stack, prioridades,
-                de, ate, texto, soPendentes);
+    public Pagina<CandidaturaResumo> listar(FiltroCandidaturas filtro, Pageable pageable) {
+        var spec = CandidaturaSpecs.filtrar(usuarioAtual.id(), filtro);
         return Pagina.de(repository.findAll(spec, pageable), CandidaturaDtos::resumo);
     }
 
     @Transactional(readOnly = true)
-    public List<Candidatura> listarTodas(List<Status> status, String empresa, List<Plataforma> plataformas,
-                                         String stack, List<Prioridade> prioridades, LocalDate de, LocalDate ate,
-                                         String texto, Boolean soPendentes) {
-        var spec = CandidaturaSpecs.filtrar(usuarioAtual.id(), status, empresa, plataformas, stack, prioridades,
-                de, ate, texto, soPendentes);
+    public List<Candidatura> listarTodas(FiltroCandidaturas filtro) {
+        var spec = CandidaturaSpecs.filtrar(usuarioAtual.id(), filtro);
         List<Candidatura> todas = repository.findAll(spec, Sort.by("id"));
         // inicializa coleções usadas na exportação enquanto a sessão está aberta
         todas.forEach(c -> {

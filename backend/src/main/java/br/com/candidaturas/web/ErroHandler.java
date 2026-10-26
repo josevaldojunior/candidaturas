@@ -12,7 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -58,12 +59,21 @@ public class ErroHandler {
         return resposta(HttpStatus.UNAUTHORIZED, e.getMessage(), req, List.of());
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    ResponseEntity<ErroResposta> validacao(MethodArgumentNotValidException e, HttpServletRequest req) {
+    /**
+     * Corpo JSON inválido (@Valid) e filtros da query string que não convertem (ex.: status=XYZ).
+     * MethodArgumentNotValidException é uma BindException, então este handler cobre os dois casos.
+     */
+    @ExceptionHandler(BindException.class)
+    ResponseEntity<ErroResposta> validacao(BindException e, HttpServletRequest req) {
         List<CampoErro> campos = e.getBindingResult().getFieldErrors().stream()
-                .map(f -> new CampoErro(f.getField(), f.getDefaultMessage()))
+                .map(f -> new CampoErro(f.getField(), f.isBindingFailure()
+                        ? "valor inválido: '" + f.getRejectedValue() + "'" : f.getDefaultMessage()))
                 .toList();
-        return resposta(HttpStatus.BAD_REQUEST, "Dados inválidos", req, campos);
+        var conversao = e.getBindingResult().getFieldErrors().stream().filter(FieldError::isBindingFailure).findFirst();
+        String mensagem = conversao
+                .map(f -> "Valor inválido para o parâmetro '" + f.getField() + "': " + f.getRejectedValue())
+                .orElse("Dados inválidos");
+        return resposta(HttpStatus.BAD_REQUEST, mensagem, req, campos);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
