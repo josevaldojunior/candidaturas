@@ -1,0 +1,66 @@
+<div class="tela">
+  <div class="topo">
+    <app-seletor-tema />
+  </div>
+
+  <main class="cartao caixa">
+    <div class="marca">
+      <mat-icon>rocket_launch</mat-icon>
+      <span>Candidaturas</span>
+    </div>
+    <p class="texto-suave subtitulo">Acompanhe suas candidaturas a vagas: quadro, follow-ups, dashboard e integração com agentes.</p>
+
+    @if (cadastroAberto()) {
+      <div class="abas" role="tablist">
+        <button type="button" role="tab" [attr.aria-selected]="modo() === 'entrar'" (click)="alternar('entrar')">Entrar</button>
+        <button type="button" role="tab" [attr.aria-selected]="modo() === 'cadastrar'" (click)="alternar('cadastrar')">Criar conta</button>
+      </div>
+    }
+
+    @if (enviando()) { <mat-progress-bar mode="indeterminate" /> }
+
+    @if (modo() === 'entrar') {
+      <form [formGroup]="entrar" (ngSubmit)="enviar()" class="formulario">
+        <mat-form-field>
+          <mat-label>E-mail</mat-label>
+          <input matInput type="email" formControlName="email" autocomplete="username" required>
+          @if (entrar.controls.email.hasError('email')) { <mat-error>E-mail inválido</mat-error> }
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Senha</mat-label>
+          <input matInput [type]="verSenha() ? 'text' : 'password'" formControlName="senha" autocomplete="current-password" required>
+          <button mat-icon-button matSuffix type="button" (click)="verSenha.set(!verSenha())"
+                  [attr.aria-label]="verSenha() ? 'Esconder senha' : 'Mostrar senha'">
+            <mat-icon>{{ verSenha() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </mat-form-field>
+        @if (erro()) { <p class="erro" role="alert">{{ erro() }}</p> }
+        <button mat-flat-button type="submit" [disabled]="enviando()">Entrar</button>
+      </form>
+    } @else {
+      <form [formGroup]="cadastro" (ngSubmit)="enviar()" class="formulario">
+        <mat-form-field>
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="nome" autocomplete="name" required>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>E-mail</mat-label>
+          <input matInput type="email" formControlName="email" autocomplete="username" required>
+          @if (cadastro.controls.email.hasError('email')) { <mat-error>E-mail inválido</mat-error> }
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Senha</mat-label>
+          <input matInput [type]="verSenha() ? 'text' : 'password'" formControlName="senha" autocomplete="new-password" required>
+          <button mat-icon-button matSuffix type="button" (click)="verSenha.set(!verSenha())"
+                  [attr.aria-label]="verSenha() ? 'Esconder senha' : 'Mostrar senha'">
+            <mat-icon>{{ verSenha() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-hint>Pelo menos 8 caracteres</mat-hint>
+          @if (cadastro.controls.senha.hasError('minlength')) { <mat-error>Pelo menos 8 caracteres</mat-error> }
+        </mat-form-field>
+        @if (erro()) { <p class="erro" role="alert">{{ erro() }}</p> }
+        <button mat-flat-button type="submit" [disabled]="enviando()">Criar conta</button>
+      </form>
+    }
+  </main>
+</div>

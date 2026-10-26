@@ -1,0 +1,25 @@
+.tela {
+  min-height: 100vh; box-sizing: border-box; padding: 16px;
+  display: flex; flex-direction: column; align-items: center; background: var(--cor-fundo);
+}
+.topo { width: 100%; display: flex; justify-content: flex-end; }
+.caixa { width: 100%; max-width: 400px; margin: auto 0; padding: 28px 24px; box-sizing: border-box; }
+.marca {
+  display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 500; color: var(--cor-destaque);
+}
+.subtitulo { margin: 8px 0 20px; line-height: 1.5; font-size: 14px; }
+
+.abas {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; margin-bottom: 16px;
+  border: 1px solid var(--cor-borda); border-radius: 999px;
+  button {
+    border: 0; border-radius: 999px; padding: 8px 0; cursor: pointer; font: inherit; font-weight: 500;
+    background: transparent; color: var(--cor-texto-suave);
+  }
+  button[aria-selected='true'] { background: var(--cor-destaque-suave); color: var(--cor-destaque); }
+  button:focus-visible { outline: 2px solid var(--cor-destaque); }
+}
+
+.formulario { display: grid; gap: 8px; }
+.formulario button[type='submit'] { margin-top: 8px; height: 44px; }
+.erro { color: var(--cor-perigo); margin: 0; font-size: 14px; }
