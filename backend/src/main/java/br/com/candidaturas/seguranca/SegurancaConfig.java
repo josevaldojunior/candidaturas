@@ -37,6 +37,7 @@ import java.util.Base64;
 public class SegurancaConfig {
 
     private static final Logger log = LoggerFactory.getLogger(SegurancaConfig.class);
+    static final int TAMANHO_MINIMO_SEGREDO = 32;
 
     @Bean
     SecurityFilterChain filtros(HttpSecurity http, UsuarioRepository usuarioRepository, ErroSeguranca erros)
@@ -75,8 +76,14 @@ public class SegurancaConfig {
      * aleatória: funciona, mas os logins expiram a cada reinício da API.
      */
     @Bean
-    SecretKey chaveJwt(@Value("${app.seguranca.jwt-segredo:}") String segredo) {
+    SecretKey chaveJwt(@Value("${app.seguranca.jwt-segredo:}") String segredo,
+                       @Value("${app.seguranca.jwt-segredo-obrigatorio:false}") boolean obrigatorio) {
         String base = segredo;
+        if (obrigatorio && (base == null || base.strip().length() < TAMANHO_MINIMO_SEGREDO
+                || base.contains("troque-por"))) { // o valor de exemplo do .env.example não vale
+            throw new IllegalStateException("Defina JWT_SEGREDO com pelo menos " + TAMANHO_MINIMO_SEGREDO
+                    + " caracteres aleatórios (ex.: openssl rand -base64 48)");
+        }
         if (base == null || base.isBlank()) {
             byte[] aleatorio = new byte[32];
             new SecureRandom().nextBytes(aleatorio);

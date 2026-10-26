@@ -57,12 +57,12 @@ class ContaServiceTest {
         when(usuarioRepository.count()).thenReturn(0L);
         when(candidaturaRepository.assumirSemDono(7L)).thenReturn(14);
 
-        SessaoResponse s = service(false).cadastrar(new CadastroRequest(" Josevaldo ", " Eu@Exemplo.com ", "senha-forte-1"));
+        SessaoResponse s = service(false).cadastrar(new CadastroRequest(" Maria Silva ", " Maria@Exemplo.com ", "senha-forte-1"));
 
         verify(candidaturaRepository).assumirSemDono(7L);
         verify(contatoRepository).assumirSemDono(7L);
-        assertThat(s.usuario().email()).isEqualTo("eu@exemplo.com");
-        assertThat(s.usuario().nome()).isEqualTo("Josevaldo");
+        assertThat(s.usuario().email()).isEqualTo("maria@exemplo.com");
+        assertThat(s.usuario().nome()).isEqualTo("Maria Silva");
         assertThat(s.token()).isNotBlank();
         assertThat(s.expiraEm()).isEqualTo(RelogioFixo.AGORA.plusSeconds(12 * 3600));
     }
