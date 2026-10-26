@@ -1,6 +1,7 @@
 .filtros { margin-bottom: 16px; border-radius: 12px !important; }
 .busca { grid-column: span 2; }
-.acoes-filtro { display: flex; align-items: center; }
+/* alinha o "Só pendentes" e o "Limpar" com a altura dos campos */
+.acoes-filtro { display: flex; align-items: center; min-height: 56px; }
 .lista { padding: 0; overflow: hidden; }
 .rolagem-tabela { overflow-x: auto; }
 table { width: 100%; min-width: 760px; }

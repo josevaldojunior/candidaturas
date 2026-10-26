@@ -70,16 +70,16 @@
     </section>
 
     <section class="cartao">
-      <h2><mat-icon>import_export</mat-icon> Exportar e importar CSV</h2>
+      <h2><mat-icon>import_export</mat-icon> Exportar e importar planilha</h2>
       <p class="texto-suave">
-        A exportação usa o mesmo cabeçalho da importação, então dá para exportar, editar no Excel e reimportar.
-        A importação faz upsert pela chave externa (ou pelo link da vaga): o que já existe é atualizado, sem duplicar.
+        A planilha (arquivo CSV) tem o mesmo formato na exportação e na importação: dá para exportar, editar no Excel
+        e importar de volta. Ao importar, as candidaturas que já existem (mesma vaga) são atualizadas, sem duplicar.
       </p>
       <div class="linha">
         <button mat-stroked-button (click)="exportar()"><mat-icon>download</mat-icon> Exportar todas</button>
         <input #campoArquivo type="file" accept=".csv,text/csv" hidden (change)="importar(campoArquivo)">
         <button mat-flat-button (click)="campoArquivo.click()" [disabled]="importando()">
-          <mat-icon>upload</mat-icon> Importar CSV
+          <mat-icon>upload</mat-icon> Importar planilha
         </button>
       </div>
       @if (resultadoImportacao(); as r) {
@@ -111,7 +111,7 @@
               {{ a.resultado.erros.length }} erro(s)
             </li>
           } @empty {
-            <li class="texto-suave">Nenhum CSV encontrado.</li>
+            <li class="texto-suave">Nenhum arquivo encontrado.</li>
           }
         </ul>
       }

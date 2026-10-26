@@ -22,7 +22,7 @@ import { RotuloPipe } from '../../shared/rotulo.pipe';
     <div class="pagina">
       <div class="pagina-cabecalho">
         <h1>Contatos</h1>
-        <button mat-flat-button (click)="editar()"><mat-icon>person_add</mat-icon> Novo</button>
+        <button mat-flat-button (click)="editar()"><mat-icon>person_add</mat-icon> Novo contato</button>
       </div>
       <div class="grade">
         @for (c of contatos(); track c.id) {

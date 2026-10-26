@@ -134,8 +134,10 @@ a { color: var(--cor-destaque); }
   background: var(--cor-superficie); border: 1px solid var(--cor-borda); border-radius: 12px; padding: 16px;
   transition: background-color .25s, border-color .25s;
 }
+/* formulários e filtros: campos em grade, com respiro entre linhas e colunas */
 .grade-form {
-  display: grid; gap: 4px 16px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  display: grid; gap: 16px 20px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  align-items: start;
   .largura-total { grid-column: 1 / -1; }
 }
 .texto-suave { color: var(--cor-texto-suave); }
