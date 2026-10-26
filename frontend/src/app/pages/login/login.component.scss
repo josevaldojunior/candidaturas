@@ -4,9 +4,7 @@
 }
 .topo { width: 100%; display: flex; justify-content: flex-end; }
 .caixa { width: 100%; max-width: 400px; margin: auto 0; padding: 28px 24px; box-sizing: border-box; }
-.marca {
-  display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 500; color: var(--cor-destaque);
-}
+.marca { margin: 0; font-size: 24px; font-weight: 500; }
 .subtitulo { margin: 8px 0 20px; line-height: 1.5; font-size: 14px; }
 
 .abas {

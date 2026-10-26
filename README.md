@@ -1,10 +1,12 @@
-# Candidaturas
+# CandiTrack
 
 [![Backend](https://github.com/josevaldojunior/candidaturas/actions/workflows/backend.yml/badge.svg)](https://github.com/josevaldojunior/candidaturas/actions/workflows/backend.yml)
 [![Frontend](https://github.com/josevaldojunior/candidaturas/actions/workflows/frontend.yml/badge.svg)](https://github.com/josevaldojunior/candidaturas/actions/workflows/frontend.yml)
 [![Licença: MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue.svg)](LICENSE)
 
-Sistema web para organizar a busca de emprego: registre candidaturas, acompanhe cada uma por um pipeline de
+<img src="frontend/public/favicon.svg" alt="" width="48" align="left">
+
+**CandiTrack** é um sistema web para organizar a busca de emprego: registre candidaturas, acompanhe cada uma por um pipeline de
 etapas, receba lembretes de follow-up e veja no dashboard onde o processo trava. Cada pessoa tem a própria conta,
 e as candidaturas podem ser cadastradas à mão, importadas por CSV ou enviadas por um **agente/automação** pela API.
 

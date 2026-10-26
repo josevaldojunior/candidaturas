@@ -8,13 +8,14 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Router } from '@angular/router';
 import { mensagemDeErro } from '../../core/notificacao.service';
 import { SessaoService } from '../../core/sessao.service';
+import { LogoComponent } from '../../shared/logo.component';
 import { SeletorTemaComponent } from '../../shared/seletor-tema.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule,
-    MatProgressBarModule, SeletorTemaComponent],
+    MatProgressBarModule, SeletorTemaComponent, LogoComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })

@@ -17,7 +17,7 @@ public class OpenApiConfig {
     public OpenAPI openApi() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Candidaturas API")
+                        .title("CandiTrack API")
                         .version("1.0.0")
                         .description("Acompanhamento de candidaturas a vagas: contas, CRUD, pipeline de status, "
                                 + "interações, contatos, dashboard e integração com agentes/automações. "
