@@ -1,15 +1,12 @@
 package br.com.candidaturas.web;
 
-import br.com.candidaturas.domain.Plataforma;
-import br.com.candidaturas.domain.Prioridade;
-import br.com.candidaturas.domain.Status;
 import br.com.candidaturas.dto.CandidaturaDtos.*;
+import br.com.candidaturas.dto.FiltroCandidaturas;
 import br.com.candidaturas.dto.InteracaoDtos.InteracaoRequest;
 import br.com.candidaturas.dto.InteracaoDtos.InteracaoResponse;
 import br.com.candidaturas.dto.Pagina;
 import br.com.candidaturas.service.CandidaturaService;
 import br.com.candidaturas.service.InteracaoService;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -17,11 +14,9 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -40,20 +35,13 @@ public class CandidaturaController {
     @GetMapping
     @Operation(summary = "Lista candidaturas com filtros e paginação",
             description = "Filtros opcionais; status, plataforma e prioridade aceitam vários valores. "
-                    + "'q' busca em empresa, cargo, link e observações.")
+                    + "'q' busca em empresa, cargo, link e observações. etapaMinima e comResposta consideram o "
+                    + "histórico de status, com as mesmas regras do dashboard.")
     public Pagina<CandidaturaResumo> listar(
-            @RequestParam(required = false) List<Status> status,
-            @RequestParam(required = false) String empresa,
-            @RequestParam(required = false) List<Plataforma> plataforma,
-            @RequestParam(required = false) String stack,
-            @RequestParam(required = false) List<Prioridade> prioridade,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate de,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate ate,
-            @RequestParam(required = false) String q,
-            @RequestParam(required = false) @Parameter(description = "true = só candidaturas com pendência") Boolean pendentes,
+            @ParameterObject FiltroCandidaturas filtro,
             @ParameterObject @PageableDefault(size = 20, sort = "atualizadoEm", direction = Sort.Direction.DESC)
             Pageable pageable) {
-        return service.listar(status, empresa, plataforma, stack, prioridade, de, ate, q, pendentes, pageable);
+        return service.listar(filtro, pageable);
     }
 
     @GetMapping("/{id}")

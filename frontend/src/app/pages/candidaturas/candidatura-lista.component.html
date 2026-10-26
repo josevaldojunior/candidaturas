@@ -9,6 +9,19 @@
     </a>
   </div>
 
+  @if (filtrosDoDashboard().length) {
+    <div class="filtros-dashboard" aria-label="Filtros vindos do dashboard">
+      @for (f of filtrosDoDashboard(); track f.chave) {
+        <span class="etiqueta">
+          <mat-icon inline>insights</mat-icon> {{ f.rotulo }}
+          <button type="button" (click)="removerFiltroDoDashboard(f.chave)" [attr.aria-label]="'Remover filtro: ' + f.rotulo">
+            <mat-icon inline>close</mat-icon>
+          </button>
+        </span>
+      }
+    </div>
+  }
+
   <mat-expansion-panel class="filtros" [expanded]="!celular()">
     <mat-expansion-panel-header>
       <mat-panel-title><mat-icon>filter_list</mat-icon>&nbsp;Filtros</mat-panel-title>

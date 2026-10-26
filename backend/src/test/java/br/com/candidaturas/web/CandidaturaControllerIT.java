@@ -192,6 +192,49 @@ class CandidaturaControllerIT {
     }
 
     @Test
+    void filtrosDosCardsDoDashboardBatemComOsNumeros() throws Exception {
+        long entrevistouESumiu = criar("{\"empresa\":\"Alfa\",\"cargo\":\"Java\"}");
+        mudarStatus(entrevistouESumiu, "ENTREVISTA_TECNICA");
+        mudarStatus(entrevistouESumiu, "SEM_RETORNO");
+        long recusada = criar("{\"empresa\":\"Beta\",\"cargo\":\"Java\"}");
+        mudarStatus(recusada, "RECUSADA");
+        criar("{\"empresa\":\"Gama\",\"cargo\":\"Java\"}");
+        criar("{\"empresa\":\"Delta\",\"cargo\":\"Java\",\"status\":\"INTERESSE\"}");
+
+        mvc.perform(get("/api/dashboard"))
+                .andExpect(jsonPath("$.total").value(4))
+                .andExpect(jsonPath("$.ativas").value(1))
+                .andExpect(jsonPath("$.comResposta").value(2))
+                .andExpect(jsonPath("$.funil[4].etapa").value("ENTREVISTA_TECNICA"))
+                .andExpect(jsonPath("$.funil[4].quantidade").value(1));
+
+        // card "Chegaram à entrevista": conta pelo histórico, mesmo que hoje esteja SEM_RETORNO
+        mvc.perform(get("/api/candidaturas").param("etapaMinima", "ENTREVISTA_TECNICA"))
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.content[0].empresa").value("Alfa"));
+        // card "Taxa de resposta": chegou à triagem ou além (histórico) ou foi recusada
+        mvc.perform(get("/api/candidaturas").param("comResposta", "true").param("sort", "empresa,asc"))
+                .andExpect(jsonPath("$.content[*].empresa", contains("Alfa", "Beta")));
+        // card "Em andamento": status de CANDIDATADO a PROPOSTA
+        mvc.perform(get("/api/candidaturas").param("status", "CANDIDATADO", "TRIAGEM_RH", "TESTE_TECNICO",
+                        "ENTREVISTA_TECNICA", "ENTREVISTA_FINAL", "PROPOSTA"))
+                .andExpect(jsonPath("$.content[*].empresa", contains("Gama")));
+        // "enviadas": etapa mínima CANDIDATADO inclui as encerradas, não o INTERESSE
+        mvc.perform(get("/api/candidaturas").param("etapaMinima", "CANDIDATADO"))
+                .andExpect(jsonPath("$.totalElements").value(3));
+
+        mvc.perform(get("/api/candidaturas").param("etapaMinima", "RECUSADA"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.mensagem", containsString("etapaMinima")));
+    }
+
+    private void mudarStatus(long id, String status) throws Exception {
+        mvc.perform(patch("/api/candidaturas/{id}/status", id).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"status\":\"" + status + "\"}"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void excluir() throws Exception {
         long id = criar("{\"empresa\":\"ACME\",\"cargo\":\"Java\"}");
         mvc.perform(delete("/api/candidaturas/{id}", id)).andExpect(status().isNoContent());

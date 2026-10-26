@@ -7,7 +7,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { DashboardApi } from '../../core/api.service';
-import { Dashboard } from '../../core/models';
+import { Dashboard, Status } from '../../core/models';
 import { Notificacao } from '../../core/notificacao.service';
 import { RotuloPipe } from '../../shared/rotulo.pipe';
 
@@ -24,6 +24,9 @@ export class DashboardComponent implements OnInit {
   private readonly notificacao = inject(Notificacao);
 
   readonly d = signal<Dashboard | null>(null);
+  /** Mesmos status que o card "Em andamento" conta (aguardando retorno ou com proposta). */
+  readonly emAndamento: Status[] = ['CANDIDATADO', 'TRIAGEM_RH', 'TESTE_TECNICO', 'ENTREVISTA_TECNICA',
+    'ENTREVISTA_FINAL', 'PROPOSTA'];
   /** Alterna entre gráficos e a mesma informação em tabela (acessibilidade). */
   readonly modo = signal<'grafico' | 'tabela'>('grafico');
 
