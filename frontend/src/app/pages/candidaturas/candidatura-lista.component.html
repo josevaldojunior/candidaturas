@@ -1,9 +1,9 @@
 <div class="pagina">
   <div class="pagina-cabecalho">
     <h1>Candidaturas</h1>
-    <a mat-stroked-button [href]="urlExportacao()" download matTooltip="Exporta as candidaturas filtradas">
+    <button mat-stroked-button (click)="exportar()" matTooltip="Exporta as candidaturas filtradas">
       <mat-icon>download</mat-icon> CSV
-    </a>
+    </button>
     <a mat-flat-button routerLink="/candidaturas/nova">
       <mat-icon>add</mat-icon> Nova
     </a>

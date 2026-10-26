@@ -66,7 +66,6 @@ export class CandidaturaListaComponent implements OnInit {
   tamanho = TAMANHO_PADRAO;
   ordenacao = ORDEM_PADRAO;
 
-  readonly urlExportacao = signal(this.csvApi.urlExportacao());
 
   readonly filtros = inject(FormBuilder).group({
     q: [''],
@@ -97,7 +96,6 @@ export class CandidaturaListaComponent implements OnInit {
     const params = this.paramsDaConsulta();
     this.consulta.ultima.set(params);
     this.router.navigate([], { relativeTo: this.route, queryParams: params, replaceUrl: true });
-    this.urlExportacao.set(this.csvApi.urlExportacao(this.filtrosAtuais()));
     this.carregar();
   }
 
@@ -175,6 +173,10 @@ export class CandidaturaListaComponent implements OnInit {
 
   limpar(): void {
     this.filtros.reset({ q: '', status: [], empresa: '', plataforma: [], stack: '', prioridade: [], de: null, ate: null, pendentes: false });
+  }
+
+  exportar(): void {
+    this.csvApi.exportar(this.filtrosAtuais()).subscribe({ error: (e) => this.notificacao.erro(e, 'Erro ao exportar') });
   }
 
   abrir(c: CandidaturaResumo): void {
