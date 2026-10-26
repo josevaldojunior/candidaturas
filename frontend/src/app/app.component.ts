@@ -10,6 +10,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter, map } from 'rxjs';
 import { SessaoService } from './core/sessao.service';
+import { LogoComponent } from './shared/logo.component';
 import { SeletorTemaComponent } from './shared/seletor-tema.component';
 
 interface ItemMenu {
@@ -31,7 +32,7 @@ const MENU: ItemMenu[] = [
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, RouterLink, RouterLinkActive, MatSidenavModule, MatToolbarModule, MatListModule,
-    MatIconModule, MatButtonModule, MatMenuModule, SeletorTemaComponent],
+    MatIconModule, MatButtonModule, MatMenuModule, SeletorTemaComponent, LogoComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })

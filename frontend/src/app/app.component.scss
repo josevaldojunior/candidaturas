@@ -6,10 +6,14 @@
   background: var(--cor-superficie);
 }
 
+/* logo + nome: leva ao Dashboard */
 .marca {
-  display: flex; align-items: center; gap: 10px;
-  padding: 20px 16px 12px; font-size: 18px; font-weight: 500; color: var(--cor-destaque);
+  display: flex; align-items: center; margin: 12px 8px 4px; padding: 8px; border-radius: 10px;
+  font-size: 19px; text-decoration: none;
 }
+.marca:hover { background: var(--cor-hover); }
+.marca:focus-visible, .marca-topo:focus-visible { outline: 2px solid var(--cor-destaque); outline-offset: 2px; }
+.marca-topo { display: inline-flex; font-size: 17px; text-decoration: none; border-radius: 8px; padding: 2px 4px; }
 
 .ativo { font-weight: 500; }
 

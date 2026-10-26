@@ -7,10 +7,9 @@
                  [mode]="celular() ? 'over' : 'side'"
                  [opened]="!celular()"
                  [fixedInViewport]="celular()">
-      <div class="marca">
-        <mat-icon>rocket_launch</mat-icon>
-        <span>Candidaturas</span>
-      </div>
+      <a class="marca" routerLink="/dashboard" aria-label="CandiTrack: ir para o Dashboard" (click)="fecharSeCelular(sidenav)">
+        <app-logo />
+      </a>
       <mat-nav-list>
         @for (item of menu; track item.rota) {
           <a mat-list-item [routerLink]="item.rota" routerLinkActive="ativo" #rla="routerLinkActive"
@@ -29,7 +28,9 @@
           <button mat-icon-button aria-label="Abrir menu" (click)="sidenav.toggle()">
             <mat-icon>menu</mat-icon>
           </button>
-          <span>Candidaturas</span>
+          <a class="marca-topo" routerLink="/dashboard" aria-label="CandiTrack: ir para o Dashboard">
+            <app-logo [tamanho]="24" />
+          </a>
         }
         <span class="flex-espaco"></span>
         <app-seletor-tema />

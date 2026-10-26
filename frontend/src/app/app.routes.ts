@@ -63,5 +63,6 @@ export const routes: Routes = [
     canActivate: [somenteLogado],
     loadComponent: () => import('./pages/contatos/contatos.component').then((m) => m.ContatosComponent),
   },
-  { path: '**', redirectTo: 'candidaturas' },
+  // a tela padrão é o Dashboard, inclusive para endereços desconhecidos
+  { path: '**', redirectTo: 'dashboard' },
 ];

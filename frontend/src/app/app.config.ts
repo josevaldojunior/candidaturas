@@ -6,11 +6,12 @@ import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/cor
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { TitleStrategy, provideRouter, withComponentInputBinding } from '@angular/router';
 
 import { routes } from './app.routes';
 import { autenticacaoInterceptor } from './core/autenticacao';
 import { PaginadorPtBr } from './core/paginador-intl';
+import { TituloStrategy } from './core/titulo.strategy';
 
 registerLocaleData(localePt);
 
@@ -25,5 +26,6 @@ export const appConfig: ApplicationConfig = {
     { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },
     { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline', subscriptSizing: 'dynamic' } },
     { provide: MatPaginatorIntl, useClass: PaginadorPtBr },
+    { provide: TitleStrategy, useClass: TituloStrategy },
   ],
 };
