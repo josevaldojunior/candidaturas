@@ -20,14 +20,15 @@ import { ConsultaListaService } from '../../core/consulta-lista.service';
 import { paraIsoData } from '../../core/datas';
 import { CandidaturaDetalhe, Contato, Interacao, Status, TipoInteracao } from '../../core/models';
 import { Notificacao } from '../../core/notificacao.service';
-import { STATUS, TIPOS_INTERACAO } from '../../core/rotulos';
+import { ETAPAS_TRAJETORIA, STATUS, TIPOS_INTERACAO } from '../../core/rotulos';
 import { confirmar } from '../../shared/confirmacao.dialog';
 import { RotuloPipe } from '../../shared/rotulo.pipe';
+import { TrajetoriaComponent } from '../../shared/trajetoria.component';
 
 @Component({
   selector: 'app-candidatura-detalhe',
   standalone: true,
-  imports: [DatePipe, FormsModule, ReactiveFormsModule, RouterLink, RotuloPipe, MatButtonModule, MatIconModule,
+  imports: [TrajetoriaComponent, DatePipe, FormsModule, ReactiveFormsModule, RouterLink, RotuloPipe, MatButtonModule, MatIconModule,
     MatSelectModule, MatFormFieldModule, MatInputModule, MatDatepickerModule, MatExpansionModule, MatCheckboxModule,
     MatMenuModule, MatProgressBarModule, MatTooltipModule],
   templateUrl: './candidatura-detalhe.component.html',
@@ -52,6 +53,12 @@ export class CandidaturaDetalheComponent implements OnInit {
     return this.todosContatos().filter((ct) => !vinculados.has(ct.id));
   });
   readonly historicoRecente = computed(() => [...(this.c()?.historico ?? [])].reverse());
+  /** Etapa mais avançada que a candidatura alcançou (para mostrar onde uma encerrada parou). */
+  readonly etapaAlcancada = computed<Status | null>(() => {
+    const indices = (this.c()?.historico ?? []).map((h) => ETAPAS_TRAJETORIA.indexOf(h.statusNovo));
+    const maior = Math.max(-1, ...indices);
+    return maior >= 0 ? ETAPAS_TRAJETORIA[maior] : null;
+  });
   readonly salvandoInteracao = signal(false);
 
   readonly novaInteracao = inject(FormBuilder).group({

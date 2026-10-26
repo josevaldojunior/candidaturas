@@ -25,7 +25,7 @@ const FOGUETE =
     svg { flex: none; }
     .fundo { fill: var(--cor-destaque); }
     .foguete { fill: var(--cor-logo-traco); }
-    .nome { font-weight: 600; letter-spacing: -0.01em; color: var(--cor-destaque); }
+    .nome { font-family: var(--fonte-titulo); font-weight: 700; letter-spacing: -0.02em; color: var(--cor-destaque); }
   `,
 })
 export class LogoComponent {

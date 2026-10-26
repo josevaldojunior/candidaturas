@@ -4,6 +4,11 @@
   width: 232px;
   border-right: 1px solid var(--cor-borda);
   background: var(--cor-superficie);
+  /* item ativo: fundo azul suave em vez do tom padrão do Material */
+  --mat-list-active-indicator-color: var(--cor-destaque-suave);
+  --mat-list-active-indicator-shape: 10px;
+  mat-nav-list { padding: 4px 8px; }
+  a[mat-list-item] { border-radius: 10px; margin-bottom: 2px; }
 }
 
 /* logo + nome: leva ao Dashboard */
@@ -15,7 +20,7 @@
 .marca:focus-visible, .marca-topo:focus-visible { outline: 2px solid var(--cor-destaque); outline-offset: 2px; }
 .marca-topo { display: inline-flex; font-size: 17px; text-decoration: none; border-radius: 8px; padding: 2px 4px; }
 
-.ativo { font-weight: 500; }
+.ativo { font-weight: 700; --mdc-list-list-item-label-text-color: var(--cor-destaque); --mdc-list-list-item-leading-icon-color: var(--cor-destaque); }
 
 .barra-topo {
   position: sticky; top: 0; z-index: 2;

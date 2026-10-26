@@ -25,6 +25,12 @@
     <div class="layout">
       <section class="coluna-principal">
         <div class="cartao">
+          <app-trajetoria class="trajetoria" modo="completa" [status]="c.status" [alcancada]="etapaAlcancada()" />
+          @if (c.status === 'RECUSADA' || c.status === 'SEM_RETORNO') {
+            <p class="encerrada">
+              Encerrada como {{ c.status | rotulo: 'status' }}{{ etapaAlcancada() ? ' depois de ' + (etapaAlcancada()! | rotulo: 'status') : '' }}.
+            </p>
+          }
           <div class="status-linha">
             <mat-form-field class="campo-status">
               <mat-label>Status</mat-label>
@@ -144,15 +150,16 @@
         </div>
 
         <div class="cartao">
-          <h2>Histórico de status</h2>
-          <ul class="historico">
+          <h2>Histórico de etapas</h2>
+          <ol class="historico">
             @for (h of historicoRecente(); track h.id) {
-              <li>
-                <span class="chip-status s-{{ h.statusNovo }}">{{ h.statusNovo | rotulo: 'status' }}</span>
+              <li [class.encerrada]="h.statusNovo === 'RECUSADA' || h.statusNovo === 'SEM_RETORNO'"
+                  [class.chegada]="h.statusNovo === 'PROPOSTA' || h.statusNovo === 'ACEITA'">
+                <span class="etapa">{{ h.statusNovo | rotulo: 'status' }}</span>
                 <span class="texto-suave pequeno">{{ h.data | date: 'dd/MM/yyyy HH:mm' }}</span>
               </li>
             }
-          </ul>
+          </ol>
         </div>
       </aside>
     </div>

@@ -18,6 +18,16 @@ export const ROTULO_STATUS: Record<Status, string> = {
   SEM_RETORNO: 'Sem retorno',
 };
 
+/** Etapas da trajetória, na ordem do processo (Interesse vem antes; Recusada e Sem retorno encerram). */
+export const ETAPAS_TRAJETORIA: Status[] = [
+  'CANDIDATADO', 'TRIAGEM_RH', 'TESTE_TECNICO', 'ENTREVISTA_TECNICA', 'ENTREVISTA_FINAL', 'PROPOSTA', 'ACEITA',
+];
+/** Rótulos curtos para a trajetória, onde o espaço é de uma coluna estreita. */
+export const ROTULO_ETAPA_CURTO: Partial<Record<Status, string>> = {
+  CANDIDATADO: 'Candidatado', TRIAGEM_RH: 'Triagem', TESTE_TECNICO: 'Teste', ENTREVISTA_TECNICA: 'Técnica',
+  ENTREVISTA_FINAL: 'Final', PROPOSTA: 'Proposta', ACEITA: 'Aceita',
+};
+
 /** Ordem de exibição (a mesma do enum Plataforma no backend). */
 export const PLATAFORMAS: Plataforma[] = [
   'GUPY', 'LINKEDIN_VAGAS', 'LINKEDIN_FEED', 'INDEED', 'PROGRAMATHOR', 'REMOTAR', 'INFOJOBS', 'COODESH',

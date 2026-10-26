@@ -2,96 +2,55 @@
   <div class="pagina-cabecalho">
     <h1>Dashboard</h1>
     <mat-button-toggle-group hideSingleSelectionIndicator [value]="modo()" (change)="modo.set($event.value)" aria-label="Forma de exibição">
-      <mat-button-toggle value="grafico"><mat-icon>bar_chart</mat-icon></mat-button-toggle>
-      <mat-button-toggle value="tabela"><mat-icon>table_rows</mat-icon></mat-button-toggle>
+      <mat-button-toggle value="grafico" matTooltip="Ver em gráficos"><mat-icon>bar_chart</mat-icon></mat-button-toggle>
+      <mat-button-toggle value="tabela" matTooltip="Ver em tabelas"><mat-icon>table_rows</mat-icon></mat-button-toggle>
     </mat-button-toggle-group>
     <button mat-icon-button aria-label="Recarregar" matTooltip="Recarregar" (click)="carregar()"><mat-icon>refresh</mat-icon></button>
   </div>
 
   @if (d(); as d) {
-    <!-- cada card abre a lista de candidaturas filtrada pelo que ele conta -->
-    <div class="kpis">
-      <a class="cartao kpi kpi-link" routerLink="/candidaturas" aria-label="Ver todas as candidaturas">
-        <span class="kpi-rotulo">Total de candidaturas</span>
-        <span class="kpi-valor">{{ d.total }}</span>
-        <span class="kpi-nota">{{ enviadas() }} enviadas</span>
-      </a>
-      <a class="cartao kpi kpi-link" routerLink="/candidaturas" [queryParams]="{ status: emAndamento }"
-         aria-label="Ver candidaturas em andamento">
-        <span class="kpi-rotulo">Em andamento</span>
-        <span class="kpi-valor">{{ d.ativas }}</span>
-        <span class="kpi-nota">aguardando retorno ou proposta</span>
-      </a>
-      <a class="cartao kpi kpi-link" routerLink="/candidaturas" [queryParams]="{ comResposta: true }"
-         aria-label="Ver candidaturas que tiveram resposta">
-        <span class="kpi-rotulo">Taxa de resposta</span>
-        <span class="kpi-valor">{{ d.taxaResposta | number: '1.0-1' }}%</span>
-        <span class="kpi-nota">{{ d.comResposta }} de {{ enviadas() }} enviadas</span>
-      </a>
-      <a class="cartao kpi kpi-link" routerLink="/candidaturas" [queryParams]="{ pendentes: true }"
-         aria-label="Ver candidaturas com pendência">
-        <span class="kpi-rotulo">Pendências</span>
-        <span class="kpi-valor" [class.kpi-alerta]="d.pendentes > 0">{{ d.pendentes }}</span>
-        <span class="kpi-nota">candidaturas com algo a fazer</span>
-      </a>
-      <a class="cartao kpi kpi-link" routerLink="/candidaturas" [queryParams]="{ etapaMinima: 'ENTREVISTA_TECNICA' }"
-         aria-label="Ver candidaturas que chegaram à entrevista">
-        <span class="kpi-rotulo">Chegaram à entrevista</span>
-        <span class="kpi-valor">{{ entrevistas() }}</span>
-        <span class="kpi-nota">entrevista técnica ou além</span>
-      </a>
-    </div>
-
     @if (d.total === 0) {
-      <div class="cartao vazio">
-        Ainda não há candidaturas. <a routerLink="/candidaturas/nova">Cadastre a primeira</a>.
-      </div>
-    } @else if (modo() === 'grafico') {
-      <div class="graficos">
-        <section class="cartao grafico funil">
-          <h2>Funil por etapa</h2>
-          <p class="texto-suave legenda">Quantas candidaturas chegaram a cada etapa e a conversão em relação à etapa anterior.</p>
-          @for (e of d.funil; track e.etapa) {
-            <div class="linha-barra" [matTooltip]="e.quantidade + ' candidatura(s) · ' + (e.percentualDoTotal | number: '1.0-1') + '% do total'">
-              <span class="rotulo">{{ e.etapa | rotulo: 'status' }}</span>
-              <span class="trilho"><span class="barra" [style.width]="largura(e.quantidade, maxFunil())"></span></span>
-              <span class="valor">{{ e.quantidade }}</span>
-              <span class="conversao">{{ $first ? '' : (e.conversaoDaAnterior | number: '1.0-0') + '%' }}</span>
-            </div>
-          }
-        </section>
-
-        <section class="cartao grafico">
-          <h2>Por plataforma</h2>
-          @for (p of d.porPlataforma; track p.chave) {
-            <div class="linha-barra simples" [class.zerada]="p.quantidade === 0" [matTooltip]="p.quantidade + ' candidatura(s)'">
-              <span class="rotulo" [title]="p.chave === 'NAO_INFORMADA' ? 'Não informada' : (p.chave | rotulo: 'plataforma')">{{ p.chave === 'NAO_INFORMADA' ? 'Não informada' : (p.chave | rotulo: 'plataforma') }}</span>
-              <span class="trilho"><span class="barra" [style.width]="largura(p.quantidade, maxPlataforma())"></span></span>
-              <span class="valor">{{ p.quantidade }}</span>
-            </div>
-          }
-        </section>
-
-        <section class="cartao grafico semanas">
-          <h2>Candidaturas por semana</h2>
-          <p class="texto-suave legenda">Últimas 12 semanas · {{ totalSemanas() }} enviadas no período</p>
-          <div class="colunas" role="img" [attr.aria-label]="'Candidaturas por semana nas últimas 12 semanas'">
-            @for (s of d.porSemana; track s.inicioSemana) {
-              <div class="coluna" [matTooltip]="'Semana de ' + (s.inicioSemana | date: 'dd/MM') + ': ' + s.quantidade">
-                <span class="valor-coluna">{{ s.quantidade || '' }}</span>
-                <span class="barra-vertical" [style.height]="largura(s.quantidade, maxSemana())"></span>
-                <span class="eixo">{{ s.inicioSemana | date: 'dd/MM' }}</span>
-              </div>
-            }
-          </div>
-        </section>
+      <div class="cartao boas-vindas">
+        <h2>Sua trajetória começa na primeira candidatura</h2>
+        <p class="texto-suave">Cadastre uma vaga que você enviou ou quer enviar. As etapas, pendências e follow-ups aparecem aqui.</p>
+        <a mat-flat-button routerLink="/candidaturas/nova"><mat-icon>add</mat-icon> Nova candidatura</a>
       </div>
     } @else {
-      <div class="graficos">
-        <section class="cartao">
-          <h2>Funil por etapa</h2>
+      <!-- a trajetória: quantas candidaturas chegaram a cada etapa; cada etapa abre a lista filtrada -->
+      <section class="cartao trajetoria" aria-labelledby="titulo-trajetoria">
+        <div class="trajetoria-topo">
+          <h2 id="titulo-trajetoria">Sua trajetória</h2>
+          <p class="resumo">
+            <a routerLink="/candidaturas">{{ d.total }} candidaturas</a>,
+            <a routerLink="/candidaturas" [queryParams]="{ comResposta: true }">{{ d.comResposta }} com resposta</a>
+            ({{ d.taxaResposta | number: '1.0-0' }}% das enviadas) e
+            <a routerLink="/candidaturas" [queryParams]="{ status: emAndamento }">{{ d.ativas }} em andamento</a>.
+            @if (emInteresse()) {
+              <a routerLink="/candidaturas" [queryParams]="{ status: 'INTERESSE' }">{{ emInteresse() }} ainda por enviar</a>.
+            }
+          </p>
+        </div>
+
+        @if (modo() === 'grafico') {
+          <ol class="etapas">
+            @for (e of trajetoria(); track e.etapa) {
+              <li>
+                <a class="etapa" [class.zerada]="e.quantidade === 0" routerLink="/candidaturas"
+                   [queryParams]="{ etapaMinima: e.etapa }"
+                   [attr.aria-label]="e.quantidade + ' chegaram a ' + (e.etapa | rotulo: 'status') + '. Ver candidaturas'">
+                  <span class="numero">{{ e.quantidade }}</span>
+                  <span class="nome">{{ e.etapa | rotulo: 'status' }}</span>
+                  <span class="trilho"><span class="barra" [style.width]="largura(e.quantidade, maxTrajetoria())"></span></span>
+                  <span class="conversao">
+                    @if ($first) { enviadas } @else if (e.quantidade) { {{ e.conversaoDaAnterior | number: '1.0-0' }}% da anterior }
+                  </span>
+                </a>
+              </li>
+            }
+          </ol>
+        } @else {
           <table class="tabela">
-            <thead><tr><th>Etapa</th><th>Qtd.</th><th>% do total</th><th>Conversão</th></tr></thead>
+            <thead><tr><th>Etapa</th><th>Chegaram</th><th>% do total</th><th>Conversão da anterior</th></tr></thead>
             <tbody>
               @for (e of d.funil; track e.etapa) {
                 <tr>
@@ -102,37 +61,76 @@
               }
             </tbody>
           </table>
-        </section>
-        <section class="cartao">
-          <h2>Por status atual</h2>
-          <table class="tabela">
-            <tbody>
-              @for (s of d.porStatus; track s.chave) {
-                <tr><td>{{ s.chave | rotulo: 'status' }}</td><td>{{ s.quantidade }}</td></tr>
+        }
+      </section>
+
+      <div class="inferior">
+        <section class="cartao afazeres" aria-labelledby="titulo-afazeres">
+          <div class="secao-topo">
+            <h2 id="titulo-afazeres">Para fazer agora</h2>
+            @if (totalAfazeres() > (afazeres()?.length ?? 0)) {
+              <a routerLink="/follow-ups">Mais {{ totalAfazeres() - (afazeres()?.length ?? 0) }} nos follow-ups</a>
+            }
+          </div>
+          @if (afazeres(); as itens) {
+            <ul>
+              @for (a of itens; track a.chave) {
+                <li [class.urgente]="a.urgente">
+                  <a [routerLink]="['/candidaturas', a.candidaturaId]">
+                    <span class="titulo">{{ a.titulo }}</span>
+                    <span class="onde">{{ a.empresa }}, {{ a.cargo }}</span>
+                  </a>
+                  <span class="prazo">{{ a.prazo }}</span>
+                </li>
+              } @empty {
+                <li class="nada">
+                  <span>Nada pendente nem follow-up marcado. Bom momento para procurar vagas novas.</span>
+                </li>
               }
-            </tbody>
-          </table>
+            </ul>
+          } @else {
+            <mat-progress-bar mode="indeterminate" />
+          }
         </section>
-        <section class="cartao">
-          <h2>Por plataforma</h2>
-          <table class="tabela">
-            <tbody>
-              @for (p of d.porPlataforma; track p.chave) {
-                <tr><td>{{ p.chave === 'NAO_INFORMADA' ? 'Não informada' : (p.chave | rotulo: 'plataforma') }}</td><td>{{ p.quantidade }}</td></tr>
+
+        <div class="lateral">
+          <section class="cartao" aria-labelledby="titulo-ritmo">
+            <h2 id="titulo-ritmo">Ritmo</h2>
+            <p class="texto-suave legenda">{{ totalSemanas() }} enviadas nas últimas 12 semanas</p>
+            @if (modo() === 'grafico') {
+              <div class="colunas" role="img" [attr.aria-label]="'Candidaturas por semana nas últimas 12 semanas'">
+                @for (s of d.porSemana; track s.inicioSemana) {
+                  <div class="coluna" [matTooltip]="'Semana de ' + (s.inicioSemana | date: 'dd/MM') + ': ' + s.quantidade">
+                    <span class="valor-coluna">{{ s.quantidade || '' }}</span>
+                    <span class="barra-vertical" [style.height]="largura(s.quantidade, maxSemana())"></span>
+                    <span class="eixo">{{ s.inicioSemana | date: 'dd/MM' }}</span>
+                  </div>
+                }
+              </div>
+            } @else {
+              <table class="tabela">
+                <tbody>
+                  @for (s of d.porSemana; track s.inicioSemana) {
+                    <tr><td>Semana de {{ s.inicioSemana | date: 'dd/MM/yyyy' }}</td><td>{{ s.quantidade }}</td></tr>
+                  }
+                </tbody>
+              </table>
+            }
+          </section>
+
+          <section class="cartao" aria-labelledby="titulo-plataformas">
+            <h2 id="titulo-plataformas">De onde vêm</h2>
+            @for (p of d.porPlataforma; track p.chave) {
+              @if (p.quantidade > 0 || modo() === 'tabela') {
+                <div class="linha-barra" [matTooltip]="p.quantidade + ' candidatura(s)'">
+                  <span class="rotulo">{{ p.chave === 'NAO_INFORMADA' ? 'Não informada' : (p.chave | rotulo: 'plataforma') }}</span>
+                  <span class="trilho"><span class="barra" [style.width]="largura(p.quantidade, maxPlataforma())"></span></span>
+                  <span class="valor">{{ p.quantidade }}</span>
+                </div>
               }
-            </tbody>
-          </table>
-        </section>
-        <section class="cartao">
-          <h2>Por semana</h2>
-          <table class="tabela">
-            <tbody>
-              @for (s of d.porSemana; track s.inicioSemana) {
-                <tr><td>Semana de {{ s.inicioSemana | date: 'dd/MM/yyyy' }}</td><td>{{ s.quantidade }}</td></tr>
-              }
-            </tbody>
-          </table>
-        </section>
+            }
+          </section>
+        </div>
       </div>
     }
   } @else {

@@ -23,14 +23,17 @@
   <div class="quadro" cdkDropListGroup>
     @for (coluna of colunasVisiveis(); track coluna.status) {
       <section class="coluna">
-        <header class="coluna-topo chip-status s-{{ coluna.status }}">
-          <span>{{ coluna.status | rotulo: 'status' }}</span>
+        <header class="coluna-topo" [class.encerrada]="numero(coluna.status) === 0 && coluna.status !== 'INTERESSE'">
+          <span class="titulo-coluna">
+            @if (numero(coluna.status); as n) { <span class="numero" aria-hidden="true">{{ n }}</span> }
+            {{ coluna.status | rotulo: 'status' }}
+          </span>
           <span class="contador">{{ coluna.candidaturas.length }}</span>
         </header>
         <div class="cartoes" cdkDropList [id]="'coluna-' + coluna.status" [cdkDropListData]="coluna.candidaturas"
              [cdkDropListConnectedTo]="idsListas()" (cdkDropListDropped)="soltar($event, coluna.status)">
           @for (c of coluna.visiveis; track c.id) {
-            <article class="cartao-kanban" cdkDrag [cdkDragData]="c" [cdkDragStartDelay]="{ touch: 250, mouse: 0 }">
+            <article class="cartao-kanban" [class.pendente]="c.pendencia" cdkDrag [cdkDragData]="c" [cdkDragStartDelay]="{ touch: 250, mouse: 0 }">
               <div class="linha">
                 <a class="empresa" [routerLink]="['/candidaturas', c.id]">{{ c.empresa }}</a>
                 <span class="prioridade p-{{ c.prioridade }}" [matTooltip]="'Prioridade ' + (c.prioridade | rotulo: 'prioridade')">●</span>

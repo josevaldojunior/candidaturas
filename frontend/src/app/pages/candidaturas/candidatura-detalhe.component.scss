@@ -1,6 +1,8 @@
-h1 { line-height: 1.2; }
-.subtitulo { font-size: 15px; font-weight: 400; }
-h2 { font-size: 16px; font-weight: 500; margin: 0 0 12px; }
+h1 { line-height: 1.15; }
+.subtitulo { font-family: var(--fonte-texto); font-size: 15px; font-weight: 400; letter-spacing: 0; margin-top: 4px; }
+h2 { font-size: 18px; font-weight: 600; margin: 0 0 12px; }
+.trajetoria { margin: 4px 0 20px; }
+.encerrada { margin: -8px 0 16px; color: var(--cor-texto-suave); }
 .pequeno { font-size: 12px; }
 .pre { white-space: pre-wrap; }
 
@@ -36,7 +38,21 @@ button.pequeno { transform: scale(0.85); }
 
 .historico {
   list-style: none; margin: 0; padding: 0;
-  li { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
+  li {
+    position: relative; display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+    padding: 0 0 14px 20px;
+  }
+  /* linha do tempo vertical: ponto em cada etapa, ligados por um traço */
+  li::before {
+    content: ''; position: absolute; left: 0; top: 5px; width: 9px; height: 9px; border-radius: 50%;
+    background: var(--cor-destaque);
+  }
+  li:not(:last-child)::after {
+    content: ''; position: absolute; left: 4px; top: 16px; bottom: 0; width: 1px; background: var(--cor-borda);
+  }
+  li.chegada::before { background: var(--cor-ok); }
+  li.encerrada::before { background: var(--cor-encerrada); }
+  li:first-child .etapa { font-weight: 700; }
 }
 
 @media (max-width: 959px) {

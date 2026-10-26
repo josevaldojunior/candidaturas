@@ -13,8 +13,9 @@ import { RouterLink } from '@angular/router';
 import { CandidaturaApi } from '../../core/api.service';
 import { CandidaturaResumo, ColunaKanban, Status } from '../../core/models';
 import { Notificacao } from '../../core/notificacao.service';
-import { ROTULO_STATUS } from '../../core/rotulos';
+import { ETAPAS_TRAJETORIA, ROTULO_STATUS } from '../../core/rotulos';
 import { RotuloPipe } from '../../shared/rotulo.pipe';
+import { TrajetoriaComponent } from '../../shared/trajetoria.component';
 
 /** Status encerrados ficam ocultos por padrão para o quadro não poluir. */
 const ENCERRADOS: Status[] = ['RECUSADA', 'SEM_RETORNO'];
@@ -22,7 +23,7 @@ const ENCERRADOS: Status[] = ['RECUSADA', 'SEM_RETORNO'];
 @Component({
   selector: 'app-kanban',
   standalone: true,
-  imports: [DragDropModule, DatePipe, FormsModule, RouterLink, RotuloPipe, MatButtonModule, MatIconModule,
+  imports: [TrajetoriaComponent, DragDropModule, DatePipe, FormsModule, RouterLink, RotuloPipe, MatButtonModule, MatIconModule,
     MatFormFieldModule, MatInputModule, MatProgressBarModule, MatSlideToggleModule, MatTooltipModule],
   templateUrl: './kanban.component.html',
   styleUrl: './kanban.component.scss',
@@ -52,6 +53,11 @@ export class KanbanComponent implements OnInit {
   });
 
   readonly idsListas = computed(() => this.colunasVisiveis().map((c) => `coluna-${c.status}`));
+
+  /** Posição da etapa no processo (1 a 7); 0 para Interesse e para as encerradas. */
+  numero(status: Status): number {
+    return ETAPAS_TRAJETORIA.indexOf(status) + 1;
+  }
 
   ngOnInit(): void {
     this.carregar();

@@ -15,9 +15,13 @@
 
 .coluna-topo {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 12px; font-weight: 500; font-size: 14px; border-radius: 12px 12px 0 0;
+  padding: 12px 12px 6px; font-weight: 700; font-size: 14px;
 }
-.contador { background: var(--cor-superficie); border-radius: 10px; padding: 0 8px; font-size: 12px; }
+/* número da etapa: as colunas seguem a ordem real do processo */
+.titulo-coluna { display: inline-flex; align-items: baseline; gap: 8px; }
+.numero { font-family: var(--fonte-titulo); font-size: 18px; font-weight: 600; color: var(--cor-destaque); }
+.coluna-topo.encerrada { color: var(--cor-texto-suave); }
+.contador { color: var(--cor-texto-suave); font-weight: 500; font-size: 13px; font-variant-numeric: tabular-nums; }
 
 .cartoes { flex: 1 1 auto; overflow-y: auto; padding: 8px; min-height: 80px; display: flex; flex-direction: column; gap: 8px; }
 
@@ -25,11 +29,14 @@
   background: var(--cor-superficie); border: 1px solid var(--cor-borda); border-radius: 10px;
   padding: 10px 12px; cursor: grab; display: grid; gap: 4px; font-size: 13px;
   .linha { display: flex; justify-content: space-between; gap: 8px; }
-  .empresa { font-weight: 500; color: inherit; text-decoration: none; }
+  .empresa { font-weight: 700; color: inherit; text-decoration: none; }
   .empresa:hover { text-decoration: underline; }
   .cargo { color: var(--cor-texto-suave); }
   .rodape { display: flex; justify-content: space-between; font-size: 12px; }
 }
+
+/* pendência: um traço laranja na borda esquerda do cartão */
+.cartao-kanban.pendente { box-shadow: inset 3px 0 0 var(--cor-acao); }
 
 .coluna-vazia { color: var(--cor-texto-suave); font-size: 12px; text-align: center; padding: 16px 0; }
 

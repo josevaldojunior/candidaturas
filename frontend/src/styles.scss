@@ -8,26 +8,31 @@ mat.$theme-ignore-duplication-warnings: true;
 
 $tema-claro: mat.define-theme((
   color: (theme-type: light, primary: mat.$azure-palette, tertiary: mat.$blue-palette),
-  typography: (brand-family: 'Roboto', plain-family: 'Roboto'),
+  typography: (brand-family: 'Bricolage Grotesque', plain-family: 'Atkinson Hyperlegible Next'),
   density: (scale: 0),
 ));
 
 $tema-escuro: mat.define-theme((
   color: (theme-type: dark, primary: mat.$azure-palette, tertiary: mat.$blue-palette),
-  typography: (brand-family: 'Roboto', plain-family: 'Roboto'),
+  typography: (brand-family: 'Bricolage Grotesque', plain-family: 'Atkinson Hyperlegible Next'),
   density: (scale: 0),
 ));
 
-// Paleta do portfólio + cores de estado da aplicação.
+// Paleta do portfólio, com um papel para cada cor:
+// órbita (azul) = progresso e ações; propulsão (laranja) = o que pede ação agora;
+// chegada (verde) = proposta e vaga aceita. Encerradas ficam em cinza.
 @mixin tokens-claros {
   color-scheme: light;
-  --cor-fundo: #F3F5F9;
+  --cor-fundo: #F4F6FA;
   --cor-superficie: #FFFFFF;
   --cor-superficie-2: #EBEFF5;
   --cor-hover: #F0F4FB;
-  --cor-texto: #111B2E;
+  --cor-texto: #15203A;
   --cor-texto-suave: #56627A;
-  --cor-borda: #D4DCE8;
+  --cor-borda: #DCE2EC;
+  --cor-trilho: #DCE2EC;
+  --cor-acao: #B4540A;
+  --cor-acao-suave: #FDF0E3;
   --cor-destaque: #1D5FD1;
   --cor-destaque-suave: #E2EBFA;
   --cor-logo-traco: #FFFFFF;
@@ -35,54 +40,41 @@ $tema-escuro: mat.define-theme((
   --cor-perigo: #B3261E;
   --cor-ok: #1B7F3B;
   --cor-alerta: #9A6700;
-  --cor-pendente-fundo: #FFF4E5;
-  --cor-pendente-texto: #8A4B00;
-  --cor-pendente-borda: #F5C98B;
-  --sombra: 0 6px 18px rgba(17, 27, 46, .18);
-
-  --st-INTERESSE-bg: #ECEFF1;          --st-INTERESSE-fg: #37474F;
-  --st-CANDIDATADO-bg: #E3F2FD;        --st-CANDIDATADO-fg: #0D47A1;
-  --st-TRIAGEM_RH-bg: #E0F7FA;         --st-TRIAGEM_RH-fg: #006064;
-  --st-TESTE_TECNICO-bg: #EDE7F6;      --st-TESTE_TECNICO-fg: #4527A0;
-  --st-ENTREVISTA_TECNICA-bg: #F3E5F5; --st-ENTREVISTA_TECNICA-fg: #6A1B9A;
-  --st-ENTREVISTA_FINAL-bg: #FFF3E0;   --st-ENTREVISTA_FINAL-fg: #B34700;
-  --st-PROPOSTA-bg: #FFFDE7;           --st-PROPOSTA-fg: #7A5F00;
-  --st-ACEITA-bg: #E8F5E9;             --st-ACEITA-fg: #1B5E20;
-  --st-RECUSADA-bg: #FFEBEE;           --st-RECUSADA-fg: #B71C1C;
-  --st-SEM_RETORNO-bg: #F1F1F1;        --st-SEM_RETORNO-fg: #5C5C5C;
+  --cor-pendente-fundo: var(--cor-acao-suave);
+  --cor-pendente-texto: var(--cor-acao);
+  --cor-pendente-borda: #F2C9A0;
+  --cor-chegada-suave: #E6F4EA;
+  --cor-encerrada: #8A94A8;
+  --cor-encerrada-suave: #EEF1F5;
+  --sombra: 0 6px 18px rgba(21, 32, 58, .16);
 }
 
 @mixin tokens-escuros {
   color-scheme: dark;
-  --cor-fundo: #0C1220;
-  --cor-superficie: #131C2E;
+  --cor-fundo: #0B1222;
+  --cor-superficie: #131C2F;
   --cor-superficie-2: #1A2438;
   --cor-hover: #1A2540;
   --cor-texto: #E3E9F4;
   --cor-texto-suave: #96A3BB;
-  --cor-borda: #25304A;
-  --cor-destaque: #6FA3FF;
+  --cor-borda: #222C42;
+  --cor-trilho: #26324B;
+  --cor-acao: #F0A04B;
+  --cor-acao-suave: #33240F;
+  --cor-destaque: #7AA8FF;
   --cor-destaque-suave: #17264A;
-  --cor-logo-traco: #0C1220;
+  --cor-logo-traco: #0B1222;
   --cor-marca: #E8A34B;
   --cor-perigo: #FF8A80;
   --cor-ok: #7BD88F;
   --cor-alerta: #E8B44B;
-  --cor-pendente-fundo: #3A2A12;
-  --cor-pendente-texto: #F2C27A;
+  --cor-pendente-fundo: var(--cor-acao-suave);
+  --cor-pendente-texto: var(--cor-acao);
   --cor-pendente-borda: #6B4A1C;
+  --cor-chegada-suave: #163420;
+  --cor-encerrada: #6F7B93;
+  --cor-encerrada-suave: #1E2638;
   --sombra: 0 6px 18px rgba(0, 0, 0, .5);
-
-  --st-INTERESSE-bg: #263042;          --st-INTERESSE-fg: #C5CEDC;
-  --st-CANDIDATADO-bg: #16294A;        --st-CANDIDATADO-fg: #8DB8FF;
-  --st-TRIAGEM_RH-bg: #0F3238;         --st-TRIAGEM_RH-fg: #7FDBE6;
-  --st-TESTE_TECNICO-bg: #261F45;      --st-TESTE_TECNICO-fg: #B9A6FF;
-  --st-ENTREVISTA_TECNICA-bg: #33193B; --st-ENTREVISTA_TECNICA-fg: #E3A6F0;
-  --st-ENTREVISTA_FINAL-bg: #3A2412;   --st-ENTREVISTA_FINAL-fg: #FFB074;
-  --st-PROPOSTA-bg: #362E10;           --st-PROPOSTA-fg: #F2D46B;
-  --st-ACEITA-bg: #163420;             --st-ACEITA-fg: #8EE0A3;
-  --st-RECUSADA-bg: #3D1A1C;           --st-RECUSADA-fg: #FF9C9C;
-  --st-SEM_RETORNO-bg: #252B36;        --st-SEM_RETORNO-fg: #A9B2C2;
 }
 
 html {
@@ -116,9 +108,16 @@ body {
   --mdc-dialog-container-color: var(--cor-superficie);
 }
 
+// Tipografia: Bricolage Grotesque nos títulos e números grandes; Atkinson Hyperlegible Next no resto.
+// Escala: 13 / 15 / 18 / 24 / 32 / 44px.
+:root {
+  --fonte-titulo: 'Bricolage Grotesque', 'Atkinson Hyperlegible Next', sans-serif;
+  --fonte-texto: 'Atkinson Hyperlegible Next', 'Segoe UI', sans-serif;
+}
+
 html, body { height: 100%; }
 body {
-  margin: 0; font-family: Roboto, 'Helvetica Neue', sans-serif;
+  margin: 0; font-family: var(--fonte-texto); font-size: 15px;
   background: var(--cor-fundo); color: var(--cor-texto);
   transition: background-color .25s, color .25s;
 }
@@ -127,9 +126,13 @@ a { color: var(--cor-destaque); }
 
 .pagina { padding: 16px; max-width: 1280px; margin: 0 auto; box-sizing: border-box; }
 .pagina-cabecalho {
-  display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
-  h1 { font-size: 22px; font-weight: 500; margin: 0; flex: 1 1 auto; }
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;
+  h1 {
+    font-family: var(--fonte-titulo); font-size: 32px; font-weight: 600; letter-spacing: -0.02em;
+    line-height: 1.15; margin: 0; flex: 1 1 auto;
+  }
 }
+h2, h3 { font-family: var(--fonte-titulo); letter-spacing: -0.01em; }
 .cartao {
   background: var(--cor-superficie); border: 1px solid var(--cor-borda); border-radius: 12px; padding: 16px;
   transition: background-color .25s, border-color .25s;
@@ -145,15 +148,14 @@ a { color: var(--cor-destaque); }
 .acoes { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .flex-espaco { flex: 1 1 auto; }
 
-$status: INTERESSE, CANDIDATADO, TRIAGEM_RH, TESTE_TECNICO, ENTREVISTA_TECNICA, ENTREVISTA_FINAL, PROPOSTA,
-  ACEITA, RECUSADA, SEM_RETORNO;
-
+// A etapa é mostrada pela posição na trajetória; a cor só diz a categoria:
+// em andamento (azul), chegada (verde), ainda não enviada e encerradas (neutro).
 .chip-status {
   display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 500;
   white-space: nowrap; background: var(--cor-destaque-suave); color: var(--cor-destaque);
-  @each $s in $status {
-    &.s-#{$s} { background: var(--st-#{$s}-bg); color: var(--st-#{$s}-fg); }
-  }
+  &.s-PROPOSTA, &.s-ACEITA { background: var(--cor-chegada-suave); color: var(--cor-ok); }
+  &.s-INTERESSE { background: transparent; color: var(--cor-texto-suave); box-shadow: inset 0 0 0 1px var(--cor-borda); }
+  &.s-RECUSADA, &.s-SEM_RETORNO { background: var(--cor-encerrada-suave); color: var(--cor-texto-suave); }
 }
 .prioridade { font-size: 12px; font-weight: 500;
   &.p-ALTA { color: var(--cor-perigo); }

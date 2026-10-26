@@ -1,51 +1,88 @@
-/* Uma única série por gráfico: um só tom (magnitude), texto sempre em tinta neutra */
-:host { --cor-barra: var(--cor-destaque); --cor-trilho: var(--cor-superficie-2); }
+h2 { font-size: 18px; font-weight: 600; margin: 0 0 4px; }
+.legenda { font-size: 13px; margin: 0 0 12px; }
 
-h2 { font-size: 16px; font-weight: 500; margin: 0 0 4px; }
-.legenda { font-size: 12px; margin: 0 0 12px; }
-
-.kpis { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 16px; }
-.kpi { display: flex; flex-direction: column; gap: 2px; }
-.kpi-rotulo { font-size: 13px; color: var(--cor-texto-suave); }
-.kpi-valor { font-size: 32px; font-weight: 500; line-height: 1.2; color: var(--cor-texto); }
-.kpi-nota { font-size: 12px; color: var(--cor-texto-suave); }
-.kpi-link {
-  position: relative; text-decoration: none; color: inherit; cursor: pointer;
-  transition: border-color .15s, background-color .15s;
+.boas-vindas { padding: 32px; display: grid; gap: 12px; justify-items: start;
+  h2 { font-size: 24px; }
+  p { margin: 0; max-width: 60ch; }
 }
-/* seta discreta indicando que o card abre a lista */
-.kpi-link::after {
-  content: '→'; position: absolute; top: 12px; right: 14px; font-size: 14px;
-  color: var(--cor-texto-suave); opacity: 0; transition: opacity .15s, transform .15s;
+
+/* Trajetória: o elemento principal da página */
+.trajetoria { padding: 24px; margin-bottom: 16px; }
+.trajetoria-topo {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; margin-bottom: 20px;
+  h2 { font-size: 24px; margin: 0; }
 }
-.kpi-link:hover { border-color: var(--cor-destaque); background: var(--cor-hover); }
-.kpi-link:hover::after, .kpi-link:focus-visible::after { opacity: 1; transform: translateX(2px); }
-.kpi-link:focus-visible { outline: 2px solid var(--cor-destaque); outline-offset: 2px; }
-.kpi-alerta { color: var(--cor-pendente-texto); }
+.resumo {
+  margin: 0; color: var(--cor-texto-suave); max-width: 75ch;
+  a { color: var(--cor-texto); text-decoration-color: var(--cor-borda); text-underline-offset: 3px; }
+  a:hover { text-decoration-color: currentColor; }
+}
 
-.graficos { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
-.semanas { grid-column: 1 / -1; }
+.etapas { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
+.etapa {
+  display: grid; gap: 6px; padding: 8px; margin: -8px; border-radius: 10px; color: inherit; text-decoration: none;
+  .numero {
+    font-family: var(--fonte-titulo); font-size: 44px; font-weight: 600; line-height: 1; letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .nome { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .conversao { font-size: 12px; color: var(--cor-texto-suave); min-height: 16px; }
+  .trilho { height: 8px; border-radius: 4px; background: var(--cor-trilho); overflow: hidden; }
+  .barra { display: block; height: 100%; min-width: 0; background: var(--cor-destaque); border-radius: 4px; }
+  &.zerada .numero, &.zerada .nome { color: var(--cor-texto-suave); }
+}
+.etapa:hover { background: var(--cor-hover); }
+.etapa:focus-visible { outline: 2px solid var(--cor-destaque); outline-offset: 2px; }
+.etapas li:nth-last-child(-n + 2) .barra { background: var(--cor-ok); }
 
+/* Abaixo: o que fazer agora, e o ritmo ao lado */
+.inferior { display: grid; gap: 16px; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: start; }
+.lateral { display: grid; gap: 16px; }
+.secao-topo { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+
+.afazeres ul { list-style: none; margin: 0; padding: 0; }
+.afazeres li {
+  position: relative; display: flex; align-items: center; gap: 12px; padding: 12px 0 12px 16px;
+  border-top: 1px solid var(--cor-borda);
+  &:first-child { border-top: 0; }
+  &::before {
+    content: ''; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 2px;
+    background: var(--cor-trilho);
+  }
+  &.urgente::before { background: var(--cor-acao); }
+  a { flex: 1 1 auto; min-width: 0; display: grid; gap: 2px; color: inherit; text-decoration: none; }
+  a:hover .titulo { text-decoration: underline; }
+  a:focus-visible { outline: 2px solid var(--cor-destaque); outline-offset: 2px; border-radius: 4px; }
+  .titulo { font-weight: 500; }
+  .onde { font-size: 13px; color: var(--cor-texto-suave); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .prazo { flex: none; font-size: 13px; color: var(--cor-texto-suave); }
+  &.urgente .prazo { color: var(--cor-acao); font-weight: 500; }
+  &.nada { padding-left: 0; color: var(--cor-texto-suave); &::before { display: none; } }
+}
+
+/* Gráficos de apoio: um só tom, mais apagado que a trajetória, para ela continuar sendo o destaque */
+.lateral { --cor-barra-apoio: color-mix(in srgb, var(--cor-destaque) 55%, var(--cor-superficie)); }
 .linha-barra {
-  display: grid; grid-template-columns: 130px 1fr 36px 44px; align-items: center; gap: 8px;
+  display: grid; grid-template-columns: minmax(110px, 160px) 1fr 32px; align-items: center; gap: 8px;
   padding: 4px 0; font-size: 13px;
-  &.simples { grid-template-columns: minmax(120px, 210px) 1fr 36px; }
-  .rotulo { color: var(--cor-texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .valor { text-align: right; font-weight: 500; color: var(--cor-texto); }
-  .conversao { text-align: right; font-size: 12px; color: var(--cor-texto-suave); }
+  .rotulo { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .valor { text-align: right; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .trilho { height: 10px; background: var(--cor-trilho); border-radius: 4px; overflow: hidden; }
+  .barra { display: block; height: 100%; min-width: 2px; background: var(--cor-barra-apoio); border-radius: 0 4px 4px 0; }
 }
-.trilho { height: 14px; background: var(--cor-trilho); border-radius: 4px; overflow: hidden; }
-.barra { display: block; height: 100%; min-width: 2px; background: var(--cor-barra); border-radius: 0 4px 4px 0; }
-.linha-barra:hover .barra, .coluna:hover .barra-vertical { filter: brightness(0.85); }
 
-.colunas { display: flex; align-items: flex-end; gap: 2px; height: 200px; padding-top: 8px; }
+.colunas { display: flex; align-items: flex-end; gap: 3px; height: 160px; padding-top: 8px; }
 .coluna {
   flex: 1 1 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
   min-width: 0; cursor: default;
 }
-.barra-vertical { width: 70%; max-width: 36px; min-height: 2px; background: var(--cor-barra); border-radius: 4px 4px 0 0; }
-.valor-coluna { font-size: 11px; color: var(--cor-texto); min-height: 14px; }
-.eixo { font-size: 11px; color: var(--cor-texto-suave); margin-top: 4px; border-top: 1px solid var(--cor-borda); width: 100%; text-align: center; padding-top: 2px; }
+.barra-vertical { width: 70%; max-width: 28px; min-height: 2px; background: var(--cor-barra-apoio); border-radius: 4px 4px 0 0; }
+.coluna:hover .barra-vertical, .linha-barra:hover .barra { background: var(--cor-destaque); }
+.valor-coluna { font-size: 11px; min-height: 14px; }
+.eixo {
+  font-size: 11px; color: var(--cor-texto-suave); margin-top: 4px; border-top: 1px solid var(--cor-borda);
+  width: 100%; text-align: center; padding-top: 2px;
+}
 
 .tabela {
   width: 100%; border-collapse: collapse; font-size: 13px;
@@ -53,10 +90,21 @@ h2 { font-size: 16px; font-weight: 500; margin: 0 0 4px; }
   th { color: var(--cor-texto-suave); font-weight: 500; }
 }
 
-@media (max-width: 599px) {
-  .linha-barra { grid-template-columns: 96px 1fr 28px 38px; }
-  .linha-barra.simples { grid-template-columns: 130px 1fr 28px; }
-  .eixo { font-size: 9px; }
-  .graficos { grid-template-columns: 1fr; }
+@media (max-width: 959px) {
+  .inferior { grid-template-columns: minmax(0, 1fr); }
 }
-.linha-barra.zerada .rotulo, .linha-barra.zerada .valor { color: var(--cor-texto-suave); font-weight: 400; }
+
+/* No celular a trajetória vira uma coluna: número, nome e barra em cada linha */
+@media (max-width: 699px) {
+  .trajetoria { padding: 16px; }
+  .etapas { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .etapa {
+    grid-template-columns: 56px minmax(0, 1fr) auto; grid-template-areas: 'numero nome conversao' 'numero trilho trilho';
+    align-items: center; gap: 4px 12px; margin: 0 -8px;
+    .numero { grid-area: numero; font-size: 32px; }
+    .nome { grid-area: nome; }
+    .conversao { grid-area: conversao; min-height: 0; }
+    .trilho { grid-area: trilho; }
+  }
+  .eixo { font-size: 9px; }
+}

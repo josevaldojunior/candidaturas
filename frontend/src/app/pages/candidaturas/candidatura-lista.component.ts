@@ -25,6 +25,7 @@ import { CandidaturaResumo, FiltrosCandidatura, Plataforma, Prioridade, Status }
 import { Notificacao } from '../../core/notificacao.service';
 import { PLATAFORMAS, PRIORIDADES, ROTULO_STATUS, STATUS } from '../../core/rotulos';
 import { RotuloPipe } from '../../shared/rotulo.pipe';
+import { TrajetoriaComponent } from '../../shared/trajetoria.component';
 
 const TAMANHO_PADRAO = 20;
 const ORDEM_PADRAO = 'atualizadoEm,desc';
@@ -32,7 +33,7 @@ const ORDEM_PADRAO = 'atualizadoEm,desc';
 @Component({
   selector: 'app-candidatura-lista',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, DatePipe, RotuloPipe, MatTableModule, MatPaginatorModule, MatSortModule,
+  imports: [TrajetoriaComponent, ReactiveFormsModule, RouterLink, DatePipe, RotuloPipe, MatTableModule, MatPaginatorModule, MatSortModule,
     MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, MatButtonModule, MatIconModule,
     MatExpansionModule, MatProgressBarModule, MatTooltipModule, MatSlideToggleModule],
   templateUrl: './candidatura-lista.component.html',

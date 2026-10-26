@@ -8,11 +8,12 @@ import { AcompanhamentoApi, CandidaturaApi } from '../../core/api.service';
 import { FollowUpItem, FollowUps } from '../../core/models';
 import { Notificacao } from '../../core/notificacao.service';
 import { RotuloPipe } from '../../shared/rotulo.pipe';
+import { TrajetoriaComponent } from '../../shared/trajetoria.component';
 
 @Component({
   selector: 'app-follow-ups',
   standalone: true,
-  imports: [DatePipe, NgTemplateOutlet, RouterLink, RotuloPipe, MatButtonModule, MatIconModule, MatProgressBarModule],
+  imports: [TrajetoriaComponent, DatePipe, NgTemplateOutlet, RouterLink, RotuloPipe, MatButtonModule, MatIconModule, MatProgressBarModule],
   template: `
     <div class="pagina">
       <div class="pagina-cabecalho">
@@ -50,9 +51,9 @@ import { RotuloPipe } from '../../shared/rotulo.pipe';
           <span>{{ prazo(f) }}</span>
         </div>
         <div class="corpo">
-          <a [routerLink]="['/candidaturas', f.candidaturaId]" class="empresa">{{ f.empresa }}</a>
-          <span class="texto-suave"> · {{ f.cargo }}</span>
-          <span class="chip-status s-{{ f.status }}">{{ f.status | rotulo: 'status' }}</span>
+          <div><a [routerLink]="['/candidaturas', f.candidaturaId]" class="empresa">{{ f.empresa }}</a></div>
+          <div class="texto-suave">{{ f.cargo }}</div>
+          <app-trajetoria [status]="f.status" />
           @if (f.proximoPasso) { <div><strong>Próximo passo:</strong> {{ f.proximoPasso }}</div> }
           @if (f.descricao) { <div class="texto-suave">{{ f.tipo | rotulo: 'interacao' }}: {{ f.descricao }}</div> }
         </div>
@@ -62,15 +63,15 @@ import { RotuloPipe } from '../../shared/rotulo.pipe';
   `,
   styles: `
     section { margin-bottom: 24px; }
-    .titulo-secao { display: flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 500; margin: 0 0 8px; }
-    .titulo-secao.vencidos { color: var(--cor-perigo); }
+    .titulo-secao { display: flex; align-items: center; gap: 6px; font-size: 18px; font-weight: 600; margin: 0 0 8px; }
+    .titulo-secao.vencidos { color: var(--cor-acao); }
     .follow-up { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
     .data { display: flex; flex-direction: column; align-items: center; min-width: 64px; font-size: 12px; color: var(--cor-texto-suave); }
     .data strong { font-size: 18px; color: var(--cor-texto); }
-    .data.atrasado, .data.atrasado strong { color: var(--cor-perigo); }
+    .data.atrasado, .data.atrasado strong { color: var(--cor-acao); }
     .corpo { flex: 1 1 auto; display: grid; gap: 4px; min-width: 0; }
     .empresa { font-weight: 500; color: inherit; }
-    .chip-status { justify-self: start; }
+    app-trajetoria { justify-self: start; }
     @media (max-width: 599px) {
       .follow-up { flex-wrap: wrap; gap: 8px 12px; }
       .follow-up button { width: 100%; }
