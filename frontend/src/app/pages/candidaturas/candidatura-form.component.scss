@@ -1,4 +1,4 @@
-.secao { font-size: 15px; font-weight: 500; margin: 8px 0 12px; color: var(--cor-destaque); }
-.secao:not(:first-child) { margin-top: 20px; }
-.acoes { margin-top: 16px; }
+.secao { font-size: 15px; font-weight: 500; margin: 4px 0 16px; color: var(--cor-destaque); }
+.secao:not(:first-child) { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--cor-borda); }
+.acoes { margin-top: 24px; }
 .pendencia-concluida { color: var(--cor-ok); }

@@ -1,11 +1,12 @@
 <div class="pagina">
   <div class="pagina-cabecalho">
     <h1>Candidaturas</h1>
-    <button mat-stroked-button (click)="exportar()" matTooltip="Exporta as candidaturas filtradas">
-      <mat-icon>download</mat-icon> CSV
+    <button mat-stroked-button (click)="exportar()"
+            matTooltip="Baixa as candidaturas filtradas numa planilha (CSV), que abre no Excel">
+      <mat-icon>download</mat-icon> Exportar
     </button>
     <a mat-flat-button routerLink="/candidaturas/nova">
-      <mat-icon>add</mat-icon> Nova
+      <mat-icon>add</mat-icon> Nova candidatura
     </a>
   </div>
 
