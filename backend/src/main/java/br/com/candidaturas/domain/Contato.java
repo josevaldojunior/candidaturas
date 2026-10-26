@@ -10,6 +10,10 @@ public class Contato {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /** Dono do contato. */
+    @Column(name = "usuario_id")
+    private Long usuarioId;
+
     @Column(nullable = false, length = 200)
     private String nome;
 
@@ -31,6 +35,8 @@ public class Contato {
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+    public Long getUsuarioId() { return usuarioId; }
+    public void setUsuarioId(Long usuarioId) { this.usuarioId = usuarioId; }
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
     public CargoContato getCargo() { return cargo; }

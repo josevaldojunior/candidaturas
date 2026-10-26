@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import {
   CandidaturaDetalhe, CandidaturaRequest, CandidaturaResumo, ColunaKanban, Contato, ContatoRequest, Dashboard,
   FiltrosCandidatura, FollowUps, ResultadoImportacao, ResultadoInbox, ResultadoSemRetorno, Interacao, InteracaoRequest, Pagina, Status,
@@ -144,10 +144,22 @@ export class AcompanhamentoApi {
 export class CsvApi {
   private readonly http = inject(HttpClient);
 
-  /** URL de download do CSV com os mesmos filtros da listagem. */
-  urlExportacao(filtros: FiltrosCandidatura = {}): string {
-    const query = paramsDeFiltros(filtros).toString();
-    return `/api/csv/exportar${query ? '?' + query : ''}`;
+  /**
+   * Baixa o CSV com os mesmos filtros da listagem. É feito pela API (e não por um link) porque o
+   * download precisa levar o token de login.
+   */
+  exportar(filtros: FiltrosCandidatura = {}): Observable<void> {
+    return this.http.get('/api/csv/exportar', {
+      params: paramsDeFiltros(filtros), responseType: 'blob', observe: 'response',
+    }).pipe(map((r) => {
+      const nome = /filename="([^"]+)"/.exec(r.headers.get('Content-Disposition') ?? '')?.[1] ?? 'candidaturas.csv';
+      const url = URL.createObjectURL(r.body as Blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = nome;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }));
   }
 
   importar(arquivo: File): Observable<ResultadoImportacao> {
@@ -158,5 +170,32 @@ export class CsvApi {
 
   processarInbox(): Observable<ResultadoInbox> {
     return this.http.post<ResultadoInbox>('/api/inbox/processar', null);
+  }
+}
+
+export interface TokenIntegracaoStatus {
+  configurado: boolean;
+  criadoEm: string | null;
+}
+
+@Injectable({ providedIn: 'root' })
+export class ContaApi {
+  private readonly http = inject(HttpClient);
+
+  statusToken(): Observable<TokenIntegracaoStatus> {
+    return this.http.get<TokenIntegracaoStatus>('/api/conta/token-integracao');
+  }
+
+  /** O token só vem nesta resposta; depois não dá para ver de novo, só gerar outro. */
+  gerarToken(): Observable<{ token: string; criadoEm: string }> {
+    return this.http.post<{ token: string; criadoEm: string }>('/api/conta/token-integracao', null);
+  }
+
+  revogarToken(): Observable<void> {
+    return this.http.delete<void>('/api/conta/token-integracao');
+  }
+
+  trocarSenha(senhaAtual: string, novaSenha: string): Observable<void> {
+    return this.http.put<void>('/api/conta/senha', { senhaAtual, novaSenha });
   }
 }

@@ -8,6 +8,7 @@ import br.com.candidaturas.dto.FollowUpDtos.FollowUpItem;
 import br.com.candidaturas.dto.FollowUpDtos.FollowUpsResponse;
 import br.com.candidaturas.repository.InteracaoRepository;
 import br.com.candidaturas.support.RelogioFixo;
+import br.com.candidaturas.support.UsuarioFixo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -35,11 +36,11 @@ class FollowUpServiceTest {
         Interacao vencido = followUp(c, 10L, HOJE.minusDays(3));
         Interacao hoje = followUp(c, 11L, HOJE);
         Interacao emSete = followUp(c, 12L, HOJE.plusDays(7));
-        when(repository.followUpsPendentesAte(HOJE.plusDays(7))).thenReturn(List.of(vencido, hoje, emSete));
+        when(repository.followUpsPendentesAte(UsuarioFixo.ID, HOJE.plusDays(7))).thenReturn(List.of(vencido, hoje, emSete));
 
-        FollowUpsResponse r = new FollowUpService(repository, RelogioFixo.clock()).pendentes();
+        FollowUpsResponse r = new FollowUpService(repository, new UsuarioFixo(), RelogioFixo.clock()).pendentes();
 
-        verify(repository).followUpsPendentesAte(LocalDate.of(2026, 10, 31));
+        verify(repository).followUpsPendentesAte(UsuarioFixo.ID, LocalDate.of(2026, 10, 31));
         assertThat(r.vencidos()).extracting(FollowUpItem::interacaoId, FollowUpItem::diasParaVencer)
                 .containsExactly(org.assertj.core.groups.Tuple.tuple(10L, -3L));
         assertThat(r.proximos()).extracting(FollowUpItem::interacaoId).containsExactly(11L, 12L);

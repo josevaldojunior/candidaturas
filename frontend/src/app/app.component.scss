@@ -20,3 +20,8 @@
 }
 /* no desktop a barra só segura o seletor de tema, então fica baixa */
 .barra-topo.compacta { height: 52px; min-height: 52px; padding: 0 16px; }
+
+.conta { margin-left: 8px; color: var(--cor-texto); }
+.conta .nome { margin-left: 6px; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.conta-dados { display: flex; flex-direction: column; line-height: 1.3; height: auto; padding-top: 8px; padding-bottom: 8px; }
+.conta-dados span { font-size: 12px; }

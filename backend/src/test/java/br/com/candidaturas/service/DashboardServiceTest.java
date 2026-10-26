@@ -8,6 +8,7 @@ import br.com.candidaturas.dto.DashboardDtos.EtapaFunil;
 import br.com.candidaturas.repository.CandidaturaRepository;
 import br.com.candidaturas.repository.HistoricoStatusRepository;
 import br.com.candidaturas.support.RelogioFixo;
+import br.com.candidaturas.support.UsuarioFixo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +39,7 @@ class DashboardServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new DashboardService(candidaturaRepository, historicoRepository, RelogioFixo.clock());
+        service = new DashboardService(candidaturaRepository, historicoRepository, new UsuarioFixo(), RelogioFixo.clock());
         // hoje = sábado 24/10/2026; semana atual começa na segunda 19/10
         nova(1L, Status.INTERESSE, Plataforma.LINKEDIN_VAGAS, null);
         nova(2L, Status.CANDIDATADO, Plataforma.LINKEDIN_VAGAS, "2026-10-20", Status.CANDIDATADO);
@@ -49,8 +50,8 @@ class DashboardServiceTest {
         nova(5L, Status.SEM_RETORNO, null, "2026-08-01", Status.CANDIDATADO, Status.SEM_RETORNO);
         nova(6L, Status.ACEITA, Plataforma.CATHO, "2026-10-19", Status.CANDIDATADO, Status.TRIAGEM_RH,
                 Status.TESTE_TECNICO, Status.ENTREVISTA_TECNICA, Status.ENTREVISTA_FINAL, Status.PROPOSTA, Status.ACEITA);
-        when(candidaturaRepository.findAll()).thenReturn(candidaturas);
-        when(historicoRepository.findAll()).thenReturn(historico);
+        when(candidaturaRepository.findByUsuarioId(UsuarioFixo.ID)).thenReturn(candidaturas);
+        when(historicoRepository.findByCandidaturaUsuarioId(UsuarioFixo.ID)).thenReturn(historico);
     }
 
     @Test

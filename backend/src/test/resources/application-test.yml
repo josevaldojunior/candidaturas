@@ -9,3 +9,7 @@ app:
     habilitado: false
   inbox:
     dir: target/inbox-test
+  seguranca:
+    jwt-segredo: segredo-dos-testes-de-integracao
+
+spring.flyway.locations: classpath:db/migration,classpath:db/testdata

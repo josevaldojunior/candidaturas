@@ -7,6 +7,7 @@ import br.com.candidaturas.dto.Pagina;
 import br.com.candidaturas.repository.CandidaturaRepository;
 import br.com.candidaturas.repository.CandidaturaSpecs;
 import br.com.candidaturas.repository.ContatoRepository;
+import br.com.candidaturas.seguranca.UsuarioAtual;
 import br.com.candidaturas.util.Normalizacao;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -23,11 +24,14 @@ public class CandidaturaService {
 
     private final CandidaturaRepository repository;
     private final ContatoRepository contatoRepository;
+    private final UsuarioAtual usuarioAtual;
     private final Clock clock;
 
-    public CandidaturaService(CandidaturaRepository repository, ContatoRepository contatoRepository, Clock clock) {
+    public CandidaturaService(CandidaturaRepository repository, ContatoRepository contatoRepository,
+                              UsuarioAtual usuarioAtual, Clock clock) {
         this.repository = repository;
         this.contatoRepository = contatoRepository;
+        this.usuarioAtual = usuarioAtual;
         this.clock = clock;
     }
 
@@ -35,7 +39,8 @@ public class CandidaturaService {
     public Pagina<CandidaturaResumo> listar(List<Status> status, String empresa, List<Plataforma> plataformas,
                                            String stack, List<Prioridade> prioridades, LocalDate de, LocalDate ate,
                                            String texto, Boolean soPendentes, Pageable pageable) {
-        var spec = CandidaturaSpecs.filtrar(status, empresa, plataformas, stack, prioridades, de, ate, texto, soPendentes);
+        var spec = CandidaturaSpecs.filtrar(usuarioAtual.id(), status, empresa, plataformas, stack, prioridades,
+                de, ate, texto, soPendentes);
         return Pagina.de(repository.findAll(spec, pageable), CandidaturaDtos::resumo);
     }
 
@@ -43,7 +48,8 @@ public class CandidaturaService {
     public List<Candidatura> listarTodas(List<Status> status, String empresa, List<Plataforma> plataformas,
                                          String stack, List<Prioridade> prioridades, LocalDate de, LocalDate ate,
                                          String texto, Boolean soPendentes) {
-        var spec = CandidaturaSpecs.filtrar(status, empresa, plataformas, stack, prioridades, de, ate, texto, soPendentes);
+        var spec = CandidaturaSpecs.filtrar(usuarioAtual.id(), status, empresa, plataformas, stack, prioridades,
+                de, ate, texto, soPendentes);
         List<Candidatura> todas = repository.findAll(spec, Sort.by("id"));
         // inicializa coleções usadas na exportação enquanto a sessão está aberta
         todas.forEach(c -> {
@@ -65,7 +71,7 @@ public class CandidaturaService {
         for (Status s : Status.values()) {
             porStatus.put(s, new ArrayList<>());
         }
-        repository.findAll(Sort.by(Sort.Order.desc("atualizadoEm")))
+        repository.findByUsuarioId(usuarioAtual.id(), Sort.by(Sort.Order.desc("atualizadoEm")))
                 .forEach(c -> porStatus.get(c.getStatus()).add(CandidaturaDtos.resumo(c)));
         // prioridade é gravada como texto: ordenar no Java (ALTA > MEDIA > BAIXA); o sort é estável
         porStatus.values().forEach(l -> l.sort(Comparator.comparing(CandidaturaResumo::prioridade)));
@@ -74,12 +80,12 @@ public class CandidaturaService {
 
     @Transactional(readOnly = true)
     public List<String> stacks() {
-        return repository.listarStacks();
+        return repository.listarStacks(usuarioAtual.id());
     }
 
     @Transactional(readOnly = true)
     public List<String> empresas() {
-        return repository.listarEmpresas();
+        return repository.listarEmpresas(usuarioAtual.id());
     }
 
     @Transactional
@@ -88,6 +94,7 @@ public class CandidaturaService {
         validarChaveExterna(req.chaveExterna(), null);
         Candidatura c = new Candidatura();
         c.setOrigem(Origem.MANUAL);
+        c.setUsuarioId(usuarioAtual.id());
         c.setCriadoEm(agora);
         preencher(c, req);
         c.setStatus(req.status() != null ? req.status() : Status.CANDIDATADO);
@@ -139,7 +146,7 @@ public class CandidaturaService {
     @Transactional
     public CandidaturaDetalhe vincularContato(Long id, Long contatoId) {
         Candidatura c = obter(id);
-        Contato contato = contatoRepository.findById(contatoId)
+        Contato contato = contatoRepository.findByIdAndUsuarioId(contatoId, usuarioAtual.id())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Contato", contatoId));
         c.getContatos().add(contato);
         c.setAtualizadoEm(agora());
@@ -181,7 +188,8 @@ public class CandidaturaService {
     }
 
     Candidatura obter(Long id) {
-        return repository.findById(id).orElseThrow(() -> new RecursoNaoEncontradoException("Candidatura", id));
+        return repository.findByIdAndUsuarioId(id, usuarioAtual.id())
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Candidatura", id));
     }
 
     private void preencher(Candidatura c, CandidaturaRequest req) {
@@ -205,7 +213,8 @@ public class CandidaturaService {
         c.setChaveExterna(Normalizacao.texto(req.chaveExterna()));
         if (req.contatoIds() != null) {
             c.getContatos().clear();
-            c.getContatos().addAll(contatoRepository.findAllById(req.contatoIds()));
+            c.getContatos().addAll(req.contatoIds().isEmpty() ? List.of()
+                    : contatoRepository.findByUsuarioIdAndIdIn(usuarioAtual.id(), req.contatoIds()));
         }
     }
 
@@ -214,7 +223,7 @@ public class CandidaturaService {
         if (k == null) {
             return;
         }
-        repository.findByChaveExterna(k)
+        repository.findByUsuarioIdAndChaveExterna(usuarioAtual.id(), k)
                 .filter(outra -> !outra.getId().equals(idAtual))
                 .ifPresent(outra -> {
                     throw new RegraNegocioException("Já existe a candidatura " + outra.getId()

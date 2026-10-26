@@ -4,10 +4,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { map } from 'rxjs';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { filter, map } from 'rxjs';
+import { SessaoService } from './core/sessao.service';
 import { SeletorTemaComponent } from './shared/seletor-tema.component';
 
 interface ItemMenu {
@@ -29,12 +31,23 @@ const MENU: ItemMenu[] = [
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, RouterLink, RouterLinkActive, MatSidenavModule, MatToolbarModule, MatListModule,
-    MatIconModule, MatButtonModule, SeletorTemaComponent],
+    MatIconModule, MatButtonModule, MatMenuModule, SeletorTemaComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
   readonly menu = MENU;
+  readonly sessao = inject(SessaoService);
+  private readonly router = inject(Router);
+
+  /** Na tela de login o app aparece sem o menu lateral e sem a barra superior. */
+  readonly telaDeLogin = toSignal(
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      map((e) => e.urlAfterRedirects.startsWith('/login')),
+    ),
+    { initialValue: location.pathname.startsWith('/login') },
+  );
   /** No celular o menu lateral vira gaveta (hambúrguer). */
   readonly celular = toSignal(
     inject(BreakpointObserver).observe([Breakpoints.XSmall, Breakpoints.Small]).pipe(map((r) => r.matches)),

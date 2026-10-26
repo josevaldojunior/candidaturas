@@ -50,16 +50,21 @@ app:
   agendamento:
     habilitado: true
   sem-retorno:
-    # todo dia às 18:00 (horário de Brasília)
+    # todo dia às 18:00 (horário de Brasília), para cada conta
     cron: "0 0 18 * * *"
   inbox:
     dir: ${INBOX_DIR:./inbox}
+    # e-mail da conta que recebe os CSVs da pasta; vazio desliga a leitura automática
+    usuario: ${INBOX_USUARIO:}
     # a cada 5 minutos
     intervalo-ms: 300000
     atraso-inicial-ms: 30000
   cors:
-    origens: http://localhost:4200
-
-integracao:
-  # se definido, o header X-Integracao-Token passa a ser obrigatório
-  token: ${INTEGRACAO_TOKEN:}
+    # origens do frontend, separadas por vírgula
+    origens: ${CORS_ORIGENS:http://localhost:4200}
+  seguranca:
+    # segredo do JWT; obrigatório em produção (sem ele, os logins expiram a cada reinício)
+    jwt-segredo: ${JWT_SEGREDO:}
+    sessao-horas: ${SESSAO_HORAS:12}
+    # false: só a primeira conta pode ser criada (instalação de uso pessoal)
+    cadastro-aberto: ${CADASTRO_ABERTO:true}

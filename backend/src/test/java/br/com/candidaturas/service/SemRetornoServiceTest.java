@@ -1,18 +1,18 @@
 package br.com.candidaturas.service;
 
 import br.com.candidaturas.domain.Candidatura;
-import br.com.candidaturas.domain.Configuracao;
 import br.com.candidaturas.domain.Status;
 import br.com.candidaturas.domain.TipoInteracao;
+import br.com.candidaturas.domain.Usuario;
 import br.com.candidaturas.dto.SemRetornoDtos.ResultadoSemRetorno;
 import br.com.candidaturas.repository.CandidaturaRepository;
-import br.com.candidaturas.repository.ConfiguracaoRepository;
 import br.com.candidaturas.repository.ContatoRepository;
+import br.com.candidaturas.repository.UsuarioRepository;
 import br.com.candidaturas.support.RelogioFixo;
+import br.com.candidaturas.support.UsuarioFixo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -33,7 +33,7 @@ class SemRetornoServiceTest {
     @Mock
     private CandidaturaRepository candidaturaRepository;
     @Mock
-    private ConfiguracaoRepository configuracaoRepository;
+    private UsuarioRepository usuarioRepository;
     @Mock
     private ContatoRepository contatoRepository;
 
@@ -43,12 +43,16 @@ class SemRetornoServiceTest {
     private Candidatura comInteracaoRecente;
     private Candidatura semInteracaoComDataAntiga;
     private Candidatura recemCriada;
+    private final Usuario usuario = new Usuario();
 
     @BeforeEach
     void setUp() {
-        var candidaturaService = new CandidaturaService(candidaturaRepository, contatoRepository, RelogioFixo.clock());
-        service = new SemRetornoService(candidaturaRepository, configuracaoRepository, candidaturaService,
+        var candidaturaService = new CandidaturaService(candidaturaRepository, contatoRepository, new UsuarioFixo(),
                 RelogioFixo.clock());
+        service = new SemRetornoService(candidaturaRepository, usuarioRepository, candidaturaService,
+                new UsuarioFixo(), RelogioFixo.clock());
+        usuario.setId(UsuarioFixo.ID);
+        lenient().when(usuarioRepository.findById(UsuarioFixo.ID)).thenReturn(Optional.of(usuario));
 
         paradaHa24Dias = CandidaturaServiceTest.candidatura(1L, Status.CANDIDATADO);
         paradaHa24Dias.setUltimaInteracaoEm(LocalDateTime.of(2026, 9, 30, 9, 0));
@@ -62,7 +66,7 @@ class SemRetornoServiceTest {
         recemCriada = CandidaturaServiceTest.candidatura(4L, Status.CANDIDATADO);
         recemCriada.setCriadoEm(LocalDateTime.of(2026, 10, 20, 8, 0));
 
-        lenient().when(candidaturaRepository.findByStatusIn(Status.AGUARDANDO_RETORNO))
+        lenient().when(candidaturaRepository.findByUsuarioIdAndStatusIn(UsuarioFixo.ID, Status.AGUARDANDO_RETORNO))
                 .thenReturn(List.of(paradaHa24Dias, comInteracaoRecente, semInteracaoComDataAntiga, recemCriada));
     }
 
@@ -107,28 +111,23 @@ class SemRetornoServiceTest {
     }
 
     @Test
-    void usaPadraoQuandoNaoHaConfiguracaoValida() {
-        when(configuracaoRepository.findById(SemRetornoService.CHAVE_DIAS)).thenReturn(Optional.empty());
+    void usaPadraoDe30DiasDaConta() {
         assertThat(service.dias()).isEqualTo(30);
 
-        configurarDias("abc");
-        assertThat(service.dias()).isEqualTo(30);
+        when(usuarioRepository.findById(UsuarioFixo.ID)).thenReturn(Optional.empty());
+        assertThat(service.dias()).isEqualTo(SemRetornoService.DIAS_PADRAO);
     }
 
     @Test
-    void salvaDiasValidando() {
-        when(configuracaoRepository.findById(SemRetornoService.CHAVE_DIAS)).thenReturn(Optional.empty());
-
-        assertThat(service.salvarDias(30)).isEqualTo(30);
-        ArgumentCaptor<Configuracao> captor = ArgumentCaptor.forClass(Configuracao.class);
-        verify(configuracaoRepository).save(captor.capture());
-        assertThat(captor.getValue().getValor()).isEqualTo("30");
+    void salvaDiasNaContaValidando() {
+        assertThat(service.salvarDias(45)).isEqualTo(45);
+        assertThat(usuario.getSemRetornoDias()).isEqualTo(45);
 
         assertThatThrownBy(() -> service.salvarDias(0)).isInstanceOf(RegraNegocioException.class);
+        assertThatThrownBy(() -> service.salvarDias(366)).isInstanceOf(RegraNegocioException.class);
     }
 
     private void configurarDias(String valor) {
-        when(configuracaoRepository.findById(SemRetornoService.CHAVE_DIAS))
-                .thenReturn(Optional.of(new Configuracao(SemRetornoService.CHAVE_DIAS, valor)));
+        usuario.setSemRetornoDias(Integer.parseInt(valor));
     }
 }

@@ -2,6 +2,7 @@ package br.com.candidaturas.web;
 
 import br.com.candidaturas.repository.CandidaturaRepository;
 import br.com.candidaturas.repository.ContatoRepository;
+import br.com.candidaturas.support.LoginPadraoNosTestes;
 import br.com.candidaturas.support.RelogioFixo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -65,7 +66,7 @@ class IntegracaoControllerIT {
                 """).andExpect(jsonPath("$.atualizadas").value(1));
 
         mvc.perform(get("/api/candidaturas")).andExpect(jsonPath("$.totalElements").value(1));
-        long id = candidaturaRepository.findByChaveExterna("li-123").orElseThrow().getId();
+        long id = candidaturaRepository.findByUsuarioIdAndChaveExterna(LoginPadraoNosTestes.USUARIO_TESTE, "li-123").orElseThrow().getId();
         mvc.perform(get("/api/candidaturas/{id}", id))
                 .andExpect(jsonPath("$.origem").value("AGENTE"))
                 .andExpect(jsonPath("$.status").value("TRIAGEM_RH"))

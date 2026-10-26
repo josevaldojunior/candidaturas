@@ -5,6 +5,7 @@ import br.com.candidaturas.domain.Interacao;
 import br.com.candidaturas.dto.FollowUpDtos.FollowUpItem;
 import br.com.candidaturas.dto.FollowUpDtos.FollowUpsResponse;
 import br.com.candidaturas.repository.InteracaoRepository;
+import br.com.candidaturas.seguranca.UsuarioAtual;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,10 +21,12 @@ public class FollowUpService {
     static final int DIAS_A_FRENTE = 7;
 
     private final InteracaoRepository repository;
+    private final UsuarioAtual usuarioAtual;
     private final Clock clock;
 
-    public FollowUpService(InteracaoRepository repository, Clock clock) {
+    public FollowUpService(InteracaoRepository repository, UsuarioAtual usuarioAtual, Clock clock) {
         this.repository = repository;
+        this.usuarioAtual = usuarioAtual;
         this.clock = clock;
     }
 
@@ -33,7 +36,7 @@ public class FollowUpService {
         LocalDate hoje = LocalDate.now(clock);
         List<FollowUpItem> vencidos = new ArrayList<>();
         List<FollowUpItem> proximos = new ArrayList<>();
-        for (Interacao i : repository.followUpsPendentesAte(hoje.plusDays(DIAS_A_FRENTE))) {
+        for (Interacao i : repository.followUpsPendentesAte(usuarioAtual.id(), hoje.plusDays(DIAS_A_FRENTE))) {
             FollowUpItem item = item(i, hoje);
             if (i.getDataFollowUp().isBefore(hoje)) {
                 vencidos.add(item);

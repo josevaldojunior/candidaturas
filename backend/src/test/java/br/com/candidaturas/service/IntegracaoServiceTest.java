@@ -7,6 +7,7 @@ import br.com.candidaturas.dto.IntegracaoItem;
 import br.com.candidaturas.repository.CandidaturaRepository;
 import br.com.candidaturas.repository.ContatoRepository;
 import br.com.candidaturas.support.RelogioFixo;
+import br.com.candidaturas.support.UsuarioFixo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,15 +45,15 @@ class IntegracaoServiceTest {
 
     @BeforeEach
     void setUp() {
-        var candidaturaService = new CandidaturaService(repository, contatoRepository, RelogioFixo.clock());
+        var candidaturaService = new CandidaturaService(repository, contatoRepository, new UsuarioFixo(), RelogioFixo.clock());
         service = new IntegracaoService(repository, contatoRepository, candidaturaService, transactionManager,
-                RelogioFixo.clock());
-        when(repository.findByChaveExterna(any())).thenReturn(Optional.empty());
-        when(repository.findFirstByLinkVagaOrderByIdAsc(any())).thenReturn(Optional.empty());
-        when(repository.findFirstByEmpresaIgnoreCaseAndCargoIgnoreCaseOrderByIdAsc(any(), any())).thenReturn(Optional.empty());
+                new UsuarioFixo(), RelogioFixo.clock());
+        when(repository.findByUsuarioIdAndChaveExterna(any(), any())).thenReturn(Optional.empty());
+        when(repository.findFirstByUsuarioIdAndLinkVagaOrderByIdAsc(any(), any())).thenReturn(Optional.empty());
+        when(repository.findFirstByUsuarioIdAndEmpresaIgnoreCaseAndCargoIgnoreCaseOrderByIdAsc(any(), any(), any())).thenReturn(Optional.empty());
         when(repository.save(any())).thenAnswer(inv -> inv.getArgument(0));
-        when(contatoRepository.findFirstByEmailIgnoreCaseOrderByIdAsc(any())).thenReturn(Optional.empty());
-        when(contatoRepository.findByTelefoneIsNotNull()).thenReturn(List.of());
+        when(contatoRepository.findFirstByUsuarioIdAndEmailIgnoreCaseOrderByIdAsc(any(), any())).thenReturn(Optional.empty());
+        when(contatoRepository.findByUsuarioIdAndTelefoneIsNotNull(any())).thenReturn(List.of());
         when(contatoRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
     }
 
@@ -65,6 +66,7 @@ class IntegracaoServiceTest {
         assertThat(r).isEqualTo(new ResultadoImportacao(1, 0, 0, List.of()));
         Candidatura c = salva();
         assertThat(c.getOrigem()).isEqualTo(Origem.AGENTE);
+        assertThat(c.getUsuarioId()).isEqualTo(UsuarioFixo.ID);
         assertThat(c.getChaveExterna()).isEqualTo("vaga-1");
         assertThat(c.getStatus()).isEqualTo(Status.TRIAGEM_RH);
         assertThat(c.getModalidade()).isEqualTo(Modalidade.HIBRIDO);
@@ -82,6 +84,7 @@ class IntegracaoServiceTest {
             assertThat(ct.getNome()).isEqualTo("Ana");
             assertThat(ct.getCargo()).isEqualTo(CargoContato.RECRUTADOR);
             assertThat(ct.getEmpresa()).isEqualTo("ACME");
+            assertThat(ct.getUsuarioId()).isEqualTo(UsuarioFixo.ID);
         });
     }
 
@@ -95,7 +98,7 @@ class IntegracaoServiceTest {
     @Test
     void atualizaSoOsCamposEnviadosEGravaHistorico() {
         Candidatura existente = existente();
-        when(repository.findByChaveExterna("vaga-1")).thenReturn(Optional.of(existente));
+        when(repository.findByUsuarioIdAndChaveExterna(UsuarioFixo.ID, "vaga-1")).thenReturn(Optional.of(existente));
         IntegracaoItem soStatus = new Builder().chave("vaga-1").status("Entrevista técnica").build();
 
         ResultadoImportacao r = service.processar(List.of(soStatus), Origem.AGENTE);
@@ -116,7 +119,7 @@ class IntegracaoServiceTest {
     void localizaPeloLinkQuandoNaoHaChaveEGuardaAChaveNova() {
         Candidatura existente = existente();
         existente.setChaveExterna(null);
-        when(repository.findFirstByLinkVagaOrderByIdAsc("https://vagas/1")).thenReturn(Optional.of(existente));
+        when(repository.findFirstByUsuarioIdAndLinkVagaOrderByIdAsc(UsuarioFixo.ID, "https://vagas/1")).thenReturn(Optional.of(existente));
 
         ResultadoImportacao r = service.processar(List.of(new Builder().chave("li-99").link("https://vagas/1").build()),
                 Origem.AGENTE);
@@ -129,7 +132,7 @@ class IntegracaoServiceTest {
     @Test
     void itemIgualAoGravadoEhIgnorado() {
         Candidatura existente = existente();
-        when(repository.findByChaveExterna("vaga-1")).thenReturn(Optional.of(existente));
+        when(repository.findByUsuarioIdAndChaveExterna(UsuarioFixo.ID, "vaga-1")).thenReturn(Optional.of(existente));
 
         ResultadoImportacao r = service.processar(List.of(new Builder().chave("vaga-1").empresa("ACME")
                 .status("candidatado").stack("java;spring").build()), Origem.AGENTE);
@@ -141,7 +144,7 @@ class IntegracaoServiceTest {
     @Test
     void naoDuplicaInteracaoNemContatoAoRepetir() {
         Candidatura existente = existente();
-        when(repository.findByChaveExterna("vaga-1")).thenReturn(Optional.of(existente));
+        when(repository.findByUsuarioIdAndChaveExterna(UsuarioFixo.ID, "vaga-1")).thenReturn(Optional.of(existente));
         IntegracaoItem comInteracao = item("vaga-1", "https://vagas/1", null)
                 .comInteracao("ligação", "Conversa com RH", null).build();
 
@@ -159,7 +162,7 @@ class IntegracaoServiceTest {
         ana.setNome("Ana Souza");
         ana.setEmail("ANA@acme.com");
         ana.setCargo(CargoContato.RECRUTADOR);
-        when(contatoRepository.findFirstByEmailIgnoreCaseOrderByIdAsc("ana@acme.com")).thenReturn(Optional.of(ana));
+        when(contatoRepository.findFirstByUsuarioIdAndEmailIgnoreCaseOrderByIdAsc(UsuarioFixo.ID, "ana@acme.com")).thenReturn(Optional.of(ana));
 
         service.processar(List.of(item("vaga-1", null, null).build()), Origem.AGENTE);
 
@@ -171,7 +174,7 @@ class IntegracaoServiceTest {
         bruno.setNome("Bruno");
         bruno.setTelefone("+55 11 98888-7777");
         bruno.setCargo(CargoContato.TECH_LEAD);
-        when(contatoRepository.findByTelefoneIsNotNull()).thenReturn(List.of(bruno));
+        when(contatoRepository.findByUsuarioIdAndTelefoneIsNotNull(any())).thenReturn(List.of(bruno));
 
         service.processar(List.of(new Builder().chave("vaga-2").empresa("Beta").cargo("Java")
                 .contato("Bruno", null, "11988887777").build()), Origem.AGENTE);
@@ -213,7 +216,7 @@ class IntegracaoServiceTest {
     @Test
     void pendenciaAtualizaAoReenviarEObservacaoComumNaoMexe() {
         Candidatura existente = existente();
-        when(repository.findByChaveExterna("vaga-1")).thenReturn(Optional.of(existente));
+        when(repository.findByUsuarioIdAndChaveExterna(UsuarioFixo.ID, "vaga-1")).thenReturn(Optional.of(existente));
 
         assertThat(service.processar(List.of(new Builder().chave("vaga-1").observacoes("pendente: mandar portfólio").build()),
                 Origem.AGENTE).atualizadas()).isEqualTo(1);
@@ -228,7 +231,7 @@ class IntegracaoServiceTest {
         Candidatura existente = existente();
         existente.setObservacoes("PENDENTE: mandar portfólio");
         existente.setPendencia(null); // limpa na tela
-        when(repository.findByChaveExterna("vaga-1")).thenReturn(Optional.of(existente));
+        when(repository.findByUsuarioIdAndChaveExterna(UsuarioFixo.ID, "vaga-1")).thenReturn(Optional.of(existente));
 
         ResultadoImportacao r = service.processar(
                 List.of(new Builder().chave("vaga-1").observacoes("PENDENTE: mandar portfólio").build()), Origem.AGENTE);
@@ -242,7 +245,7 @@ class IntegracaoServiceTest {
         Candidatura existente = existente();
         existente.setStatus(Status.INTERESSE);
         existente.setPendencia("Etapa de perguntas não carrega");
-        when(repository.findByChaveExterna("vaga-1")).thenReturn(Optional.of(existente));
+        when(repository.findByUsuarioIdAndChaveExterna(UsuarioFixo.ID, "vaga-1")).thenReturn(Optional.of(existente));
 
         service.processar(List.of(new Builder().chave("vaga-1").status("Candidatado").build()), Origem.AGENTE);
 
@@ -261,8 +264,8 @@ class IntegracaoServiceTest {
     @Test
     void existeProcuraPorLinkOuEmpresaECargo() {
         Candidatura c = existente();
-        when(repository.findFirstByLinkVagaOrderByIdAsc("https://vagas/1")).thenReturn(Optional.of(c));
-        when(repository.findFirstByEmpresaIgnoreCaseAndCargoIgnoreCaseOrderByIdAsc("acme", "dev java")).thenReturn(Optional.of(c));
+        when(repository.findFirstByUsuarioIdAndLinkVagaOrderByIdAsc(UsuarioFixo.ID, "https://vagas/1")).thenReturn(Optional.of(c));
+        when(repository.findFirstByUsuarioIdAndEmpresaIgnoreCaseAndCargoIgnoreCaseOrderByIdAsc(UsuarioFixo.ID, "acme", "dev java")).thenReturn(Optional.of(c));
 
         ExisteResponse porLink = service.existe("https://vagas/1", null, null);
         assertThat(porLink.existe()).isTrue();
