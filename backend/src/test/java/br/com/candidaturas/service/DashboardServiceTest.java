@@ -87,8 +87,8 @@ class DashboardServiceTest {
         DashboardResponse r = service.resumo();
 
         assertThat(r.porPlataforma()).extracting(Contagem::chave, Contagem::quantidade)
-                .startsWith(tuple("LINKEDIN_VAGAS", 3L), tuple("GUPY", 1L), tuple("CATHO", 1L),
-                        tuple("NAO_INFORMADA", 1L), tuple("LINKEDIN_FEED", 0L));
+                .startsWith(tuple("GUPY", 1L), tuple("LINKEDIN_VAGAS", 3L), tuple("LINKEDIN_FEED", 0L))
+                .endsWith(tuple("CATHO", 1L), tuple("GITHUB", 0L), tuple("OUTRO", 0L), tuple("NAO_INFORMADA", 1L));
         // todas as plataformas aparecem, mesmo zeradas, mais o "não informada"
         assertThat(r.porPlataforma()).hasSize(Plataforma.values().length + 1);
 
