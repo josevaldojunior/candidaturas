@@ -124,6 +124,10 @@ export interface FiltrosCandidatura {
   ate?: string;
   q?: string;
   pendentes?: boolean;
+  /** Etapa do funil alcançada em algum momento (considera o histórico). */
+  etapaMinima?: Status;
+  /** Tiveram resposta: chegaram à triagem ou além, ou foram recusadas. */
+  comResposta?: boolean;
 }
 
 export interface ErroApi {

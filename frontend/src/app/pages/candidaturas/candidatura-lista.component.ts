@@ -1,6 +1,6 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { DatePipe } from '@angular/common';
-import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,7 +23,7 @@ import { ConsultaListaService } from '../../core/consulta-lista.service';
 import { deIsoData, paraIsoData } from '../../core/datas';
 import { CandidaturaResumo, FiltrosCandidatura, Plataforma, Prioridade, Status } from '../../core/models';
 import { Notificacao } from '../../core/notificacao.service';
-import { PLATAFORMAS, PRIORIDADES, STATUS } from '../../core/rotulos';
+import { PLATAFORMAS, PRIORIDADES, ROTULO_STATUS, STATUS } from '../../core/rotulos';
 import { RotuloPipe } from '../../shared/rotulo.pipe';
 
 const TAMANHO_PADRAO = 20;
@@ -61,6 +61,24 @@ export class CandidaturaListaComponent implements OnInit {
   readonly total = signal(0);
   readonly carregando = signal(false);
   readonly stacks = signal<string[]>([]);
+
+  /** Filtros que só chegam pelos cards do dashboard (sem campo no formulário): aparecem como etiqueta. */
+  readonly etapaMinima = signal<Status | null>(null);
+  readonly comResposta = signal(false);
+  readonly filtrosDoDashboard = computed(() => {
+    const lista: { chave: 'etapaMinima' | 'comResposta'; rotulo: string }[] = [];
+    const etapa = this.etapaMinima();
+    if (etapa) {
+      lista.push({
+        chave: 'etapaMinima',
+        rotulo: etapa === 'ENTREVISTA_TECNICA' ? 'Chegaram à entrevista' : `Chegaram a "${ROTULO_STATUS[etapa]}" ou além`,
+      });
+    }
+    if (this.comResposta()) {
+      lista.push({ chave: 'comResposta', rotulo: 'Tiveram resposta' });
+    }
+    return lista;
+  });
 
   pagina = 0;
   tamanho = TAMANHO_PADRAO;
@@ -111,6 +129,8 @@ export class CandidaturaListaComponent implements OnInit {
       ate: deIsoData(q.get('ate')),
       pendentes: q.get('pendentes') === 'true',
     }, { emitEvent: false });
+    this.etapaMinima.set((q.get('etapaMinima') as Status | null) || null);
+    this.comResposta.set(q.get('comResposta') === 'true');
     this.pagina = Math.max(0, Number(q.get('pagina')) || 0);
     this.tamanho = Number(q.get('tamanho')) || TAMANHO_PADRAO;
     this.ordenacao = q.get('ordem') || ORDEM_PADRAO;
@@ -130,6 +150,8 @@ export class CandidaturaListaComponent implements OnInit {
     p['de'] = f.de;
     p['ate'] = f.ate;
     p['pendentes'] = f.pendentes ? 'true' : undefined;
+    p['etapaMinima'] = f.etapaMinima;
+    p['comResposta'] = f.comResposta ? 'true' : undefined;
     p['pagina'] = this.pagina > 0 ? this.pagina : undefined;
     p['tamanho'] = this.tamanho !== TAMANHO_PADRAO ? this.tamanho : undefined;
     p['ordem'] = this.ordenacao !== ORDEM_PADRAO ? this.ordenacao : undefined;
@@ -172,7 +194,19 @@ export class CandidaturaListaComponent implements OnInit {
   }
 
   limpar(): void {
+    this.etapaMinima.set(null);
+    this.comResposta.set(false);
     this.filtros.reset({ q: '', status: [], empresa: '', plataforma: [], stack: '', prioridade: [], de: null, ate: null, pendentes: false });
+  }
+
+  removerFiltroDoDashboard(chave: 'etapaMinima' | 'comResposta'): void {
+    if (chave === 'etapaMinima') {
+      this.etapaMinima.set(null);
+    } else {
+      this.comResposta.set(false);
+    }
+    this.pagina = 0;
+    this.atualizar();
   }
 
   exportar(): void {
@@ -195,6 +229,8 @@ export class CandidaturaListaComponent implements OnInit {
       de: paraIsoData(v.de) ?? undefined,
       ate: paraIsoData(v.ate) ?? undefined,
       pendentes: v.pendentes || undefined,
+      etapaMinima: this.etapaMinima() ?? undefined,
+      comResposta: this.comResposta() || undefined,
     };
   }
 }
