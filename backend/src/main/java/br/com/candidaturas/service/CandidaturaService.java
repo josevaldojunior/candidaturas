@@ -167,7 +167,8 @@ public class CandidaturaService {
         LocalDateTime agora = agora();
         c.setStatus(novo);
         c.adicionarHistorico(new HistoricoStatus(anterior, novo, agora));
-        String texto = "Status alterado de " + anterior + " para " + novo
+        String texto = (anterior == null ? "Etapa definida como " : "Etapa alterada de " + anterior.getRotulo() + " para ")
+                + novo.getRotulo()
                 + (Normalizacao.vazio(descricao) ? "" : ": " + descricao.trim());
         // Sair de INTERESSE significa que o que faltava para enviar foi feito: a pendência é
         // concluída e o texto fica registrado na interação, para não se perder.
