@@ -9,7 +9,16 @@ h2 { font-size: 16px; font-weight: 500; margin: 0 0 12px; }
 
 .status-linha { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 .campo-status { min-width: 220px; }
-.nota { color: var(--cor-alerta); font-weight: 500; }
+/* prioridade em etiqueta: ponto e texto na cor do nível, fundo com um tom suave da mesma cor */
+.etiqueta-prioridade {
+  --cor-nivel: var(--cor-texto-suave);
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px;
+  font-size: 13px; font-weight: 500; color: var(--cor-nivel);
+  background: color-mix(in srgb, var(--cor-nivel) 14%, transparent);
+  .ponto { width: 8px; height: 8px; border-radius: 50%; background: var(--cor-nivel); }
+  &.p-ALTA { --cor-nivel: var(--cor-perigo); }
+  &.p-MEDIA { --cor-nivel: var(--cor-alerta); }
+}
 
 .dados {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px 16px; margin: 12px 0 0;

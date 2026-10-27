@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, LowerCasePipe } from '@angular/common';
 import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,7 +27,7 @@ import { RotuloPipe } from '../../shared/rotulo.pipe';
 @Component({
   selector: 'app-candidatura-detalhe',
   standalone: true,
-  imports: [DatePipe, FormsModule, ReactiveFormsModule, RouterLink, RotuloPipe, MatButtonModule, MatIconModule,
+  imports: [DatePipe, LowerCasePipe, FormsModule, ReactiveFormsModule, RouterLink, RotuloPipe, MatButtonModule, MatIconModule,
     MatSelectModule, MatFormFieldModule, MatInputModule, MatDatepickerModule, MatExpansionModule, MatCheckboxModule,
     MatMenuModule, MatProgressBarModule, MatTooltipModule],
   templateUrl: './candidatura-detalhe.component.html',

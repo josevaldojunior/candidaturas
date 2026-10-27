@@ -32,11 +32,13 @@
                 @for (s of status; track s) { <mat-option [value]="s">{{ s | rotulo: 'status' }}</mat-option> }
               </mat-select>
             </mat-form-field>
-            <span class="prioridade p-{{ c.prioridade }}">Prioridade {{ c.prioridade | rotulo: 'prioridade' }}</span>
-            @if (c.nota) { <span class="nota" matTooltip="Compatibilidade">★ {{ c.nota }}/10</span> }
+            <span class="etiqueta-prioridade p-{{ c.prioridade }}">
+              <span class="ponto" aria-hidden="true"></span> Prioridade {{ c.prioridade | rotulo: 'prioridade' | lowercase }}
+            </span>
           </div>
 
           <dl class="dados">
+            <div><dt>Compatibilidade</dt><dd>{{ c.nota ? c.nota + ' de 10' : '—' }}</dd></div>
             <div><dt>Plataforma</dt><dd>{{ c.plataforma | rotulo: 'plataforma' }}</dd></div>
             <div><dt>Modalidade</dt><dd>{{ c.modalidade | rotulo: 'modalidade' }}</dd></div>
             <div><dt>Contrato</dt><dd>{{ c.tipoContrato | rotulo: 'contrato' }}</dd></div>
