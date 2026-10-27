@@ -95,7 +95,7 @@ class CandidaturaServiceTest {
         });
         assertThat(c.getInteracoes()).singleElement().satisfies(i -> {
             assertThat(i.getTipo()).isEqualTo(TipoInteracao.MUDANCA_STATUS);
-            assertThat(i.getDescricao()).contains("CANDIDATADO", "TRIAGEM_RH", "RH ligou");
+            assertThat(i.getDescricao()).isEqualTo("Etapa alterada de Candidatado para Triagem RH: RH ligou");
         });
         assertThat(c.getUltimaInteracaoEm()).isEqualTo(AGORA);
         assertThat(c.getAtualizadoEm()).isEqualTo(AGORA);
