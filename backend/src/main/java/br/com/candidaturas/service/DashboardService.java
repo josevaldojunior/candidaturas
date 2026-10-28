@@ -2,7 +2,6 @@ package br.com.candidaturas.service;
 
 import br.com.candidaturas.domain.Candidatura;
 import br.com.candidaturas.domain.HistoricoStatus;
-import br.com.candidaturas.domain.Plataforma;
 import br.com.candidaturas.domain.Status;
 import br.com.candidaturas.dto.DashboardDtos.*;
 import br.com.candidaturas.repository.CandidaturaRepository;
@@ -34,14 +33,16 @@ public class DashboardService {
     private final CandidaturaRepository candidaturaRepository;
     private final HistoricoStatusRepository historicoRepository;
     private final UsuarioAtual usuarioAtual;
+    private final PlataformaService plataformas;
     private final Clock clock;
 
     public DashboardService(CandidaturaRepository candidaturaRepository, HistoricoStatusRepository historicoRepository,
-                            UsuarioAtual usuarioAtual, Clock clock) {
+                            UsuarioAtual usuarioAtual, Clock clock, PlataformaService plataformas) {
         this.candidaturaRepository = candidaturaRepository;
         this.historicoRepository = historicoRepository;
         this.usuarioAtual = usuarioAtual;
         this.clock = clock;
+        this.plataformas = plataformas;
     }
 
     @Transactional(readOnly = true)
@@ -106,8 +107,8 @@ public class DashboardService {
      * Todas as plataformas na ordem de exibição (a do enum), inclusive as sem candidatura (quantidade 0).
      * "NAO_INFORMADA" vem por último e só aparece quando há candidaturas sem plataforma.
      */
-    private static List<Contagem> porPlataforma(List<Candidatura> todas) {
-        Map<Plataforma, Long> contagem = new EnumMap<>(Plataforma.class);
+    private List<Contagem> porPlataforma(List<Candidatura> todas) {
+        Map<String, Long> contagem = new HashMap<>();
         long semPlataforma = 0;
         for (Candidatura c : todas) {
             if (c.getPlataforma() == null) {
@@ -116,8 +117,9 @@ public class DashboardService {
                 contagem.merge(c.getPlataforma(), 1L, Long::sum);
             }
         }
-        List<Contagem> resultado = new ArrayList<>(Arrays.stream(Plataforma.values())
-                .map(p -> new Contagem(p.name(), contagem.getOrDefault(p, 0L)))
+        List<Contagem> resultado = new ArrayList<>(plataformas.listar().stream()
+                .filter(p -> p.ativa() || contagem.containsKey(p.codigo()))
+                .map(p -> new Contagem(p.codigo(), contagem.getOrDefault(p.codigo(), 0L)))
                 .toList());
         if (semPlataforma > 0) {
             resultado.add(new Contagem("NAO_INFORMADA", semPlataforma));

@@ -1,6 +1,6 @@
 package br.com.candidaturas.util;
 
-import br.com.candidaturas.domain.Plataforma;
+import br.com.candidaturas.domain.PlataformaPadrao;
 
 import java.text.Normalizer;
 import java.time.LocalDate;
@@ -82,30 +82,30 @@ public final class Normalizacao {
     }
 
     /**
-     * Plataforma a partir do texto livre do agente/CSV. Além do nome exato (ignorando acento, caixa e
+     * PlataformaPadrao a partir do texto livre do agente/CSV. Além do nome exato (ignorando acento, caixa e
      * pontuação), reconhece variações: "LinkedIn (JazzHR)" → LINKEDIN_VAGAS, "post do LinkedIn" →
      * LINKEDIN_FEED, "Gupy (personalizada)" → GUPY, "repositório de vagas no GitHub" → GITHUB.
      * O que não for reconhecido vira OUTRO (e-mail, WhatsApp, sites próprios...).
      */
-    public static Plataforma plataforma(String valor) {
+    public static String plataforma(String valor) {
         if (vazio(valor)) {
             return null;
         }
-        Plataforma exata = paraEnumOu(Plataforma.class, valor, "plataforma", null);
+        PlataformaPadrao exata = paraEnumOu(PlataformaPadrao.class, valor, "plataforma", null);
         if (exata != null) {
-            return exata;
+            return exata.name();
         }
         String k = chave(valor);
         if (k.contains("LINKEDIN")) {
-            return k.contains("FEED") || k.contains("POST") ? Plataforma.LINKEDIN_FEED : Plataforma.LINKEDIN_VAGAS;
+            return k.contains("FEED") || k.contains("POST") ? "LINKEDIN_FEED" : "LINKEDIN_VAGAS";
         }
         if (k.startsWith("GUPY")) {
-            return Plataforma.GUPY;
+            return "GUPY";
         }
         if (k.contains("GITHUB")) {
-            return Plataforma.GITHUB;
+            return "GITHUB";
         }
-        return Plataforma.OUTRO;
+        return "OUTRO";
     }
 
     /** Aceita yyyy-MM-dd ou dd/MM/yyyy. */

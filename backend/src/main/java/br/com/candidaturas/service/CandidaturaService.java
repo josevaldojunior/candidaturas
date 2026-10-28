@@ -25,14 +25,16 @@ public class CandidaturaService {
     private final CandidaturaRepository repository;
     private final ContatoRepository contatoRepository;
     private final UsuarioAtual usuarioAtual;
+    private final PlataformaService plataformas;
     private final Clock clock;
 
     public CandidaturaService(CandidaturaRepository repository, ContatoRepository contatoRepository,
-                              UsuarioAtual usuarioAtual, Clock clock) {
+                              UsuarioAtual usuarioAtual, Clock clock, PlataformaService plataformas) {
         this.repository = repository;
         this.contatoRepository = contatoRepository;
         this.usuarioAtual = usuarioAtual;
         this.clock = clock;
+        this.plataformas = plataformas;
     }
 
     @Transactional(readOnly = true)
@@ -191,7 +193,7 @@ public class CandidaturaService {
         c.setEmpresa(req.empresa().trim());
         c.setCargo(req.cargo().trim());
         c.setLinkVaga(Normalizacao.texto(req.linkVaga()));
-        c.setPlataforma(req.plataforma());
+        c.setPlataforma(plataformas.validar(req.plataforma(), c.getPlataforma()));
         c.setModalidade(req.modalidade());
         c.setTipoContrato(req.tipoContrato());
         c.setFaixaSalarial(Normalizacao.texto(req.faixaSalarial()));

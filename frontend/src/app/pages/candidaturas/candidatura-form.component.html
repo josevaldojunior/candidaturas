@@ -31,7 +31,7 @@
         <mat-label>Plataforma</mat-label>
         <mat-select formControlName="plataforma">
           <mat-option [value]="null">—</mat-option>
-          @for (p of plataformas; track p) { <mat-option [value]="p">{{ p | rotulo: 'plataforma' }}</mat-option> }
+          @for (p of plataformas(); track p.id) { <mat-option [value]="p.codigo" [disabled]="!p.ativa && form.controls.plataforma.value !== p.codigo">{{ p.nome }}{{ p.ativa ? '' : ' (desativada)' }}</mat-option> }
         </mat-select>
       </mat-form-field>
       <mat-form-field>

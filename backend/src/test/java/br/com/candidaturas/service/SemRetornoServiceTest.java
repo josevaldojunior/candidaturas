@@ -1,5 +1,6 @@
 package br.com.candidaturas.service;
 
+import br.com.candidaturas.support.PlataformasMock;
 import br.com.candidaturas.domain.Candidatura;
 import br.com.candidaturas.domain.Status;
 import br.com.candidaturas.domain.TipoInteracao;
@@ -48,7 +49,7 @@ class SemRetornoServiceTest {
     @BeforeEach
     void setUp() {
         var candidaturaService = new CandidaturaService(candidaturaRepository, contatoRepository, new UsuarioFixo(),
-                RelogioFixo.clock());
+                RelogioFixo.clock(), PlataformasMock.criar());
         service = new SemRetornoService(candidaturaRepository, usuarioRepository, candidaturaService,
                 new UsuarioFixo(), RelogioFixo.clock());
         usuario.setId(UsuarioFixo.ID);

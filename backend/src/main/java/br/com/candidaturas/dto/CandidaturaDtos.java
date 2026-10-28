@@ -18,7 +18,7 @@ public final class CandidaturaDtos {
             @NotBlank @Size(max = 200) String empresa,
             @NotBlank @Size(max = 200) String cargo,
             @Size(max = 1000) String linkVaga,
-            Plataforma plataforma,
+            String plataforma,
             Modalidade modalidade,
             TipoContrato tipoContrato,
             @Size(max = 100) String faixaSalarial,
@@ -36,14 +36,14 @@ public final class CandidaturaDtos {
     }
 
     public record CandidaturaResumo(
-            Long id, String empresa, String cargo, String linkVaga, Plataforma plataforma, Modalidade modalidade,
+            Long id, String empresa, String cargo, String linkVaga, String plataforma, Modalidade modalidade,
             TipoContrato tipoContrato, String faixaSalarial, String pretensaoSalarial, Integer nota, List<String> stack,
             LocalDate dataCandidatura, Status status, Prioridade prioridade, Origem origem, String chaveExterna,
             String pendencia, LocalDateTime ultimaInteracaoEm, LocalDateTime atualizadoEm) {
     }
 
     public record CandidaturaDetalhe(
-            Long id, String empresa, String cargo, String linkVaga, Plataforma plataforma, Modalidade modalidade,
+            Long id, String empresa, String cargo, String linkVaga, String plataforma, Modalidade modalidade,
             TipoContrato tipoContrato, String faixaSalarial, String pretensaoSalarial, Integer nota, List<String> stack,
             LocalDate dataCandidatura, Status status, Prioridade prioridade, String curriculoVersao, String observacoes,
             String pendencia, Origem origem, String chaveExterna, LocalDateTime ultimaInteracaoEm, LocalDateTime criadoEm,

@@ -1,3 +1,4 @@
+import { PlataformasService } from '../../core/plataformas.service';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { DatePipe } from '@angular/common';
 import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
@@ -23,7 +24,7 @@ import { ConsultaListaService } from '../../core/consulta-lista.service';
 import { deIsoData, paraIsoData } from '../../core/datas';
 import { CandidaturaResumo, FiltrosCandidatura, Plataforma, Prioridade, Status } from '../../core/models';
 import { Notificacao } from '../../core/notificacao.service';
-import { PLATAFORMAS, PRIORIDADES, ROTULO_STATUS, STATUS } from '../../core/rotulos';
+import { PRIORIDADES, ROTULO_STATUS, STATUS } from '../../core/rotulos';
 import { RotuloPipe } from '../../shared/rotulo.pipe';
 
 const TAMANHO_PADRAO = 20;
@@ -48,7 +49,8 @@ export class CandidaturaListaComponent implements OnInit {
   private readonly consulta = inject(ConsultaListaService);
 
   readonly status = STATUS;
-  readonly plataformas = PLATAFORMAS;
+  readonly catalogo = inject(PlataformasService);
+  readonly plataformas = this.catalogo.itens;
   readonly prioridades = PRIORIDADES;
   readonly colunas = ['empresa', 'status', 'plataforma', 'stack', 'prioridade', 'dataCandidatura', 'ultimaInteracaoEm'];
 

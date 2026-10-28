@@ -20,6 +20,7 @@ e as candidaturas podem ser cadastradas à mão, importadas por CSV ou enviadas 
 ## Funcionalidades
 
 - **Contas**: cadastro e login (JWT). Cada conta enxerga só os próprios dados.
+- **Plataformas**: cadastro por conta em **Configurações → Gerenciar plataformas**. Crie, renomeie, ordene, desative ou exclua plataformas sem uso. Sólides já vem cadastrada.
 - **Candidaturas**: CRUD com filtros (status, empresa, plataforma, stack, prioridade, período, pendências e busca por texto). Os filtros ficam na URL, então voltar do detalhe mantém a lista como estava.
 - **Pipeline de status**: `INTERESSE → CANDIDATADO → TRIAGEM_RH → TESTE_TECNICO → ENTREVISTA_TECNICA → ENTREVISTA_FINAL → PROPOSTA → ACEITA | RECUSADA | SEM_RETORNO`. Toda mudança vai para o histórico e gera uma interação.
 - **Quadro (Kanban)**: arraste o cartão para mudar o status. No celular, rolagem horizontal e arraste com toque longo.
@@ -168,7 +169,8 @@ Regras:
 
 - **Upsert**: a chave é `chaveExterna` ou, se vier vazia, `linkVaga`. Sem nenhuma das duas, a busca é por empresa + cargo, sem diferenciar maiúsculas. Ao atualizar, só os campos enviados mudam, e uma mudança de status vai para o histórico. Uma candidatura nova entra com origem `AGENTE` e status padrão `CANDIDATADO`.
 - **Texto livre nos campos de opção**: a comparação ignora acento, caixa, espaço e hífen (`"Híbrido"`→`HIBRIDO`, `"Triagem RH"`→`TRIAGEM_RH`, `"e-mail"`→`EMAIL`). Tipo de contrato e tipo de interação desconhecidos viram `OUTRO`. Status, modalidade ou prioridade inválidos geram erro naquele item.
-- **Plataformas** (nesta ordem): `GUPY`, `LINKEDIN_VAGAS` (LinkedIn Vagas), `LINKEDIN_FEED` (LinkedIn Feed), `INDEED`, `PROGRAMATHOR`, `REMOTAR`, `INFOJOBS`, `COODESH`, `GEEKHUNTER`, `CATHO`, `GITHUB` (Repositórios GitHub) e `OUTRO` (Outros). Variações também são reconhecidas: textos com "LinkedIn" viram LinkedIn Vagas, ou LinkedIn Feed quando falam em post/feed; `"Gupy (personalizada)"` vira Gupy; textos com "GitHub" viram Repositórios GitHub. O resto (e-mail, WhatsApp, sites próprios) vira `OUTRO`.
+- **Catálogo inicial de plataformas** (a ordem pode ser alterada): `GUPY`, `LINKEDIN_VAGAS` (LinkedIn Vagas), `LINKEDIN_FEED` (LinkedIn Feed), `INDEED`, `PROGRAMATHOR`, `REMOTAR`, `INFOJOBS`, `COODESH`, `GEEKHUNTER`, `CATHO`, `GITHUB` (Repositórios GitHub), `SOLIDES` (Sólides) e `OUTRO` (Outros). Variações também são reconhecidas: textos com "LinkedIn" viram LinkedIn Vagas, ou LinkedIn Feed quando falam em post/feed; `"Gupy (personalizada)"` vira Gupy; textos com "GitHub" viram Repositórios GitHub. O resto (e-mail, WhatsApp, sites próprios) vira `OUTRO`.
+- **Plataformas personalizadas**: JSON e planilha aceitam o nome ou o código cadastrado, ignorando acentos e caixa. Renomear mantém o código estável, inclusive nos arquivos exportados. Plataformas desativadas continuam no histórico e nos filtros, mas não podem ser atribuídas a novas candidaturas. Excluir uma plataforma em uso é bloqueado; use a desativação. `OUTRO` permanece disponível como alternativa para origens não reconhecidas. O catálogo é exclusivo de cada conta.
 - **Contato**: é reaproveitado por e-mail ou telefone; senão, é criado como `RECRUTADOR` e vinculado.
 - **Interação**: é criada se vier `descricaoInteracao` ou `dataFollowUp`. Reenviar o mesmo item não a duplica.
 - **Pendência**: se `observacoes` começar com `PENDENTE:`, o texto depois do prefixo vira a pendência da candidatura.
@@ -244,6 +246,8 @@ A lista completa está no Swagger (`/swagger-ui.html`).
 | PATCH | `/api/interacoes/{id}/follow-up` | Conclui follow-up |
 | GET/POST/PUT/DELETE | `/api/contatos` | Contatos |
 | GET | `/api/dashboard` | Indicadores |
+| GET/POST | `/api/plataformas` | Lista e cria plataformas da conta |
+| GET/PUT/DELETE | `/api/plataformas/{id}` | Consulta, edita e exclui plataforma sem candidaturas |
 | GET | `/api/follow-ups` | Follow-ups vencidos e dos próximos 7 dias |
 | GET/PUT | `/api/sem-retorno/configuracao` | Prazo do sem retorno da conta |
 | POST | `/api/sem-retorno/executar` | Executa o sem retorno agora |

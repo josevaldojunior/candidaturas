@@ -52,6 +52,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/follow-ups/follow-ups.component').then((m) => m.FollowUpsComponent),
   },
   {
+    path: 'plataformas', title: 'Plataformas', canActivate: [somenteLogado],
+    loadComponent: () => import('./pages/plataformas/plataformas.component').then(m => m.PlataformasComponent),
+  },
+  {
     path: 'configuracoes',
     title: 'Configurações',
     canActivate: [somenteLogado],

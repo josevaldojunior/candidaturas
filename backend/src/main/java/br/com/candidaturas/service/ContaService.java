@@ -38,6 +38,7 @@ public class ContaService {
     private final PasswordEncoder passwordEncoder;
     private final JwtEncoder jwtEncoder;
     private final UsuarioAtual usuarioAtual;
+    private final PlataformaService plataformas;
     private final Clock clock;
     private final boolean cadastroAberto;
     private final Duration validadeSessao;
@@ -46,7 +47,7 @@ public class ContaService {
 
     public ContaService(UsuarioRepository usuarioRepository, CandidaturaRepository candidaturaRepository,
                         ContatoRepository contatoRepository, PasswordEncoder passwordEncoder, JwtEncoder jwtEncoder,
-                        UsuarioAtual usuarioAtual, Clock clock,
+                        UsuarioAtual usuarioAtual, Clock clock, PlataformaService plataformas,
                         @Value("${app.seguranca.cadastro-aberto:true}") boolean cadastroAberto,
                         @Value("${app.seguranca.sessao-horas:12}") long sessaoHoras) {
         this.usuarioRepository = usuarioRepository;
@@ -56,6 +57,7 @@ public class ContaService {
         this.jwtEncoder = jwtEncoder;
         this.usuarioAtual = usuarioAtual;
         this.clock = clock;
+        this.plataformas = plataformas;
         this.cadastroAberto = cadastroAberto;
         this.validadeSessao = Duration.ofHours(sessaoHoras);
         this.hashFalso = passwordEncoder.encode("senha-que-nao-existe");
@@ -86,6 +88,7 @@ public class ContaService {
         u.setSenhaHash(passwordEncoder.encode(req.senha()));
         u.setCriadoEm(LocalDateTime.now(clock));
         usuarioRepository.saveAndFlush(u);
+        plataformas.inicializar(u.getId());
         if (primeira) {
             int candidaturas = candidaturaRepository.assumirSemDono(u.getId());
             int contatos = contatoRepository.assumirSemDono(u.getId());

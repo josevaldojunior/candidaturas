@@ -1,9 +1,8 @@
 export type Status =
   | 'INTERESSE' | 'CANDIDATADO' | 'TRIAGEM_RH' | 'TESTE_TECNICO' | 'ENTREVISTA_TECNICA'
   | 'ENTREVISTA_FINAL' | 'PROPOSTA' | 'ACEITA' | 'RECUSADA' | 'SEM_RETORNO';
-export type Plataforma =
-  | 'GUPY' | 'LINKEDIN_VAGAS' | 'LINKEDIN_FEED' | 'INDEED' | 'PROGRAMATHOR' | 'REMOTAR' | 'INFOJOBS' | 'COODESH'
-  | 'GEEKHUNTER' | 'CATHO' | 'GITHUB' | 'OUTRO';
+export type Plataforma = string;
+export interface PlataformaCadastro { id: number; codigo: string; nome: string; ordem: number; ativa: boolean; }
 export type Modalidade = 'REMOTO' | 'HIBRIDO' | 'PRESENCIAL';
 export type TipoContrato = 'CLT' | 'PJ' | 'OUTRO';
 export type Prioridade = 'ALTA' | 'MEDIA' | 'BAIXA';

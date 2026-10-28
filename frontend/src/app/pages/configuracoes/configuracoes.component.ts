@@ -1,3 +1,4 @@
+import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -16,7 +17,7 @@ import { Notificacao } from '../../core/notificacao.service';
 @Component({
   selector: 'app-configuracoes',
   standalone: true,
-  imports: [DatePipe, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule],
+  imports: [RouterLink, DatePipe, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule],
   templateUrl: './configuracoes.component.html',
   styleUrl: './configuracoes.component.scss',
 })

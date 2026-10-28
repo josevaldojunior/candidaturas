@@ -15,7 +15,7 @@ public record IntegracaoItem(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "ACME") String empresa,
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "Desenvolvedor Java Pleno") String cargo,
         @Schema(example = "https://www.linkedin.com/jobs/view/123") String linkVaga,
-        @Schema(example = "LinkedIn Vagas", description = "Gupy, LinkedIn Vagas, LinkedIn Feed, Indeed, Programathor, Remotar, InfoJobs, Coodesh, GeekHunter, Catho, Repositórios GitHub; o resto vira OUTRO") String plataforma,
+        @Schema(example = "LinkedIn Vagas", description = "Nome ou código do catálogo da conta, incluindo Sólides e plataformas personalizadas; origens não reconhecidas viram OUTRO") String plataforma,
         @Schema(example = "Remoto") String modalidade,
         @Schema(example = "PJ") String tipoContrato,
         String faixaSalarial,

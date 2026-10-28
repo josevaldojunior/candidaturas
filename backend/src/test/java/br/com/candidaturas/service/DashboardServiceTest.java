@@ -1,5 +1,6 @@
 package br.com.candidaturas.service;
 
+import br.com.candidaturas.support.PlataformasMock;
 import br.com.candidaturas.domain.*;
 import br.com.candidaturas.dto.DashboardDtos.Contagem;
 import br.com.candidaturas.dto.DashboardDtos.ContagemSemana;
@@ -39,16 +40,16 @@ class DashboardServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new DashboardService(candidaturaRepository, historicoRepository, new UsuarioFixo(), RelogioFixo.clock());
+        service = new DashboardService(candidaturaRepository, historicoRepository, new UsuarioFixo(), RelogioFixo.clock(), PlataformasMock.criar());
         // hoje = sábado 24/10/2026; semana atual começa na segunda 19/10
-        nova(1L, Status.INTERESSE, Plataforma.LINKEDIN_VAGAS, null);
-        nova(2L, Status.CANDIDATADO, Plataforma.LINKEDIN_VAGAS, "2026-10-20", Status.CANDIDATADO);
-        nova(3L, Status.ENTREVISTA_TECNICA, Plataforma.GUPY, "2026-10-01",
+        nova(1L, Status.INTERESSE, "LINKEDIN_VAGAS", null);
+        nova(2L, Status.CANDIDATADO, "LINKEDIN_VAGAS", "2026-10-20", Status.CANDIDATADO);
+        nova(3L, Status.ENTREVISTA_TECNICA, "GUPY", "2026-10-01",
                 Status.CANDIDATADO, Status.TRIAGEM_RH, Status.TESTE_TECNICO, Status.ENTREVISTA_TECNICA);
-        nova(4L, Status.RECUSADA, Plataforma.LINKEDIN_VAGAS, "2026-10-22",
+        nova(4L, Status.RECUSADA, "LINKEDIN_VAGAS", "2026-10-22",
                 Status.CANDIDATADO, Status.TRIAGEM_RH, Status.RECUSADA);
         nova(5L, Status.SEM_RETORNO, null, "2026-08-01", Status.CANDIDATADO, Status.SEM_RETORNO);
-        nova(6L, Status.ACEITA, Plataforma.CATHO, "2026-10-19", Status.CANDIDATADO, Status.TRIAGEM_RH,
+        nova(6L, Status.ACEITA, "CATHO", "2026-10-19", Status.CANDIDATADO, Status.TRIAGEM_RH,
                 Status.TESTE_TECNICO, Status.ENTREVISTA_TECNICA, Status.ENTREVISTA_FINAL, Status.PROPOSTA, Status.ACEITA);
         when(candidaturaRepository.findByUsuarioId(UsuarioFixo.ID)).thenReturn(candidaturas);
         when(historicoRepository.findByCandidaturaUsuarioId(UsuarioFixo.ID)).thenReturn(historico);
@@ -88,9 +89,9 @@ class DashboardServiceTest {
 
         assertThat(r.porPlataforma()).extracting(Contagem::chave, Contagem::quantidade)
                 .startsWith(tuple("GUPY", 1L), tuple("LINKEDIN_VAGAS", 3L), tuple("LINKEDIN_FEED", 0L))
-                .endsWith(tuple("CATHO", 1L), tuple("GITHUB", 0L), tuple("OUTRO", 0L), tuple("NAO_INFORMADA", 1L));
+                .endsWith(tuple("CATHO", 1L), tuple("GITHUB", 0L), tuple("SOLIDES", 0L), tuple("OUTRO", 0L), tuple("NAO_INFORMADA", 1L));
         // todas as plataformas aparecem, mesmo zeradas, mais o "não informada"
-        assertThat(r.porPlataforma()).hasSize(Plataforma.values().length + 1);
+        assertThat(r.porPlataforma()).hasSize(PlataformaPadrao.values().length + 1);
 
         List<ContagemSemana> semanas = r.porSemana();
         assertThat(semanas).hasSize(12);
@@ -109,14 +110,14 @@ class DashboardServiceTest {
         DashboardResponse r = service.resumo();
 
         assertThat(r.porPlataforma()).extracting(Contagem::chave)
-                .containsExactly(Arrays.stream(Plataforma.values()).map(Enum::name).toArray(String[]::new));
+                .containsExactly(Arrays.stream(PlataformaPadrao.values()).map(Enum::name).toArray(String[]::new));
 
         assertThat(r.total()).isZero();
         assertThat(r.taxaResposta()).isZero();
         assertThat(r.funil()).allSatisfy(e -> assertThat(e.conversaoDaAnterior()).isZero());
     }
 
-    private void nova(Long id, Status atual, Plataforma plataforma, String data, Status... passos) {
+    private void nova(Long id, Status atual, String plataforma, String data, Status... passos) {
         Candidatura c = CandidaturaServiceTest.candidatura(id, atual);
         c.setPlataforma(plataforma);
         c.setDataCandidatura(data == null ? null : LocalDate.parse(data));
