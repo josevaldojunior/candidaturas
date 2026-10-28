@@ -41,7 +41,7 @@ class NormalizacaoTest {
             "Coodesh,COODESH", "GeekHunter,GEEKHUNTER", "Catho,CATHO",
             "E-mail,OUTRO", "WhatsApp,OUTRO", "InHire,OUTRO", "Indicação,OUTRO",
             "LinkedIn Feed,LINKEDIN_FEED", "Repositórios GitHub,GITHUB", "Outros,OUTRO"})
-    void normalizaPlataformas(String entrada, Plataforma esperada) {
+    void normalizaPlataformas(String entrada, String esperada) {
         assertThat(Normalizacao.plataforma(entrada)).isEqualTo(esperada);
     }
 
@@ -56,8 +56,8 @@ class NormalizacaoTest {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> Normalizacao.paraEnum(Status.class, "contratado amanhã", "status"))
                 .withMessageContaining("status");
-        assertThat(Normalizacao.paraEnumOu(Plataforma.class, "Vagas.com", "plataforma", Plataforma.OUTRO))
-                .isEqualTo(Plataforma.OUTRO);
+        assertThat(Normalizacao.plataforma("Vagas.com"))
+                .isEqualTo("OUTRO");
     }
 
     @Test

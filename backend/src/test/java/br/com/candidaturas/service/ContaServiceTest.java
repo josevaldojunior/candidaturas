@@ -1,5 +1,6 @@
 package br.com.candidaturas.service;
 
+import br.com.candidaturas.support.PlataformasMock;
 import br.com.candidaturas.domain.Usuario;
 import br.com.candidaturas.dto.ContaDtos.CadastroRequest;
 import br.com.candidaturas.dto.ContaDtos.SessaoResponse;
@@ -49,7 +50,7 @@ class ContaServiceTest {
 
     private ContaService service(boolean cadastroAberto) {
         return new ContaService(usuarioRepository, candidaturaRepository, contatoRepository, encoder, jwtEncoder,
-                new UsuarioFixo(), RelogioFixo.clock(), cadastroAberto, 12);
+                new UsuarioFixo(), RelogioFixo.clock(), PlataformasMock.criar(), cadastroAberto, 12);
     }
 
     @Test

@@ -46,11 +46,12 @@ public class IntegracaoService {
     private final CandidaturaService candidaturaService;
     private final TransactionTemplate transacaoPorItem;
     private final UsuarioAtual usuarioAtual;
+    private final PlataformaService plataformas;
     private final Clock clock;
 
     public IntegracaoService(CandidaturaRepository repository, ContatoRepository contatoRepository,
                              CandidaturaService candidaturaService, PlatformTransactionManager transactionManager,
-                             UsuarioAtual usuarioAtual, Clock clock) {
+                             UsuarioAtual usuarioAtual, Clock clock, PlataformaService plataformas) {
         this.repository = repository;
         this.contatoRepository = contatoRepository;
         this.candidaturaService = candidaturaService;
@@ -58,6 +59,7 @@ public class IntegracaoService {
         this.transacaoPorItem = new TransactionTemplate(transactionManager);
         this.transacaoPorItem.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         this.clock = clock;
+        this.plataformas = plataformas;
     }
 
     public ResultadoImportacao processar(List<IntegracaoItem> itens, Origem origem) {
@@ -106,7 +108,7 @@ public class IntegracaoService {
     }
 
     Resultado upsert(IntegracaoItem item, Origem origem, Long usuarioId) {
-        Dados d = Dados.de(item);
+        Dados d = Dados.de(item, plataformas.resolver(item.plataforma()));
         return localizar(d, usuarioId).map(c -> atualizar(c, d)).orElseGet(() -> criar(d, origem, usuarioId));
     }
 
@@ -144,7 +146,7 @@ public class IntegracaoService {
         c.setEmpresa(d.empresa());
         c.setCargo(d.cargo());
         c.setLinkVaga(d.link());
-        c.setPlataforma(d.plataforma());
+        c.setPlataforma(plataformas.validar(d.plataforma(), null));
         c.setModalidade(d.modalidade());
         c.setTipoContrato(d.tipoContrato());
         c.setFaixaSalarial(d.faixaSalarial());
@@ -178,7 +180,7 @@ public class IntegracaoService {
         mudou |= aplicar(d.empresa(), c::getEmpresa, c::setEmpresa);
         mudou |= aplicar(d.cargo(), c::getCargo, c::setCargo);
         mudou |= aplicar(d.link(), c::getLinkVaga, c::setLinkVaga);
-        mudou |= aplicar(d.plataforma(), c::getPlataforma, c::setPlataforma);
+        if (d.plataforma() != null) mudou |= aplicar(plataformas.validar(d.plataforma(), c.getPlataforma()), c::getPlataforma, c::setPlataforma);
         mudou |= aplicar(d.modalidade(), c::getModalidade, c::setModalidade);
         mudou |= aplicar(d.tipoContrato(), c::getTipoContrato, c::setTipoContrato);
         mudou |= aplicar(d.faixaSalarial(), c::getFaixaSalarial, c::setFaixaSalarial);
@@ -321,20 +323,20 @@ public class IntegracaoService {
     }
 
     /** Item já normalizado e validado. */
-    record Dados(String chave, String empresa, String cargo, String link, Plataforma plataforma,
+    record Dados(String chave, String empresa, String cargo, String link, String plataforma,
                  Modalidade modalidade, TipoContrato tipoContrato, String faixaSalarial, String pretensaoSalarial,
                  Integer nota, LocalDate dataCandidatura, Status status, Prioridade prioridade,
                  String curriculoVersao, String observacoes, String pendencia, Set<String> stack, String contatoNome,
                  String contatoEmail, String contatoTelefone, TipoInteracao tipoInteracao,
                  String descricaoInteracao, String proximoPasso, LocalDate dataFollowUp) {
 
-        static Dados de(IntegracaoItem i) {
+        static Dados de(IntegracaoItem i, String plataforma) {
             return new Dados(
                     limite(i.chaveExterna(), 300, "chaveExterna"),
                     limite(i.empresa(), 200, "empresa"),
                     limite(i.cargo(), 200, "cargo"),
                     limite(i.linkVaga(), 1000, "linkVaga"),
-                    Normalizacao.plataforma(i.plataforma()),
+                    plataforma,
                     paraEnum(Modalidade.class, i.modalidade(), "modalidade"),
                     paraEnumOu(TipoContrato.class, i.tipoContrato(), "tipoContrato", TipoContrato.OUTRO),
                     limite(i.faixaSalarial(), 100, "faixaSalarial"),

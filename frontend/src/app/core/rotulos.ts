@@ -1,4 +1,4 @@
-import { CargoContato, Modalidade, Origem, Plataforma, Prioridade, Status, TipoContrato, TipoInteracao } from './models';
+import { CargoContato, Modalidade, Origem, Prioridade, Status, TipoContrato, TipoInteracao } from './models';
 
 export const STATUS: Status[] = [
   'INTERESSE', 'CANDIDATADO', 'TRIAGEM_RH', 'TESTE_TECNICO', 'ENTREVISTA_TECNICA',
@@ -16,26 +16,6 @@ export const ROTULO_STATUS: Record<Status, string> = {
   ACEITA: 'Aceita',
   RECUSADA: 'Recusada',
   SEM_RETORNO: 'Sem retorno',
-};
-
-/** Ordem de exibição (a mesma do enum Plataforma no backend). */
-export const PLATAFORMAS: Plataforma[] = [
-  'GUPY', 'LINKEDIN_VAGAS', 'LINKEDIN_FEED', 'INDEED', 'PROGRAMATHOR', 'REMOTAR', 'INFOJOBS', 'COODESH',
-  'GEEKHUNTER', 'CATHO', 'GITHUB', 'OUTRO',
-];
-export const ROTULO_PLATAFORMA: Record<Plataforma, string> = {
-  LINKEDIN_VAGAS: 'LinkedIn Vagas',
-  LINKEDIN_FEED: 'LinkedIn Feed',
-  GUPY: 'Gupy',
-  INDEED: 'Indeed',
-  PROGRAMATHOR: 'Programathor',
-  REMOTAR: 'Remotar',
-  INFOJOBS: 'InfoJobs',
-  GITHUB: 'Repositórios GitHub',
-  COODESH: 'Coodesh',
-  GEEKHUNTER: 'GeekHunter',
-  CATHO: 'Catho',
-  OUTRO: 'Outros',
 };
 
 export const MODALIDADES: Modalidade[] = ['REMOTO', 'HIBRIDO', 'PRESENCIAL'];

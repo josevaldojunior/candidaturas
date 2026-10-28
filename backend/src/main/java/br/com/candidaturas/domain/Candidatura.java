@@ -30,9 +30,8 @@ public class Candidatura {
     @Column(name = "link_vaga", length = 1000)
     private String linkVaga;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20)
-    private Plataforma plataforma;
+    @Column(length = 40)
+    private String plataforma;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
@@ -129,8 +128,8 @@ public class Candidatura {
     public void setCargo(String cargo) { this.cargo = cargo; }
     public String getLinkVaga() { return linkVaga; }
     public void setLinkVaga(String linkVaga) { this.linkVaga = linkVaga; }
-    public Plataforma getPlataforma() { return plataforma; }
-    public void setPlataforma(Plataforma plataforma) { this.plataforma = plataforma; }
+    public String getPlataforma() { return plataforma; }
+    public void setPlataforma(String plataforma) { this.plataforma = plataforma; }
     public Modalidade getModalidade() { return modalidade; }
     public void setModalidade(Modalidade modalidade) { this.modalidade = modalidade; }
     public TipoContrato getTipoContrato() { return tipoContrato; }

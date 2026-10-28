@@ -15,6 +15,8 @@ import java.util.Optional;
 /** Toda consulta recebe o dono (usuarioId): um usuário nunca enxerga dados de outro. */
 public interface CandidaturaRepository extends JpaRepository<Candidatura, Long>, JpaSpecificationExecutor<Candidatura> {
 
+    boolean existsByUsuarioIdAndPlataforma(Long usuarioId, String plataforma);
+
     Optional<Candidatura> findByIdAndUsuarioId(Long id, Long usuarioId);
 
     List<Candidatura> findByUsuarioId(Long usuarioId);

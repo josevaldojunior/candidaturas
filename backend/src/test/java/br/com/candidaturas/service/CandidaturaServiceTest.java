@@ -1,5 +1,6 @@
 package br.com.candidaturas.service;
 
+import br.com.candidaturas.support.PlataformasMock;
 import br.com.candidaturas.domain.*;
 import br.com.candidaturas.dto.CandidaturaDtos.CandidaturaDetalhe;
 import br.com.candidaturas.dto.CandidaturaDtos.CandidaturaRequest;
@@ -38,7 +39,7 @@ class CandidaturaServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new CandidaturaService(repository, contatoRepository, new UsuarioFixo(), RelogioFixo.clock());
+        service = new CandidaturaService(repository, contatoRepository, new UsuarioFixo(), RelogioFixo.clock(), PlataformasMock.criar());
     }
 
     @Test
@@ -234,7 +235,7 @@ class CandidaturaServiceTest {
     }
 
     private static CandidaturaRequest request(String empresa, Status status, String chave) {
-        return new CandidaturaRequest(empresa, "Dev Java", "https://vagas/1", Plataforma.LINKEDIN_VAGAS, Modalidade.REMOTO,
+        return new CandidaturaRequest(empresa, "Dev Java", "https://vagas/1", "LINKEDIN_VAGAS", Modalidade.REMOTO,
                 TipoContrato.PJ, null, null, 8, Set.of("Java", "Spring"), null, status, null, "v3", null, chave, null, null);
     }
 

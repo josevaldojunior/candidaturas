@@ -1,7 +1,6 @@
 package br.com.candidaturas.dto;
 
 import br.com.candidaturas.domain.Candidatura;
-import br.com.candidaturas.domain.Plataforma;
 import br.com.candidaturas.domain.Status;
 
 import java.time.LocalDate;
@@ -20,7 +19,7 @@ public final class IntegracaoDtos {
     }
 
     public record ResumoExistente(Long id, String empresa, String cargo, String linkVaga, String chaveExterna,
-                                  Status status, Plataforma plataforma, LocalDate dataCandidatura,
+                                  Status status, String plataforma, LocalDate dataCandidatura,
                                   LocalDateTime ultimaInteracaoEm) {
 
         public static ResumoExistente de(Candidatura c) {

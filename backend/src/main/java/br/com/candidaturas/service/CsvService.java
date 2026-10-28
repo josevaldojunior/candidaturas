@@ -89,7 +89,7 @@ public class CsvService {
                         .max(Comparator.comparing(Interacao::getData))
                         .orElse(null);
                 printer.printRecord(
-                        c.getChaveExterna(), c.getEmpresa(), c.getCargo(), c.getLinkVaga(), nome(c.getPlataforma()),
+                        c.getChaveExterna(), c.getEmpresa(), c.getCargo(), c.getLinkVaga(), c.getPlataforma(),
                         nome(c.getModalidade()), nome(c.getTipoContrato()), c.getFaixaSalarial(),
                         c.getPretensaoSalarial(), c.getNota(), c.getDataCandidatura(), nome(c.getStatus()),
                         nome(c.getPrioridade()), c.getCurriculoVersao(),

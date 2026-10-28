@@ -1,3 +1,4 @@
+import { PlataformasService } from '../../core/plataformas.service';
 import { COMMA, ENTER, SEMICOLON } from '@angular/cdk/keycodes';
 import { Component, DestroyRef, OnInit, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -19,7 +20,7 @@ import {
   CandidaturaDetalhe, CandidaturaRequest, Contato, Modalidade, Plataforma, Prioridade, Status, TipoContrato,
 } from '../../core/models';
 import { Notificacao } from '../../core/notificacao.service';
-import { MODALIDADES, PLATAFORMAS, PRIORIDADES, STATUS, TIPOS_CONTRATO } from '../../core/rotulos';
+import { MODALIDADES, PRIORIDADES, STATUS, TIPOS_CONTRATO } from '../../core/rotulos';
 import { RotuloPipe } from '../../shared/rotulo.pipe';
 
 @Component({
@@ -41,7 +42,8 @@ export class CandidaturaFormComponent implements OnInit {
   readonly id = input<string>();
 
   readonly status = STATUS;
-  readonly plataformas = PLATAFORMAS;
+  readonly catalogo = inject(PlataformasService);
+  readonly plataformas = this.catalogo.itens;
   readonly modalidades = MODALIDADES;
   readonly tiposContrato = TIPOS_CONTRATO;
   readonly prioridades = PRIORIDADES;

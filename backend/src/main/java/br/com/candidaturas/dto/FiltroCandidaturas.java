@@ -1,6 +1,5 @@
 package br.com.candidaturas.dto;
 
-import br.com.candidaturas.domain.Plataforma;
 import br.com.candidaturas.domain.Prioridade;
 import br.com.candidaturas.domain.Status;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,7 +15,7 @@ import java.util.List;
 public record FiltroCandidaturas(
         @Parameter(description = "Status atual (aceita vários)") List<Status> status,
         @Parameter(description = "Parte do nome da empresa") String empresa,
-        @Parameter(description = "Plataforma (aceita várias)") List<Plataforma> plataforma,
+        @Parameter(description = "Plataforma (aceita várias)") List<String> plataforma,
         @Parameter(description = "Tag de stack, sem diferenciar maiúsculas") String stack,
         @Parameter(description = "Prioridade (aceita várias)") List<Prioridade> prioridade,
         @Parameter(description = "Data da candidatura a partir de (yyyy-MM-dd)") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate de,

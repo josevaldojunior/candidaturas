@@ -1,5 +1,6 @@
 package br.com.candidaturas.service;
 
+import br.com.candidaturas.support.PlataformasMock;
 import br.com.candidaturas.domain.*;
 import br.com.candidaturas.dto.IntegracaoDtos.ExisteResponse;
 import br.com.candidaturas.dto.IntegracaoDtos.ResultadoImportacao;
@@ -45,9 +46,9 @@ class IntegracaoServiceTest {
 
     @BeforeEach
     void setUp() {
-        var candidaturaService = new CandidaturaService(repository, contatoRepository, new UsuarioFixo(), RelogioFixo.clock());
+        var candidaturaService = new CandidaturaService(repository, contatoRepository, new UsuarioFixo(), RelogioFixo.clock(), PlataformasMock.criar());
         service = new IntegracaoService(repository, contatoRepository, candidaturaService, transactionManager,
-                new UsuarioFixo(), RelogioFixo.clock());
+                new UsuarioFixo(), RelogioFixo.clock(), PlataformasMock.criar());
         when(repository.findByUsuarioIdAndChaveExterna(any(), any())).thenReturn(Optional.empty());
         when(repository.findFirstByUsuarioIdAndLinkVagaOrderByIdAsc(any(), any())).thenReturn(Optional.empty());
         when(repository.findFirstByUsuarioIdAndEmpresaIgnoreCaseAndCargoIgnoreCaseOrderByIdAsc(any(), any(), any())).thenReturn(Optional.empty());
@@ -70,7 +71,7 @@ class IntegracaoServiceTest {
         assertThat(c.getChaveExterna()).isEqualTo("vaga-1");
         assertThat(c.getStatus()).isEqualTo(Status.TRIAGEM_RH);
         assertThat(c.getModalidade()).isEqualTo(Modalidade.HIBRIDO);
-        assertThat(c.getPlataforma()).isEqualTo(Plataforma.LINKEDIN_VAGAS);
+        assertThat(c.getPlataforma()).isEqualTo("LINKEDIN_VAGAS");
         assertThat(c.getTipoContrato()).isEqualTo(TipoContrato.PJ);
         assertThat(c.getPrioridade()).isEqualTo(Prioridade.MEDIA);
         assertThat(c.getStack()).containsExactly("Java", "Spring");

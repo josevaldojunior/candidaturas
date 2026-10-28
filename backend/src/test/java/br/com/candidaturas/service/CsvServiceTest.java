@@ -69,7 +69,7 @@ class CsvServiceTest {
         Candidatura c = CandidaturaServiceTest.candidatura(1L, Status.ENTREVISTA_TECNICA);
         c.setChaveExterna("li-1");
         c.setLinkVaga("https://vagas/1");
-        c.setPlataforma(Plataforma.GUPY);
+        c.setPlataforma("GUPY");
         c.setModalidade(Modalidade.REMOTO);
         c.setNota(9);
         c.setDataCandidatura(LocalDate.of(2026, 10, 1));
